@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -16,7 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
-// ✅ الإضافات المطلوبة فقط
+// Retrofit
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +30,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ProductAdapter
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var fab: FloatingActionButton
+
+    // أزرار الشريط العلوي
+    private lateinit var btnSearch: ImageView
+    private lateinit var btnHelp: ImageView
+    private lateinit var btnSettings: ImageView
+
     private val productList = mutableListOf<Product>()
     private var currentDialog: AddProductDialog? = null
 
@@ -58,6 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
+        // ربط RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -89,9 +97,27 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.adapter = adapter
 
+        // FAB
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             checkCameraPermissionAndOpenScanner()
+        }
+
+        // ===== ربط أزرار الشريط العلوي =====
+        btnSearch = findViewById(R.id.btnSearch)
+        btnHelp = findViewById(R.id.btnHelp)
+        btnSettings = findViewById(R.id.btnSettings)
+
+        btnSearch.setOnClickListener {
+            Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
+        }
+
+        btnHelp.setOnClickListener {
+            Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSettings.setOnClickListener {
+            Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
         }
 
         loadProductsFromDatabase()
@@ -112,17 +138,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openScanner() {
-    val options = ScanOptions()
-    options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
-    options.setPrompt("قرّب الباركود من الكاميرا")
-    options.setCameraId(0)
-    options.setBeepEnabled(true)
-    options.setBarcodeImageEnabled(false)
-    options.setOrientationLocked(true)
-    options.setCaptureActivity(PortraitScanActivity::class.java)
-    options.setTorchEnabled(true)
-    barcodeLauncher.launch(options)
-}
+        val options = ScanOptions()
+        options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
+        options.setPrompt("قرّب الباركود من الكاميرا")
+        options.setCameraId(0)
+        options.setBeepEnabled(true)
+        options.setBarcodeImageEnabled(false)
+        options.setOrientationLocked(true)
+        options.setCaptureActivity(PortraitScanActivity::class.java)
+        options.setTorchEnabled(true)
+        barcodeLauncher.launch(options)
+    }
 
     private fun searchProductInGlobalDatabase(barcode: String) {
 
