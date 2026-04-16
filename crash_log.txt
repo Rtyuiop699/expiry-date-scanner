@@ -1,0 +1,25 @@
+--------- beginning of main
+04-05 19:29:10.640 11934 11934 I SystemProperties: ret = false
+04-05 19:29:10.780 11934 11934 I SystemProperties: ret = false
+04-05 19:29:10.790 11934 11934 I SystemProperties: ret = false
+04-05 19:29:10.918 11934 13740 I OMXClient: IOmx service obtained
+04-05 19:29:11.036 11934 13740 W ExtendedACodec: Failed to get extension for extradata parameter
+04-05 19:29:11.249 11934 11934 I SystemProperties: ret = false
+04-05 19:29:11.270 11934 11934 I SystemProperties: ret = false
+04-05 19:29:13.032 11934 11934 I Activity: dispatchKeyEvent.keyCode=52   event.getAction()=0
+04-05 19:29:13.039 11934 11934 I Activity: dispatchKeyEvent.keyCode=52   event.getAction()=1
+04-05 19:29:14.306 11934 11934 I Activity: dispatchKeyEvent.keyCode=66   event.getAction()=0
+04-05 19:29:14.307 11934 11934 I Activity: dispatchKeyEvent.keyCode=66   event.getAction()=1
+04-05 19:29:16.237 11934 11934 I Activity: dispatchKeyEvent.keyCode=31   event.getAction()=0
+04-05 19:29:16.238 11934 11934 I Activity: dispatchKeyEvent.keyCode=31   event.getAction()=1
+04-05 19:29:18.007 11934 11934 I SystemProperties: ret = false
+04-05 19:29:18.018 11934 11934 E ViewDragHelper: Ignoring pointerId=0 because ACTION_DOWN was not received for this pointer before ACTION_MOVE. It likely happened because  ViewDragHelper did not receive all the events in the event stream.
+04-05 19:29:18.018 11934 11934 I chatty  : uid=11326(com.termux) identical 2 lines
+04-05 19:29:18.018 11934 11934 E ViewDragHelper: Ignoring pointerId=0 because ACTION_DOWN was not received for this pointer before ACTION_MOVE. It likely happened because  ViewDragHelper did not receive all the events in the event stream.
+04-05 19:29:18.043 11934 11934 I SystemProperties: ret = false
+04-05 19:29:18.049 11934 11934 E ViewDragHelper: Ignoring pointerId=0 because ACTION_DOWN was not received for this pointer before ACTION_MOVE. It likely happened because  ViewDragHelper did not receive all the events in the event stream.
+04-05 19:29:18.049 11934 11934 I chatty  : uid=11326(com.termux) identical 2 lines
+04-05 19:29:18.049 11934 11934 E ViewDragHelper: Ignoring pointerId=0 because ACTION_DOWN was not received for this pointer before ACTION_MOVE. It likely happened because  ViewDragHelper did not receive all the events in the event stream.
+04-05 19:29:19.018 11934 11934 I SystemProperties: ret = false
+04-05 19:29:21.247 11934 11934 I Activity: dispatchKeyEvent.keyCode=66   event.getAction()=0
+04-05 19:29:21.247 11934 11934 I Activity: dispatchKeyEvent.keyCode=66   event.getAction()=1

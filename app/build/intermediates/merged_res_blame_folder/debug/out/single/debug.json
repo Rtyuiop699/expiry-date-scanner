@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_dialog_add_product.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/dialog_add_product.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_item_product.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/item_product.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_activity_product_camera.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/activity_product_camera.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/xml_file_paths.xml.flat",
+        "source": "com.saber.myapp-main-42:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_dialog_scanner.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/dialog_scanner.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_activity_date_scanner.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/activity_date_scanner.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/layout_activity_main.xml.flat",
+        "source": "com.saber.myapp-main-42:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.saber.myapp-merged_res-40:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "com.saber.myapp-main-42:/mipmap-xxxhdpi/ic_launcher_round.png"
+    }
+]

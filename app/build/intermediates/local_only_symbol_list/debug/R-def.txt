@@ -1,0 +1,31 @@
+R_DEF: Internal format may change without notice
+local
+id btnCancel
+id btnCapture
+id btnCaptureImage
+id btnSaveProduct
+id btnScanDate
+id btnTakePicture
+id btnUseDate
+id editTextBarcode
+id editTextProductDate
+id editTextProductName
+id fab
+id imageViewProduct
+id previewView
+id recyclerView
+id textViewBarcode
+id textViewExpiry
+id textViewName
+id tvRecognizedText
+id viewFinder
+layout activity_date_scanner
+layout activity_main
+layout activity_product_camera
+layout dialog_add_product
+layout dialog_scanner
+layout item_product
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+xml file_paths
