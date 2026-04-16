@@ -2,21 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.saber.myapp">
 
+    <!-- الإنترنت -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- الكاميرا -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <!-- التخزين (لأندرويد القديم فقط) -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:label="@string/app_name"
         android:icon="@android:drawable/sym_def_app_icon"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/Theme.MyApp"
         android:requestLegacyExternalStorage="true">
 
+        <!-- الشاشة الرئيسية -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,17 +34,21 @@
             </intent-filter>
         </activity>
 
+        <!-- ماسح التاريخ -->
         <activity
             android:name=".DateScannerActivity"
             android:screenOrientation="portrait" />
 
+        <!-- كاميرا المنتج -->
         <activity
-            android:name=".ProductCameraActivity" />
+            android:name=".ProductCameraActivity"
+            android:screenOrientation="portrait" />
 
+        <!-- ماسح الباركود -->
         <activity
             android:name=".PortraitScanActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.MyApp" />
 
     </application>
 

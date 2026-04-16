@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- 🌿 اللون الأساسي (أخضر احترافي) -->
+        <item name="colorPrimary">#2E7D32</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- 🌿 اللون الثانوي -->
+        <item name="colorSecondary">#1B5E20</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <!-- 🌿 الخلفية -->
+        <item name="android:colorBackground">#F5F5F5</item>
+
+        <!-- 🌿 لون الـ status bar -->
+        <item name="android:statusBarColor">#1B5E20</item>
+
+    </style>
+
+</resources>
