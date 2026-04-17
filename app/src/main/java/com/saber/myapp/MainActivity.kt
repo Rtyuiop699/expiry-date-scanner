@@ -1,7 +1,6 @@
 package com.saber.myapp
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -14,9 +13,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.appbar.MaterialToolbar
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,12 +26,33 @@ class MainActivity : AppCompatActivity() {
     private val productList = mutableListOf<Product>()
     private var currentDialog: AddProductDialog? = null
 
+    // ✅ الباركود (مكانه الصحيح)
+    private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
+        if (result.contents == null) {
+            Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
+        } else {
+            val barcodeValue = result.contents
+
+            val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
+
+            if (existingProduct != null) {
+                Toast.makeText(
+                    this,
+                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(this, "تم قراءة: $barcodeValue", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // ✅ Toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-
         toolbar.inflateMenu(R.menu.toolbar_menu)
 
         toolbar.setOnMenuItemClickListener { item ->
@@ -62,9 +79,17 @@ class MainActivity : AppCompatActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
+        // ✅ RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        adapter = ProductAdapter(productList) { product ->
+            Toast.makeText(this, product.name, Toast.LENGTH_SHORT).show()
+        }
+
+        recyclerView.adapter = adapter
+
+        // ✅ زر الكاميرا
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             checkCameraPermissionAndOpenScanner()
@@ -96,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         options.setBarcodeImageEnabled(false)
         options.setOrientationLocked(true)
         options.setCaptureActivity(PortraitScanActivity::class.java)
+
         barcodeLauncher.launch(options)
     }
 
