@@ -153,4 +153,10 @@ class MainActivity : AppCompatActivity() {
         productList.addAll(databaseHelper.getAllProducts())
         adapter.notifyDataSetChanged()
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        currentDialog?.handleActivityResult(requestCode, resultCode, data)
+    }
 }
