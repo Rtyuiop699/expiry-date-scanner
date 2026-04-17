@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val productList = mutableListOf<Product>()
     private var currentDialog: AddProductDialog? = null
 
-    // ✅ الباركود (مكانه الصحيح)
+    // ✅ الباركود
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
             Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                Toast.makeText(this, "تم قراءة: $barcodeValue", Toast.LENGTH_SHORT).show()
+                openManualAddDialog(barcodeValue)
             }
         }
     }
@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // ✅ Toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.toolbar_menu)
 
@@ -79,7 +78,6 @@ class MainActivity : AppCompatActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
-        // ✅ RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.adapter = adapter
 
-        // ✅ زر الكاميرا
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             checkCameraPermissionAndOpenScanner()
@@ -123,6 +120,32 @@ class MainActivity : AppCompatActivity() {
         options.setCaptureActivity(PortraitScanActivity::class.java)
 
         barcodeLauncher.launch(options)
+    }
+
+    private fun openManualAddDialog(barcodeValue: String) {
+        val dialog = AddProductDialog(
+            this,
+            barcodeValue,
+            "",
+            "",
+            null
+        ) { name, expiryDate, imagePath ->
+
+            val newProduct = Product(
+                barcode = barcodeValue,
+                name = name,
+                expiryDate = expiryDate,
+                imagePath = imagePath
+            )
+
+            databaseHelper.addProduct(newProduct)
+            loadProductsFromDatabase()
+
+            Toast.makeText(this, "تم حفظ المنتج", Toast.LENGTH_SHORT).show()
+        }
+
+        currentDialog = dialog
+        dialog.show()
     }
 
     private fun loadProductsFromDatabase() {
