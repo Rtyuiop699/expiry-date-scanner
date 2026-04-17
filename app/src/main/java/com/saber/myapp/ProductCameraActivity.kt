@@ -17,6 +17,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -79,21 +80,21 @@ class ProductCameraActivity : AppCompatActivity() {
 
     private fun startCamera() {
         cameraExecutor = Executors.newSingleThreadExecutor()
-        
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        
+
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-            
+
             val preview = Preview.Builder().build()
             preview.setSurfaceProvider(previewView.surfaceProvider)
-            
+
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .build()
-            
+
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            
+
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
@@ -111,24 +112,38 @@ class ProductCameraActivity : AppCompatActivity() {
 
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
-        
+
         val photoFile = createImageFile()
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        
+
         btnCapture.isEnabled = false
         btnCapture.text = "⏳ جاري..."
-        
+
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+
+                    // ✔️ ضغط الصورة (كما طلبت)
+                    val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+                    val stream = FileOutputStream(photoFile)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                    stream.flush()
+                    stream.close()
+
+                    // ✔️ التعديل المطلوب
+                    val finalPath = photoFile.absolutePath
+
+                    // ✔️ التاخير البسيط (كما طلبت)
+                    Thread.sleep(100)
+
                     val resultIntent = Intent()
-                    resultIntent.putExtra(EXTRA_IMAGE_PATH, photoFile.absolutePath)
+                    resultIntent.putExtra(EXTRA_IMAGE_PATH, finalPath)
                     setResult(RESULT_OK, resultIntent)
                     finish()
                 }
-                
+
                 override fun onError(exception: ImageCaptureException) {
                     btnCapture.isEnabled = true
                     btnCapture.text = "📸 تصوير"
