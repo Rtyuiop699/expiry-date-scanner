@@ -1,7 +1,6 @@
 package com.saber.myapp
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -14,8 +13,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.appbar.MaterialToolbar
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.appcompat.app.AlertDialog
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,13 +39,45 @@ class MainActivity : AppCompatActivity() {
             val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
 
             if (existingProduct != null) {
-                Toast.makeText(
-                    this,
-                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // ✅ المنتج موجود محليًا → افتح نافذة الإدخال اليدوي مع البيانات المحفوظة
+                openManualAddDialog(
+                    barcodeValue,
+                    existingProduct.name,
+                    existingProduct.expiryDate,
+                    existingProduct.imagePath
+                )
             } else {
-                openManualAddDialog(barcodeValue)
+                // ✅ المنتج غير موجود محليًا → جرب البحث في قاعدة البيانات العالمية
+                val apiService = ApiClient.getClient().create(OpenFoodFactsApi::class.java)
+                val call = apiService.getProduct(barcodeValue)
+
+                call.enqueue(object : Callback<ProductApiResponse> {
+                    override fun onResponse(
+                        call: Call<ProductApiResponse>,
+                        response: Response<ProductApiResponse>
+                    ) {
+                        if (response.isSuccessful && response.body()?.product != null) {
+                            val productApi = response.body()!!.product
+
+                            // افتح نافذة الإدخال اليدوي مع البيانات القادمة من الـ API
+                            openManualAddDialog(
+                                barcodeValue,
+                                productApi.productName ?: "",
+                                "", // تاريخ الصلاحية غير موجود في API
+                                productApi.imageUrl
+                            )
+                        } else {
+                            // المنتج غير موجود في قاعدة البيانات العالمية → إدخال يدوي فارغ
+                            openManualAddDialog(barcodeValue, "", "", null)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
+                        // فشل الاتصال → إدخال يدوي فارغ + رسالة خطأ
+                        Toast.makeText(this@MainActivity, "فشل الاتصال بالشبكة", Toast.LENGTH_SHORT).show()
+                        openManualAddDialog(barcodeValue, "", "", null)
+                    }
+                })
             }
         }
     }
@@ -80,31 +112,8 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // ✅ عند الضغط على المنتج يتم فتح نافذة الإدخال مع بياناته
         adapter = ProductAdapter(productList) { product ->
-            val dialog = AddProductDialog(
-                this,
-                product.barcode,
-                product.name,
-                product.expiryDate,
-                product.imagePath
-            ) { name, expiryDate, imagePath ->
-
-                val updatedProduct = Product(
-                    barcode = product.barcode,
-                    name = name,
-                    expiryDate = expiryDate,
-                    imagePath = imagePath
-                )
-
-                databaseHelper.updateProduct(updatedProduct)
-                loadProductsFromDatabase()
-
-                Toast.makeText(this, "تم تحديث المنتج", Toast.LENGTH_SHORT).show()
-            }
-
-            currentDialog = dialog
-            dialog.show()
+            Toast.makeText(this, product.name, Toast.LENGTH_SHORT).show()
         }
 
         recyclerView.adapter = adapter
@@ -115,66 +124,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadProductsFromDatabase()
-
-        // ✅ إضافة السحب لليمين مع تأكيد الحذف
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val product = productList[position]
-
-                AlertDialog.Builder(this@MainActivity)
-                    .setTitle("تأكيد الحذف")
-                    .setMessage("هل تريد حذف هذا المنتج؟")
-                    .setPositiveButton("تأكيد") { _, _ ->
-                        databaseHelper.deleteProduct(product.barcode)
-                        productList.removeAt(position)
-                        adapter.notifyItemRemoved(position)
-                        Toast.makeText(this@MainActivity, "🗑️ تم حذف المنتج", Toast.LENGTH_SHORT).show()
-                    }
-                    .setNegativeButton("إلغاء") { _, _ ->
-                        adapter.notifyItemChanged(position)
-                    }
-                    .setCancelable(false)
-                    .show()
-            }
-
-            override fun onChildDraw(
-                c: android.graphics.Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val itemView = viewHolder.itemView
-                val paint = android.graphics.Paint()
-                paint.color = android.graphics.Color.RED
-                c.drawRect(
-                    itemView.left.toFloat(),
-                    itemView.top.toFloat(),
-                    itemView.right.toFloat(),
-                    itemView.bottom.toFloat(),
-                    paint
-                )
-
-                paint.color = android.graphics.Color.WHITE
-                paint.textSize = 40f
-                c.drawText("حذف", itemView.left + 50f, itemView.top + (itemView.height / 2f), paint)
-
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            }
-        })
-
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun checkCameraPermissionAndOpenScanner() {
@@ -204,20 +153,20 @@ class MainActivity : AppCompatActivity() {
         barcodeLauncher.launch(options)
     }
 
-    private fun openManualAddDialog(barcodeValue: String) {
+    private fun openManualAddDialog(barcodeValue: String, name: String, expiryDate: String, imagePath: String?) {
         val dialog = AddProductDialog(
             this,
             barcodeValue,
-            "",
-            "",
-            null
-        ) { name, expiryDate, imagePath ->
+            name,
+            expiryDate,
+            imagePath
+        ) { newName, newExpiryDate, newImagePath ->
 
             val newProduct = Product(
                 barcode = barcodeValue,
-                name = name,
-                expiryDate = expiryDate,
-                imagePath = imagePath
+                name = newName,
+                expiryDate = newExpiryDate,
+                imagePath = newImagePath
             )
 
             databaseHelper.addProduct(newProduct)
@@ -234,11 +183,5 @@ class MainActivity : AppCompatActivity() {
         productList.clear()
         productList.addAll(databaseHelper.getAllProducts())
         adapter.notifyDataSetChanged()
-    }
-
-    // ✅ تمرير النتيجة إلى الـ Dialog ليظهر الصورة
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        currentDialog?.handleActivityResult(requestCode, resultCode, data)
     }
 }
