@@ -78,8 +78,31 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        // ✅ عند الضغط على المنتج يتم فتح نافذة الإدخال مع بياناته
         adapter = ProductAdapter(productList) { product ->
-            Toast.makeText(this, product.name, Toast.LENGTH_SHORT).show()
+            val dialog = AddProductDialog(
+                this,
+                product.barcode,
+                product.name,
+                product.expiryDate,
+                product.imagePath
+            ) { name, expiryDate, imagePath ->
+
+                val updatedProduct = Product(
+                    barcode = product.barcode,
+                    name = name,
+                    expiryDate = expiryDate,
+                    imagePath = imagePath
+                )
+
+                databaseHelper.updateProduct(updatedProduct)
+                loadProductsFromDatabase()
+
+                Toast.makeText(this, "تم تحديث المنتج", Toast.LENGTH_SHORT).show()
+            }
+
+            currentDialog = dialog
+            dialog.show()
         }
 
         recyclerView.adapter = adapter
