@@ -14,6 +14,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.appbar.MaterialToolbar
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.appcompat.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -113,6 +115,66 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadProductsFromDatabase()
+
+        // ✅ إضافة السحب لليمين مع تأكيد الحذف
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val product = productList[position]
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("تأكيد الحذف")
+                    .setMessage("هل تريد حذف هذا المنتج؟")
+                    .setPositiveButton("تأكيد") { _, _ ->
+                        databaseHelper.deleteProduct(product.barcode)
+                        productList.removeAt(position)
+                        adapter.notifyItemRemoved(position)
+                        Toast.makeText(this@MainActivity, "🗑️ تم حذف المنتج", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("إلغاء") { _, _ ->
+                        adapter.notifyItemChanged(position)
+                    }
+                    .setCancelable(false)
+                    .show()
+            }
+
+            override fun onChildDraw(
+                c: android.graphics.Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                val paint = android.graphics.Paint()
+                paint.color = android.graphics.Color.RED
+                c.drawRect(
+                    itemView.left.toFloat(),
+                    itemView.top.toFloat(),
+                    itemView.right.toFloat(),
+                    itemView.bottom.toFloat(),
+                    paint
+                )
+
+                paint.color = android.graphics.Color.WHITE
+                paint.textSize = 40f
+                c.drawText("حذف", itemView.left + 50f, itemView.top + (itemView.height / 2f), paint)
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun checkCameraPermissionAndOpenScanner() {

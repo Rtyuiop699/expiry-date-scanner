@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 
 class ProductAdapter(
     private val products: List<Product>,
@@ -29,14 +30,18 @@ class ProductAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
 
+        // الاسم
         holder.nameView.text = product.name
+
+        // التاريخ تحت الاسم بخط أسود
         holder.expiryView.text = product.expiryDate
+        holder.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
+
+        // الباركود تحت التاريخ
         holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-        val file = product.imagePath?.let { path ->
-            java.io.File(path)
-        }
-
+        // الصورة
+        val file = product.imagePath?.let { path -> File(path) }
         if (file != null && file.exists()) {
             val bitmap = BitmapFactory.decodeFile(file.absolutePath)
             holder.imageView.setImageBitmap(bitmap)
@@ -44,7 +49,7 @@ class ProductAdapter(
             holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
         }
 
-        // 👇 الضغط على العنصر لفتح التعديل
+        // الضغط على العنصر لفتح نافذة التعديل
         holder.itemView.setOnClickListener {
             onItemClick(product)
         }
