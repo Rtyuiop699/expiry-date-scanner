@@ -98,7 +98,7 @@ class DatabaseHelper(context: Context) :
     }
 
     // =========================
-    // ✔️ دالة التحديث المضافة
+    // ✔️ دالة التحديث
     // =========================
     fun updateProduct(product: Product): Int {
         val db = writableDatabase
@@ -116,5 +116,15 @@ class DatabaseHelper(context: Context) :
             "$COL_BARCODE = ?",
             arrayOf(product.barcode)
         )
+    }
+
+    // =========================
+    // ✔️ دالة الحذف المضافة
+    // =========================
+    fun deleteProduct(barcode: String): Int {
+        val db = writableDatabase
+        val result = db.delete(TABLE_PRODUCTS, "$COL_BARCODE = ?", arrayOf(barcode))
+        db.close()
+        return result
     }
 }
