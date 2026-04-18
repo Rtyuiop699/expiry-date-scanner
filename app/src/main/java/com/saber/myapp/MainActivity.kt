@@ -1,6 +1,7 @@
 package com.saber.myapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -56,22 +57,18 @@ class MainActivity : AppCompatActivity() {
 
         toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-
                 R.id.btnSearch -> {
                     Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
                     true
                 }
-
                 R.id.btnHelp -> {
                     Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
                     true
                 }
-
                 R.id.btnSettings -> {
                     Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
                     true
                 }
-
                 else -> false
             }
         }
@@ -154,9 +151,9 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
+    // ✅ تمرير النتيجة إلى الـ Dialog ليظهر الصورة
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         currentDialog?.handleActivityResult(requestCode, resultCode, data)
     }
 }
