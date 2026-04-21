@@ -1,14 +1,19 @@
 package com.saber.myapp
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Window
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.bumptech.glide.Glide
 import java.io.File
 
 class AddProductDialog(
@@ -27,7 +32,6 @@ class AddProductDialog(
     private lateinit var btnCapture: Button
     private lateinit var btnSave: Button
     private lateinit var btnScanDate: ImageButton
-
     private var currentImagePath: String? = null
 
     companion object {
@@ -54,7 +58,11 @@ class AddProductDialog(
 
         if (!imagePathValue.isNullOrEmpty()) {
             if (imagePathValue.startsWith("http")) {
-                Glide.with(context).load(imagePathValue).into(imageView)
+                Glide.with(context)
+                    .load(imagePathValue)
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .into(imageView)
                 currentImagePath = imagePathValue
             } else {
                 val file = File(imagePathValue)
@@ -64,7 +72,6 @@ class AddProductDialog(
                     currentImagePath = imagePathValue
                 }
             }
-        }
         }
 
         btnScanDate.setOnClickListener {
@@ -81,32 +88,31 @@ class AddProductDialog(
             val name = editName.text.toString().trim()
             val date = editDate.text.toString().trim()
 
-            if (name.isEmpty() || date.isEmpty() || currentImagePath.isNullOrEmpty()) {
-                Toast.makeText(context, "يرجى تعبئة كل الحقول", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            if (name.isEmpty() || date.isEmpty() || currentImagePath == null) {
+                Toast.makeText(context, "يرجى ملء جميع الحقول والتقاط الصورة", Toast.LENGTH_SHORT).show()
+            } else {
+                callback(name, date, currentImagePath!!)
+                dismiss()
             }
-
-            callback(name, date, currentImagePath!!)
-            dismiss()
         }
     }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != Activity.RESULT_OK) return
-
-        when (requestCode) {
-            REQUEST_DATE_SCAN -> {
-                val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
-                if (date != null) {
-                    editDate.setText(date)
+        if (resultCode == android.app.Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_DATE_SCAN -> {
+                    val recognizedDate = data?.getStringExtra("EXTRA_DATE")
+                    if (recognizedDate != null) {
+                        editDate.setText(recognizedDate)
+                    }
                 }
-            }
-
-            REQUEST_PRODUCT_CAMERA -> {
-                val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
-                if (imagePath != null) {
-                    currentImagePath = imagePath
-                    imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
+                REQUEST_PRODUCT_CAMERA -> {
+                    val imagePath = data?.getStringExtra("EXTRA_IMAGE_PATH")
+                    if (imagePath != null) {
+                        currentImagePath = imagePath
+                        val bitmap = BitmapFactory.decodeFile(imagePath)
+                        imageView.setImageBitmap(bitmap)
+                    }
                 }
             }
         }
