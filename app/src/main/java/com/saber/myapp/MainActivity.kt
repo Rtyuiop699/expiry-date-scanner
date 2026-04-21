@@ -20,16 +20,14 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
 
     private val REQUEST_CAMERA_PERMISSION = 100
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var fab: FloatingActionButton
 
     private val productList = mutableListOf<Product>()
-    private var currentDialog: AddProductDialog? = null
 
-    // ✅ الباركود - تم التحديث ليدعم البحث العالمي
+    // ✅ نظام ماسح الباركود المطور
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
             Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
@@ -38,13 +36,9 @@ class MainActivity : AppCompatActivity() {
             val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
 
             if (existingProduct != null) {
-                Toast.makeText(
-                    this,
-                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}", Toast.LENGTH_SHORT).show()
             } else {
-                // استدعاء دالة البحث العالمي بدلاً من فتح الديلوج فوراً
+                // البحث في الإنترنت بدلاً من الفتح المباشر
                 searchProductOnWeb(barcodeValue)
             }
         }
@@ -54,34 +48,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        databaseHelper = DatabaseHelper(this)
+
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.toolbar_menu)
-
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.btnSearch -> {
-                    Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.btnHelp -> {
-                    Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.btnSettings -> {
-                    Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
-            }
-        }
-
-        databaseHelper = DatabaseHelper(this)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = ProductAdapter(productList) { product ->
-            Toast.makeText(this, product.name, Toast.LENGTH_SHORT).show()
+            // إجراء عند الضغط على المنتج (مثلاً التعديل)
+            openManualAddDialog(product.barcode, product.name, product.imagePath)
         }
 
         recyclerView.adapter = adapter
@@ -94,44 +71,51 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
-    // ✅ دالة البحث في قاعدة البيانات العالمية (Open Food Facts)
     private fun searchProductOnWeb(barcode: String) {
+        Toast.makeText(this, "جاري البحث عن المنتج عالمياً...", Toast.LENGTH_SHORT).show()
+
         ApiClient.instance.getProduct(barcode).enqueue(object : Callback<ProductApiResponse> {
             override fun onResponse(call: Call<ProductApiResponse>, response: Response<ProductApiResponse>) {
                 if (response.isSuccessful && response.body()?.status == 1) {
-                    val productDetails = response.body()?.product
-                    openManualAddDialog(barcode, productDetails?.productName ?: "", productDetails?.imageUrl)
+                    val product = response.body()?.product
+                    openManualAddDialog(barcode, product?.productName ?: "", product?.imageUrl)
                 } else {
                     openManualAddDialog(barcode, "", null)
                 }
             }
+
             override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "فشل الاتصال بالإنترنت", Toast.LENGTH_SHORT).show()
                 openManualAddDialog(barcode, "", null)
             }
         })
     }
-                    // لم يتم العثور على المنتج، افتح الديلوج فارغاً
-                    openManualAddDialog(barcode, "", null)
-                }
-            }
 
-            override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
-                // فشل الاتصال، افتح الديلوج للإدخال اليدوي
-                Toast.makeText(this@MainActivity, "فشل الاتصال: سيتم الإدخال يدوياً", Toast.LENGTH_SHORT).show()
-                openManualAddDialog(barcode, "", null)
-            }
-        })
+    private fun openManualAddDialog(barcode: String, name: String, imagePath: String?) {
+        val dialog = AddProductDialog(
+            this,
+            barcode,
+            name,
+            "", // تاريخ انتهاء فارغ ليقوم المستخدم بمسحه أو إدخاله
+            imagePath
+        ) { finalName, finalExpiry, finalImagePath ->
+            
+            val newProduct = Product(
+                barcode = barcode,
+                name = finalName,
+                expiryDate = finalExpiry,
+                imagePath = finalImagePath
+            )
+            databaseHelper.addProduct(newProduct)
+            loadProductsFromDatabase()
+            Toast.makeText(this, "تم حفظ المنتج بنجاح", Toast.LENGTH_SHORT).show()
+        }
+        dialog.show()
     }
 
     private fun checkCameraPermissionAndOpenScanner() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CAMERA_PERMISSION
-            )
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         } else {
             openScanner()
         }
@@ -139,42 +123,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun openScanner() {
         val options = ScanOptions()
-        options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
-        options.setPrompt("قرّب الباركود من الكاميرا")
-        options.setCameraId(0)
+        options.setPrompt("وجه الكاميرا نحو الباركود")
         options.setBeepEnabled(true)
-        options.setBarcodeImageEnabled(false)
         options.setOrientationLocked(true)
         options.setCaptureActivity(PortraitScanActivity::class.java)
-
         barcodeLauncher.launch(options)
-    }
-
-    // ✅ تم التعديل لاستقبال اسم المنتج ورابط الصورة
-    private fun openManualAddDialog(barcodeValue: String, name: String = "", imageUrl: String? = null) {
-        val dialog = AddProductDialog(
-            this,
-            barcodeValue,
-            name,
-            "",
-            imageUrl // تمرير رابط الصورة لاستخدامه بـ Glide
-        ) { productName, expiryDate, imagePath ->
-
-            val newProduct = Product(
-                barcode = barcodeValue,
-                name = productName,
-                expiryDate = expiryDate,
-                imagePath = imagePath
-            )
-
-            databaseHelper.addProduct(newProduct)
-            loadProductsFromDatabase()
-
-            Toast.makeText(this, "تم حفظ المنتج", Toast.LENGTH_SHORT).show()
-        }
-
-        currentDialog = dialog
-        dialog.show()
     }
 
     private fun loadProductsFromDatabase() {
