@@ -96,18 +96,20 @@ class MainActivity : AppCompatActivity() {
 
     // ✅ دالة البحث في قاعدة البيانات العالمية (Open Food Facts)
     private fun searchProductOnWeb(barcode: String) {
-        Toast.makeText(this, "جاري البحث عالمياً...", Toast.LENGTH_SHORT).show()
-
         ApiClient.instance.getProduct(barcode).enqueue(object : Callback<ProductApiResponse> {
             override fun onResponse(call: Call<ProductApiResponse>, response: Response<ProductApiResponse>) {
                 if (response.isSuccessful && response.body()?.status == 1) {
                     val productDetails = response.body()?.product
-                    val name = productDetails?.productName ?: ""
-                    val imageUrl = productDetails?.imageUrl ?: ""
-                    
-                    // فتح الديلوج بالبيانات المجلوبة
-                    openManualAddDialog(barcode, name, imageUrl)
+                    openManualAddDialog(barcode, productDetails?.productName ?: "", productDetails?.imageUrl)
                 } else {
+                    openManualAddDialog(barcode, "", null)
+                }
+            }
+            override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
+                openManualAddDialog(barcode, "", null)
+            }
+        })
+    }
                     // لم يتم العثور على المنتج، افتح الديلوج فارغاً
                     openManualAddDialog(barcode, "", null)
                 }

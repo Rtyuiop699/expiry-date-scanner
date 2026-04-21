@@ -1,13 +1,12 @@
 package com.saber.myapp
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
+import com.bumptech.glide.Glide
 
 class ProductAdapter(
     private val products: List<Product>,
@@ -34,25 +33,29 @@ class ProductAdapter(
         holder.nameView.text = product.name
 
         // التاريخ تحت الاسم بخط أسود
-        holder.expiryView.text = product.expiryDate
-        holder.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
+        holder.expiryDateDisplay(holder, product.expiryDate)
 
         // الباركود تحت التاريخ
         holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-        // الصورة
-        val file = product.imagePath?.let { path -> File(path) }
-        if (file != null && file.exists()) {
-            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            holder.imageView.setImageBitmap(bitmap)
-        } else {
-            holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
-        }
+        // تحسين عرض الصورة باستخدام Glide لدعم الروابط والملفات المحلية
+        Glide.with(holder.itemView.context)
+            .load(product.imagePath) // Glide سيميز تلقائياً بين URL والمسار المحلي
+            .placeholder(android.R.drawable.ic_menu_gallery) // صورة مؤقتة أثناء التحميل
+            .error(android.R.drawable.ic_menu_report_image) // صورة تظهر عند الخطأ
+            .centerCrop() // لضمان مظهر متناسق للصور
+            .into(holder.imageView)
 
         // الضغط على العنصر لفتح نافذة التعديل
         holder.itemView.setOnClickListener {
             onItemClick(product)
         }
+    }
+
+    // دالة مساعدة للحفاظ على تنسيق اللون
+    private fun ProductViewHolder.expiryDateDisplay(holder: ProductViewHolder, date: String) {
+        this.expiryView.text = date
+        this.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
     }
 
     override fun getItemCount() = products.size
