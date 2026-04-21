@@ -29,55 +29,23 @@ class MainActivity : AppCompatActivity() {
     private val productList = mutableListOf<Product>()
     private var currentDialog: AddProductDialog? = null
 
-    // ✅ الباركود
+    // ✅ الباركود - تم التحديث ليدعم البحث العالمي
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
             Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
         } else {
             val barcodeValue = result.contents
-
             val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
 
             if (existingProduct != null) {
-                // ✅ المنتج موجود محليًا → افتح نافذة الإدخال اليدوي مع البيانات المحفوظة
-                openManualAddDialog(
-                    barcodeValue,
-                    existingProduct.name,
-                    existingProduct.expiryDate,
-                    existingProduct.imagePath
-                )
+                Toast.makeText(
+                    this,
+                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
-                // ✅ المنتج غير موجود محليًا → جرب البحث في قاعدة البيانات العالمية
-                val apiService = ApiClient.getClient().create(OpenFoodFactsApi::class.java)
-                val call = apiService.getProduct(barcodeValue)
-
-                call.enqueue(object : Callback<ProductApiResponse> {
-                    override fun onResponse(
-                        call: Call<ProductApiResponse>,
-                        response: Response<ProductApiResponse>
-                    ) {
-                        if (response.isSuccessful && response.body()?.product != null) {
-                            val productApi = response.body()!!.product
-
-                            // افتح نافذة الإدخال اليدوي مع البيانات القادمة من الـ API
-                            openManualAddDialog(
-                                barcodeValue,
-                                productApi.productName ?: "",
-                                "", // تاريخ الصلاحية غير موجود في API
-                                productApi.imageUrl
-                            )
-                        } else {
-                            // المنتج غير موجود في قاعدة البيانات العالمية → إدخال يدوي فارغ
-                            openManualAddDialog(barcodeValue, "", "", null)
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
-                        // فشل الاتصال → إدخال يدوي فارغ + رسالة خطأ
-                        Toast.makeText(this@MainActivity, "فشل الاتصال بالشبكة", Toast.LENGTH_SHORT).show()
-                        openManualAddDialog(barcodeValue, "", "", null)
-                    }
-                })
+                // استدعاء دالة البحث العالمي بدلاً من فتح الديلوج فوراً
+                searchProductOnWeb(barcodeValue)
             }
         }
     }
@@ -126,6 +94,33 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
+    // ✅ دالة البحث في قاعدة البيانات العالمية (Open Food Facts)
+    private fun searchProductOnWeb(barcode: String) {
+        Toast.makeText(this, "جاري البحث عالمياً...", Toast.LENGTH_SHORT).show()
+
+        ApiClient.instance.getProduct(barcode).enqueue(object : Callback<ProductApiResponse> {
+            override fun onResponse(call: Call<ProductApiResponse>, response: Response<ProductApiResponse>) {
+                if (response.isSuccessful && response.body()?.status == 1) {
+                    val productDetails = response.body()?.product
+                    val name = productDetails?.productName ?: ""
+                    val imageUrl = productDetails?.imageUrl ?: ""
+                    
+                    // فتح الديلوج بالبيانات المجلوبة
+                    openManualAddDialog(barcode, name, imageUrl)
+                } else {
+                    // لم يتم العثور على المنتج، افتح الديلوج فارغاً
+                    openManualAddDialog(barcode, "", null)
+                }
+            }
+
+            override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
+                // فشل الاتصال، افتح الديلوج للإدخال اليدوي
+                Toast.makeText(this@MainActivity, "فشل الاتصال: سيتم الإدخال يدوياً", Toast.LENGTH_SHORT).show()
+                openManualAddDialog(barcode, "", null)
+            }
+        })
+    }
+
     private fun checkCameraPermissionAndOpenScanner() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
@@ -153,20 +148,21 @@ class MainActivity : AppCompatActivity() {
         barcodeLauncher.launch(options)
     }
 
-    private fun openManualAddDialog(barcodeValue: String, name: String, expiryDate: String, imagePath: String?) {
+    // ✅ تم التعديل لاستقبال اسم المنتج ورابط الصورة
+    private fun openManualAddDialog(barcodeValue: String, name: String = "", imageUrl: String? = null) {
         val dialog = AddProductDialog(
             this,
             barcodeValue,
             name,
-            expiryDate,
-            imagePath
-        ) { newName, newExpiryDate, newImagePath ->
+            "",
+            imageUrl // تمرير رابط الصورة لاستخدامه بـ Glide
+        ) { productName, expiryDate, imagePath ->
 
             val newProduct = Product(
                 barcode = barcodeValue,
-                name = newName,
-                expiryDate = newExpiryDate,
-                imagePath = newImagePath
+                name = productName,
+                expiryDate = expiryDate,
+                imagePath = imagePath
             )
 
             databaseHelper.addProduct(newProduct)

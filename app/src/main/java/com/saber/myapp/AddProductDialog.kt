@@ -53,11 +53,18 @@ class AddProductDialog(
         editDate.setText(expiryValue)
 
         if (!imagePathValue.isNullOrEmpty()) {
-            val file = File(imagePathValue)
-            if (file.exists()) {
-                imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+            if (imagePathValue.startsWith("http")) {
+                Glide.with(context).load(imagePathValue).into(imageView)
                 currentImagePath = imagePathValue
+            } else {
+                val file = File(imagePathValue)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    imageView.setImageBitmap(bitmap)
+                    currentImagePath = imagePathValue
+                }
             }
+        }
         }
 
         btnScanDate.setOnClickListener {
