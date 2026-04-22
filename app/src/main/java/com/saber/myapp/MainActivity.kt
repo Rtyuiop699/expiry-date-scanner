@@ -2,6 +2,7 @@ package com.saber.myapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,9 @@ class MainActivity : AppCompatActivity() {
 
     private val productList = mutableListOf<Product>()
 
+    // ✅ تم الإضافة: حفظ الديالوج الحالي
+    private var currentDialog: AddProductDialog? = null
+
     // ✅ نظام ماسح الباركود المطور
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
@@ -38,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             if (existingProduct != null) {
                 Toast.makeText(this, "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}", Toast.LENGTH_SHORT).show()
             } else {
-                // البحث في الإنترنت بدلاً من الفتح المباشر
                 searchProductOnWeb(barcodeValue)
             }
         }
@@ -57,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = ProductAdapter(productList) { product ->
-            // إجراء عند الضغط على المنتج (مثلاً التعديل)
             openManualAddDialog(product.barcode, product.name, product.imagePath)
         }
 
@@ -92,14 +94,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openManualAddDialog(barcode: String, name: String, imagePath: String?) {
-        val dialog = AddProductDialog(
+
+        // ✅ تم الإضافة: حفظ الديالوج
+        currentDialog = AddProductDialog(
             this,
             barcode,
             name,
-            "", // تاريخ انتهاء فارغ ليقوم المستخدم بمسحه أو إدخاله
+            "",
             imagePath
         ) { finalName, finalExpiry, finalImagePath ->
-            
+
             val newProduct = Product(
                 barcode = barcode,
                 name = finalName,
@@ -110,7 +114,14 @@ class MainActivity : AppCompatActivity() {
             loadProductsFromDatabase()
             Toast.makeText(this, "تم حفظ المنتج بنجاح", Toast.LENGTH_SHORT).show()
         }
-        dialog.show()
+
+        currentDialog?.show()
+    }
+
+    // ✅ تم الإضافة: تمرير نتيجة الكاميرا للديالوج
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        currentDialog?.handleActivityResult(requestCode, resultCode, data)
     }
 
     private fun checkCameraPermissionAndOpenScanner() {
