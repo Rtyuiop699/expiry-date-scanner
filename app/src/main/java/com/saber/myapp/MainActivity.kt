@@ -4,7 +4,11 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.ImageView
 import android.widget.Toast
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -12,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import retrofit2.Call
@@ -26,12 +31,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var fab: FloatingActionButton
 
+    private lateinit var searchLayout: TextInputLayout
+    private lateinit var searchField: EditText
+    private lateinit var btnSearch: ImageView
+
     private val productList = mutableListOf<Product>()
 
-    // ✅ تم الإضافة: حفظ الديالوج الحالي
     private var currentDialog: AddProductDialog? = null
 
-    // ✅ نظام ماسح الباركود المطور
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
             Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
@@ -54,7 +61,6 @@ class MainActivity : AppCompatActivity() {
         databaseHelper = DatabaseHelper(this)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.inflateMenu(R.menu.toolbar_menu)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -62,13 +68,35 @@ class MainActivity : AppCompatActivity() {
         adapter = ProductAdapter(productList) { product ->
             openManualAddDialog(product.barcode, product.name, product.imagePath)
         }
-
         recyclerView.adapter = adapter
 
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             checkCameraPermissionAndOpenScanner()
         }
+
+        // ✅ ربط عناصر البحث
+        searchLayout = findViewById(R.id.searchLayout)
+        searchField = findViewById(R.id.searchField)
+        btnSearch = findViewById(R.id.btnSearch)
+
+        btnSearch.setOnClickListener {
+            if (searchLayout.visibility == android.view.View.GONE) {
+                searchLayout.visibility = android.view.View.VISIBLE
+                searchField.requestFocus()
+            } else {
+                searchLayout.visibility = android.view.View.GONE
+            }
+        }
+
+        // ✅ فلترة المنتجات عند الكتابة
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filter.filter(s)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         loadProductsFromDatabase()
     }
@@ -94,8 +122,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openManualAddDialog(barcode: String, name: String, imagePath: String?) {
-
-        // ✅ تم الإضافة: حفظ الديالوج
         currentDialog = AddProductDialog(
             this,
             barcode,
@@ -103,7 +129,6 @@ class MainActivity : AppCompatActivity() {
             "",
             imagePath
         ) { finalName, finalExpiry, finalImagePath ->
-
             val newProduct = Product(
                 barcode = barcode,
                 name = finalName,
@@ -114,11 +139,9 @@ class MainActivity : AppCompatActivity() {
             loadProductsFromDatabase()
             Toast.makeText(this, "تم حفظ المنتج بنجاح", Toast.LENGTH_SHORT).show()
         }
-
         currentDialog?.show()
     }
 
-    // ✅ تم الإضافة: تمرير نتيجة الكاميرا للديالوج
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         currentDialog?.handleActivityResult(requestCode, resultCode, data)
