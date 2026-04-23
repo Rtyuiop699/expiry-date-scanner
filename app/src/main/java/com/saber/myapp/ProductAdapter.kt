@@ -5,13 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 class ProductAdapter(
-    private val products: List<Product>,
+    private val products: MutableList<Product>,
     private val onItemClick: (Product) -> Unit
-) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
+
+    private var filteredProducts: MutableList<Product> = products.toMutableList()
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageViewProduct)
@@ -27,23 +31,24 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val product = products[position]
+        val product = filteredProducts[position]
 
         // الاسم
         holder.nameView.text = product.name
 
         // التاريخ تحت الاسم بخط أسود
-        holder.expiryDateDisplay(holder, product.expiryDate)
+        holder.expiryView.text = product.expiryDate
+        holder.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
 
         // الباركود تحت التاريخ
         holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-        // تحسين عرض الصورة باستخدام Glide لدعم الروابط والملفات المحلية
+        // الصورة في الجهة اليمنى باستخدام Glide
         Glide.with(holder.itemView.context)
-            .load(product.imagePath) // Glide سيميز تلقائياً بين URL والمسار المحلي
-            .placeholder(android.R.drawable.ic_menu_gallery) // صورة مؤقتة أثناء التحميل
-            .error(android.R.drawable.ic_menu_report_image) // صورة تظهر عند الخطأ
-            .centerCrop() // لضمان مظهر متناسق للصور
+            .load(product.imagePath)
+            .placeholder(android.R.drawable.ic_menu_gallery)
+            .error(android.R.drawable.ic_menu_report_image)
+            .centerCrop()
             .into(holder.imageView)
 
         // الضغط على العنصر لفتح نافذة التعديل
@@ -52,11 +57,30 @@ class ProductAdapter(
         }
     }
 
-    // دالة مساعدة للحفاظ على تنسيق اللون
-    private fun ProductViewHolder.expiryDateDisplay(holder: ProductViewHolder, date: String) {
-        this.expiryView.text = date
-        this.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-    }
+    override fun getItemCount() = filteredProducts.size
 
-    override fun getItemCount() = products.size
+    // ✅ دعم البحث
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val query = constraint?.toString()?.lowercase() ?: ""
+                val results = if (query.isEmpty()) {
+                    products
+                } else {
+                    products.filter {
+                        it.name.lowercase().contains(query) ||
+                        it.barcode.lowercase().contains(query)
+                    }
+                }
+                val filterResults = FilterResults()
+                filterResults.values = results
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredProducts = (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
+                notifyDataSetChanged()
+            }
+        }
+    }
 }
