@@ -84,6 +84,10 @@ class MainActivity : AppCompatActivity() {
             if (searchLayout.visibility == android.view.View.GONE) {
                 searchLayout.visibility = android.view.View.VISIBLE
                 searchField.requestFocus()
+
+                // إظهار لوحة المفاتيح
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                imm.showSoftInput(searchField, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
             } else {
                 searchLayout.visibility = android.view.View.GONE
             }
