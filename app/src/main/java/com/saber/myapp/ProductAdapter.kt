@@ -1,14 +1,14 @@
 package com.saber.myapp
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 
 class ProductAdapter(
     private val products: MutableList<Product>,
@@ -16,6 +16,15 @@ class ProductAdapter(
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
 
     private var filteredProducts: MutableList<Product> = products.toMutableList()
+
+    // ✅ تحديث القائمة عند تحميل المنتجات من قاعدة البيانات
+    fun setProducts(newProducts: List<Product>) {
+        products.clear()
+        products.addAll(newProducts)
+        filteredProducts.clear()
+        filteredProducts.addAll(newProducts)
+        notifyDataSetChanged()
+    }
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageViewProduct)
@@ -33,25 +42,21 @@ class ProductAdapter(
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = filteredProducts[position]
 
-        // الاسم
         holder.nameView.text = product.name
-
-        // التاريخ تحت الاسم بخط أسود
         holder.expiryView.text = product.expiryDate
-        holder.expiryView.setTextColor(holder.itemView.context.getColor(android.R.color.black))
-
-        // الباركود تحت التاريخ
         holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-        // الصورة في الجهة اليمنى باستخدام Glide
-        Glide.with(holder.itemView.context)
-            .load(product.imagePath)
-            .placeholder(android.R.drawable.ic_menu_gallery)
-            .error(android.R.drawable.ic_menu_report_image)
-            .centerCrop()
-            .into(holder.imageView)
+        val file = product.imagePath?.let { path ->
+            java.io.File(path)
+        }
 
-        // الضغط على العنصر لفتح نافذة التعديل
+        if (file != null && file.exists()) {
+            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+            holder.imageView.setImageBitmap(bitmap)
+        } else {
+            holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+        }
+
         holder.itemView.setOnClickListener {
             onItemClick(product)
         }
@@ -59,18 +64,14 @@ class ProductAdapter(
 
     override fun getItemCount() = filteredProducts.size
 
-    // ✅ دعم البحث
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val query = constraint?.toString()?.lowercase() ?: ""
-                val results = if (query.isEmpty()) {
+                val query = constraint?.toString()?.lowercase()?.trim()
+                val results = if (query.isNullOrEmpty()) {
                     products
                 } else {
-                    products.filter {
-                        it.name.lowercase().contains(query) ||
-                        it.barcode.lowercase().contains(query)
-                    }
+                    products.filter { it.name.lowercase().startsWith(query) }
                 }
                 val filterResults = FilterResults()
                 filterResults.values = results
@@ -78,7 +79,11 @@ class ProductAdapter(
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredProducts = (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
+                filteredProducts = if (constraint.isNullOrEmpty()) {
+                    products.toMutableList()   // ✅ العودة للقائمة الأصلية عند مسح النص
+                } else {
+                    (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
+                }
                 notifyDataSetChanged()
             }
         }

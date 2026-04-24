@@ -35,8 +35,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchField: EditText
     private lateinit var btnSearch: ImageView
 
-    private val productList = mutableListOf<Product>()
-
     private var currentDialog: AddProductDialog? = null
 
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
@@ -65,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        adapter = ProductAdapter(productList) { product ->
+        adapter = ProductAdapter(mutableListOf()) { product ->
             openManualAddDialog(product.barcode, product.name, product.imagePath)
         }
         recyclerView.adapter = adapter
@@ -169,8 +167,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadProductsFromDatabase() {
-        productList.clear()
-        productList.addAll(databaseHelper.getAllProducts())
-        adapter.notifyDataSetChanged()
+        val products = databaseHelper.getAllProducts()
+        adapter.setProducts(products)   // ✅ التعديل الجديد
     }
 }
