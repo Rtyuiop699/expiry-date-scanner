@@ -45,7 +45,11 @@ class MainActivity : AppCompatActivity() {
             val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
 
             if (existingProduct != null) {
-                Toast.makeText(this, "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 searchProductOnWeb(barcodeValue)
             }
@@ -57,8 +61,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         databaseHelper = DatabaseHelper(this)
-
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -73,7 +75,6 @@ class MainActivity : AppCompatActivity() {
             checkCameraPermissionAndOpenScanner()
         }
 
-        // ✅ ربط عناصر البحث
         searchLayout = findViewById(R.id.searchLayout)
         searchField = findViewById(R.id.searchField)
         btnSearch = findViewById(R.id.btnSearch)
@@ -83,7 +84,6 @@ class MainActivity : AppCompatActivity() {
                 searchLayout.visibility = android.view.View.VISIBLE
                 searchField.requestFocus()
 
-                // إظهار لوحة المفاتيح
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
                 imm.showSoftInput(searchField, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
             } else {
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // ✅ فلترة المنتجات عند الكتابة
         searchField.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 adapter.filter.filter(s)
@@ -124,6 +123,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openManualAddDialog(barcode: String, name: String, imagePath: String?) {
+
         currentDialog = AddProductDialog(
             this,
             barcode,
@@ -131,16 +131,39 @@ class MainActivity : AppCompatActivity() {
             "",
             imagePath
         ) { finalName, finalExpiry, finalImagePath ->
-            val newProduct = Product(
-                barcode = barcode,
-                name = finalName,
-                expiryDate = finalExpiry,
-                imagePath = finalImagePath
-            )
-            databaseHelper.addProduct(newProduct)
+
+            // 🔥 منع التكرار
+            val existingProduct = databaseHelper.getProductByBarcode(barcode)
+
+            if (existingProduct != null) {
+
+                Toast.makeText(
+                    this,
+                    "⚠️ هذا المنتج موجود مسبقاً ولا يمكن إضافته مرة أخرى",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                val newProduct = Product(
+                    barcode = barcode,
+                    name = finalName,
+                    expiryDate = finalExpiry,
+                    imagePath = finalImagePath
+                )
+
+                databaseHelper.addProduct(newProduct)
+
+                Toast.makeText(
+                    this,
+                    "تم حفظ المنتج بنجاح",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
             loadProductsFromDatabase()
-            Toast.makeText(this, "تم حفظ المنتج بنجاح", Toast.LENGTH_SHORT).show()
         }
+
         currentDialog?.show()
     }
 
@@ -150,8 +173,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkCameraPermissionAndOpenScanner() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CAMERA_PERMISSION
+            )
         } else {
             openScanner()
         }
@@ -168,6 +197,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadProductsFromDatabase() {
         val products = databaseHelper.getAllProducts()
-        adapter.setProducts(products)   // ✅ التعديل الجديد
+        adapter.setProducts(products)
     }
 }

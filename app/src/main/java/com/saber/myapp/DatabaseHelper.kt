@@ -38,16 +38,37 @@ class DatabaseHelper(context: Context) :
         onCreate(db)
     }
 
-    fun addProduct(product: Product) {
+    // =========================
+    // ✔️ منع التكرار + إضافة المنتج
+    // =========================
+    fun addProduct(product: Product): Boolean {
         val db = writableDatabase
+
+        // 🔥 التحقق من وجود الباركود مسبقاً
+        val cursor = db.rawQuery(
+            "SELECT 1 FROM $TABLE_PRODUCTS WHERE $COL_BARCODE = ?",
+            arrayOf(product.barcode)
+        )
+
+        if (cursor.moveToFirst()) {
+            cursor.close()
+            db.close()
+            return false // ❌ موجود مسبقاً
+        }
+
+        cursor.close()
+
         val values = ContentValues().apply {
             put(COL_BARCODE, product.barcode)
             put(COL_NAME, product.name)
             put(COL_EXPIRY, product.expiryDate)
             put(COL_IMAGE, product.imagePath)
         }
+
         db.insert(TABLE_PRODUCTS, null, values)
         db.close()
+
+        return true // ✅ تم الحفظ
     }
 
     fun getAllProducts(): List<Product> {
@@ -97,9 +118,6 @@ class DatabaseHelper(context: Context) :
         return product
     }
 
-    // =========================
-    // ✔️ دالة التحديث
-    // =========================
     fun updateProduct(product: Product): Int {
         val db = writableDatabase
 
@@ -118,9 +136,6 @@ class DatabaseHelper(context: Context) :
         )
     }
 
-    // =========================
-    // ✔️ دالة الحذف المضافة
-    // =========================
     fun deleteProduct(barcode: String): Int {
         val db = writableDatabase
         val result = db.delete(TABLE_PRODUCTS, "$COL_BARCODE = ?", arrayOf(barcode))
