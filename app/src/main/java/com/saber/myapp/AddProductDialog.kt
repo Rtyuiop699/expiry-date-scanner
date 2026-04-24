@@ -33,7 +33,6 @@ class AddProductDialog(
     private const val REQUEST_PRODUCT_CAMERA = 202
     private const val REQUEST_DATE_SCAN = 201
 }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
