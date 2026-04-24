@@ -136,10 +136,11 @@ class AddProductDialog(
             val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
 
             if (!date.isNullOrEmpty()) {
+
                 editDate.setText(date)
+
                 Toast.makeText(context, "تم تحديث التاريخ", Toast.LENGTH_SHORT).show()
             }
         }
     }
 }
-         
