@@ -30,7 +30,9 @@ class AddProductDialog(
     private var currentImagePath: String? = null
 
     companion object {
-        private const val REQUEST_PRODUCT_CAMERA = 202
+    private const val REQUEST_PRODUCT_CAMERA = 202
+    private const val REQUEST_DATE_SCAN = 201
+}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,7 @@ class AddProductDialog(
         imageView = findViewById(R.id.imageViewProduct)
         btnCapture = findViewById(R.id.btnCaptureImage)
         btnSave = findViewById(R.id.btnSaveProduct)
+        val btnScanDate = findViewById<ImageButton>(R.id.btnScanDate)
 
         // تعبئة البيانات
         editBarcode.setText(barcodeValue)
@@ -77,6 +80,15 @@ class AddProductDialog(
             val intent = Intent(context, ProductCameraActivity::class.java)
             (context as ComponentActivity).startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
+        btnScanDate.setOnClickListener {
+    val activity = context as? ComponentActivity
+    if (activity != null) {
+        val intent = Intent(context, DateScannerActivity::class.java)
+        activity.startActivityForResult(intent, REQUEST_DATE_SCAN)
+    } else {
+        Toast.makeText(context, "خطأ في فتح الماسح", Toast.LENGTH_SHORT).show()
+    }
+}
 
         // 💾 حفظ المنتج
         btnSave.setOnClickListener {
