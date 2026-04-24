@@ -122,13 +122,18 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun openManualAddDialog(barcode: String, name: String, imagePath: String?) {
+    private fun openManualAddDialog(
+    barcode: String,
+    name: String,
+    expiryDate: String,
+    imagePath: String?
+) {
 
         currentDialog = AddProductDialog(
             this,
             barcode,
             name,
-            "",
+            expiryDate,
             imagePath
         ) { finalName, finalExpiry, finalImagePath ->
 
