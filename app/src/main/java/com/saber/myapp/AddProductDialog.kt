@@ -3,15 +3,10 @@ package com.saber.myapp
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Window
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.ComponentActivity
 import com.bumptech.glide.Glide
 import java.io.File
@@ -31,11 +26,10 @@ class AddProductDialog(
     private lateinit var imageView: ImageView
     private lateinit var btnCapture: Button
     private lateinit var btnSave: Button
-    private lateinit var btnScanDate: ImageButton
+
     private var currentImagePath: String? = null
 
     companion object {
-        private const val REQUEST_DATE_SCAN = 201
         private const val REQUEST_PRODUCT_CAMERA = 202
     }
 
@@ -50,20 +44,24 @@ class AddProductDialog(
         imageView = findViewById(R.id.imageViewProduct)
         btnCapture = findViewById(R.id.btnCaptureImage)
         btnSave = findViewById(R.id.btnSaveProduct)
-        btnScanDate = findViewById(R.id.btnScanDate)
 
+        // تعبئة البيانات
         editBarcode.setText(barcodeValue)
         editName.setText(nameValue)
         editDate.setText(expiryValue)
 
+        // ✅ عرض الصورة (إنترنت أو محلية)
         if (!imagePathValue.isNullOrEmpty()) {
+
             if (imagePathValue.startsWith("http")) {
                 Glide.with(context)
                     .load(imagePathValue)
                     .placeholder(android.R.drawable.progress_horizontal)
                     .error(android.R.drawable.ic_menu_report_image)
                     .into(imageView)
+
                 currentImagePath = imagePathValue
+
             } else {
                 val file = File(imagePathValue)
                 if (file.exists()) {
@@ -74,45 +72,51 @@ class AddProductDialog(
             }
         }
 
-        btnScanDate.setOnClickListener {
-            val intent = Intent(context, DateScannerActivity::class.java)
-            (context as ComponentActivity).startActivityForResult(intent, REQUEST_DATE_SCAN)
-        }
-
+        // 📸 التقاط صورة جديدة
         btnCapture.setOnClickListener {
             val intent = Intent(context, ProductCameraActivity::class.java)
             (context as ComponentActivity).startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
 
+        // 💾 حفظ المنتج
         btnSave.setOnClickListener {
+
             val name = editName.text.toString().trim()
             val date = editDate.text.toString().trim()
 
-            if (name.isEmpty() || date.isEmpty() || currentImagePath == null) {
-                Toast.makeText(context, "يرجى ملء جميع الحقول والتقاط الصورة", Toast.LENGTH_SHORT).show()
-            } else {
-                callback(name, date, currentImagePath!!)
-                dismiss()
+            if (name.isEmpty()) {
+                Toast.makeText(context, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            if (currentImagePath == null) {
+                Toast.makeText(context, "يرجى إضافة صورة", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // ✔️ أهم نقطة: سيتم حفظ آخر صورة تم اختيارها
+            callback(name, date, currentImagePath!!)
+            dismiss()
         }
     }
 
+    // 🔁 استقبال نتيجة الكاميرا
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         if (resultCode == android.app.Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DATE_SCAN -> {
-                    val recognizedDate = data?.getStringExtra("EXTRA_DATE")
-                    if (recognizedDate != null) {
-                        editDate.setText(recognizedDate)
-                    }
-                }
-                REQUEST_PRODUCT_CAMERA -> {
-                    val imagePath = data?.getStringExtra("EXTRA_IMAGE_PATH")
-                    if (imagePath != null) {
-                        currentImagePath = imagePath
-                        val bitmap = BitmapFactory.decodeFile(imagePath)
-                        imageView.setImageBitmap(bitmap)
-                    }
+
+            if (requestCode == REQUEST_PRODUCT_CAMERA) {
+
+                val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
+
+                if (!imagePath.isNullOrEmpty()) {
+
+                    currentImagePath = imagePath
+
+                    val bitmap = BitmapFactory.decodeFile(imagePath)
+                    imageView.setImageBitmap(bitmap)
+
+                    Toast.makeText(context, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
                 }
             }
         }

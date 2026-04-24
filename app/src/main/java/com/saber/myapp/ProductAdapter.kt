@@ -40,27 +40,46 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val product = filteredProducts[position]
+    val product = filteredProducts[position]
 
-        holder.nameView.text = product.name
-        holder.expiryView.text = product.expiryDate
-        holder.barcodeView.text = "Barcode: ${product.barcode}"
+    holder.nameView.text = product.name
+    holder.expiryView.text = product.expiryDate
+    holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-        val file = product.imagePath?.let { path ->
-            java.io.File(path)
+    val path = product.imagePath
+
+    when {
+        // 📁 صورة محلية
+        !path.isNullOrEmpty() && !path.startsWith("http") -> {
+            val file = java.io.File(path)
+            if (file.exists()) {
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                holder.imageView.setImageBitmap(bitmap)
+            } else {
+                holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+            }
         }
 
-        if (file != null && file.exists()) {
-            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            holder.imageView.setImageBitmap(bitmap)
-        } else {
+        // 🌐 صورة من الإنترنت
+        !path.isNullOrEmpty() && path.startsWith("http") -> {
+            com.bumptech.glide.Glide.with(holder.itemView.context)
+                .load(path)
+                .placeholder(android.R.drawable.progress_horizontal)
+                .error(android.R.drawable.ic_menu_report_image)
+                .into(holder.imageView)
+        }
+
+        // ❌ لا يوجد صورة
+        else -> {
             holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
         }
-
-        holder.itemView.setOnClickListener {
-            onItemClick(product)
-        }
     }
+
+    holder.itemView.setOnClickListener {
+        onItemClick(product)
+    }
+}
+   
 
     override fun getItemCount() = filteredProducts.size
 
