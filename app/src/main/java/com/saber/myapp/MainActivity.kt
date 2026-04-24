@@ -132,19 +132,10 @@ class MainActivity : AppCompatActivity() {
             imagePath
         ) { finalName, finalExpiry, finalImagePath ->
 
-            // 🔥 منع التكرار
-            val existingProduct = databaseHelper.getProductByBarcode(barcode)
+            val existing = databaseHelper.getProductByBarcode(barcode)
 
-            if (existingProduct != null) {
-
-                Toast.makeText(
-                    this,
-                    "⚠️ هذا المنتج موجود مسبقاً ولا يمكن إضافته مرة أخرى",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            } else {
-
+            if (existing == null) {
+                // 🆕 إضافة منتج جديد
                 val newProduct = Product(
                     barcode = barcode,
                     name = finalName,
@@ -153,12 +144,29 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 databaseHelper.addProduct(newProduct)
+                Toast.makeText(this, "تم إضافة المنتج", Toast.LENGTH_SHORT).show()
 
-                Toast.makeText(
-                    this,
-                    "تم حفظ المنتج بنجاح",
-                    Toast.LENGTH_SHORT
-                ).show()
+            } else {
+                // ✏️ تعديل منتج موجود
+                val isChanged =
+                    existing.name != finalName ||
+                    existing.expiryDate != finalExpiry ||
+                    existing.imagePath != finalImagePath
+
+                if (isChanged) {
+                    val updatedProduct = Product(
+                        barcode = barcode,
+                        name = finalName,
+                        expiryDate = finalExpiry,
+                        imagePath = finalImagePath
+                    )
+
+                    databaseHelper.updateProduct(updatedProduct)
+                    Toast.makeText(this, "تم تحديث المنتج", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(this, "⚠️ لم يتم اكتشاف تعديلات", Toast.LENGTH_SHORT).show()
+                }
             }
 
             loadProductsFromDatabase()
