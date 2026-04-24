@@ -30,9 +30,9 @@ class AddProductDialog(
     private var currentImagePath: String? = null
 
     companion object {
-    private const val REQUEST_PRODUCT_CAMERA = 202
-    private const val REQUEST_DATE_SCAN = 201
-}
+        private const val REQUEST_PRODUCT_CAMERA = 202
+        private const val REQUEST_DATE_SCAN = 201
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +52,7 @@ class AddProductDialog(
         editName.setText(nameValue)
         editDate.setText(expiryValue)
 
-        // ✅ عرض الصورة (إنترنت أو محلية)
+        // عرض الصورة (إنترنت أو محلية)
         if (!imagePathValue.isNullOrEmpty()) {
 
             if (imagePathValue.startsWith("http")) {
@@ -77,17 +77,20 @@ class AddProductDialog(
         // 📸 التقاط صورة جديدة
         btnCapture.setOnClickListener {
             val intent = Intent(context, ProductCameraActivity::class.java)
-            (context as ComponentActivity).startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
+            (context as ComponentActivity)
+                .startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
+
+        // 📅 مسح التاريخ
         btnScanDate.setOnClickListener {
-    val activity = context as? ComponentActivity
-    if (activity != null) {
-        val intent = Intent(context, DateScannerActivity::class.java)
-        activity.startActivityForResult(intent, REQUEST_DATE_SCAN)
-    } else {
-        Toast.makeText(context, "خطأ في فتح الماسح", Toast.LENGTH_SHORT).show()
-    }
-}
+            val activity = context as? ComponentActivity
+            if (activity != null) {
+                val intent = Intent(context, DateScannerActivity::class.java)
+                activity.startActivityForResult(intent, REQUEST_DATE_SCAN)
+            } else {
+                Toast.makeText(context, "خطأ في فتح الماسح", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // 💾 حفظ المنتج
         btnSave.setOnClickListener {
@@ -105,41 +108,39 @@ class AddProductDialog(
                 return@setOnClickListener
             }
 
-            // ✔️ أهم نقطة: سيتم حفظ آخر صورة تم اختيارها
             callback(name, date, currentImagePath!!)
             dismiss()
         }
     }
 
-    // 🔁 استقبال نتيجة الكاميرا
+    // 🔁 استقبال النتائج
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-    if (resultCode == android.app.Activity.RESULT_OK) {
+        if (resultCode == android.app.Activity.RESULT_OK) {
 
-        if (requestCode == REQUEST_PRODUCT_CAMERA) {
+            if (requestCode == REQUEST_PRODUCT_CAMERA) {
 
-            val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
+                val imagePath =
+                    data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
 
-            if (!imagePath.isNullOrEmpty()) {
+                if (!imagePath.isNullOrEmpty()) {
+                    currentImagePath = imagePath
+                    val bitmap = BitmapFactory.decodeFile(imagePath)
+                    imageView.setImageBitmap(bitmap)
 
-                currentImagePath = imagePath
-
-                val bitmap = BitmapFactory.decodeFile(imagePath)
-                imageView.setImageBitmap(bitmap)
-
-                Toast.makeText(context, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
+                }
             }
-        }
 
-        if (requestCode == REQUEST_DATE_SCAN) {
+            if (requestCode == REQUEST_DATE_SCAN) {
 
-            val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
+                val date =
+                    data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
 
-            if (!date.isNullOrEmpty()) {
-
-                editDate.setText(date)
-
-                Toast.makeText(context, "تم تحديث التاريخ", Toast.LENGTH_SHORT).show()
+                if (!date.isNullOrEmpty()) {
+                    editDate.setText(date)
+                    Toast.makeText(context, "تم تحديث التاريخ", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
