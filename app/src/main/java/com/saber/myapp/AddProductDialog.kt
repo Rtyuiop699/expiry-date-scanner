@@ -114,22 +114,32 @@ class AddProductDialog(
     // 🔁 استقبال نتيجة الكاميرا
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        if (resultCode == android.app.Activity.RESULT_OK) {
+    if (resultCode == android.app.Activity.RESULT_OK) {
 
-            if (requestCode == REQUEST_PRODUCT_CAMERA) {
+        if (requestCode == REQUEST_PRODUCT_CAMERA) {
 
-                val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
+            val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
 
-                if (!imagePath.isNullOrEmpty()) {
+            if (!imagePath.isNullOrEmpty()) {
 
-                    currentImagePath = imagePath
+                currentImagePath = imagePath
 
-                    val bitmap = BitmapFactory.decodeFile(imagePath)
-                    imageView.setImageBitmap(bitmap)
+                val bitmap = BitmapFactory.decodeFile(imagePath)
+                imageView.setImageBitmap(bitmap)
 
-                    Toast.makeText(context, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(context, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        if (requestCode == REQUEST_DATE_SCAN) {
+
+            val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
+
+            if (!date.isNullOrEmpty()) {
+                editDate.setText(date)
+                Toast.makeText(context, "تم تحديث التاريخ", Toast.LENGTH_SHORT).show()
             }
         }
     }
 }
+         

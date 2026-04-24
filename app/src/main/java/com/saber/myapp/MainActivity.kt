@@ -176,9 +176,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        currentDialog?.handleActivityResult(requestCode, resultCode, data)
-    }
+    super.onActivityResult(requestCode, resultCode, data)
+
+    currentDialog?.handleActivityResult(requestCode, resultCode, data)
+}
 
     private fun checkCameraPermissionAndOpenScanner() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
