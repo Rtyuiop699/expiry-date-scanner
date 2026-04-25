@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         .setMessage("هل تريد حذف هذا المنتج؟")
         .setPositiveButton("حذف") { _, _ ->
 
-            databaseHelper.deleteProduct(product.id)
+            databaseHelper.deleteProduct(product.barcode)
             adapter.removeAt(position)
 
             Toast.makeText(this, "تم الحذف", Toast.LENGTH_SHORT).show()
