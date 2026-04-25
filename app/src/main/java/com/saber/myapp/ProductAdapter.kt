@@ -26,6 +26,17 @@ class ProductAdapter(
         notifyDataSetChanged()
     }
 
+    fun getProductAt(position: Int): Product {
+        return filteredProducts[position]
+    }
+
+    fun removeAt(position: Int) {
+        val item = filteredProducts[position]
+        filteredProducts.removeAt(position)
+        products.remove(item)
+        notifyItemRemoved(position)
+    }
+
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageViewProduct)
         val nameView: TextView = itemView.findViewById(R.id.textViewName)
@@ -40,46 +51,45 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-    val product = filteredProducts[position]
+        val product = filteredProducts[position]
 
-    holder.nameView.text = product.name
-    holder.expiryView.text = product.expiryDate
-    holder.barcodeView.text = "Barcode: ${product.barcode}"
+        holder.nameView.text = product.name
+        holder.expiryView.text = product.expiryDate
+        holder.barcodeView.text = "Barcode: ${product.barcode}"
 
-    val path = product.imagePath
+        val path = product.imagePath
 
-    when {
-        // 📁 صورة محلية
-        !path.isNullOrEmpty() && !path.startsWith("http") -> {
-            val file = java.io.File(path)
-            if (file.exists()) {
-                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                holder.imageView.setImageBitmap(bitmap)
-            } else {
+        when {
+            // 📁 صورة محلية
+            !path.isNullOrEmpty() && !path.startsWith("http") -> {
+                val file = java.io.File(path)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    holder.imageView.setImageBitmap(bitmap)
+                } else {
+                    holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+                }
+            }
+
+            // 🌐 صورة من الإنترنت
+            !path.isNullOrEmpty() && path.startsWith("http") -> {
+                com.bumptech.glide.Glide.with(holder.itemView.context)
+                    .load(path)
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .into(holder.imageView)
+            }
+
+            // ❌ لا يوجد صورة
+            else -> {
                 holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
             }
         }
 
-        // 🌐 صورة من الإنترنت
-        !path.isNullOrEmpty() && path.startsWith("http") -> {
-            com.bumptech.glide.Glide.with(holder.itemView.context)
-                .load(path)
-                .placeholder(android.R.drawable.progress_horizontal)
-                .error(android.R.drawable.ic_menu_report_image)
-                .into(holder.imageView)
-        }
-
-        // ❌ لا يوجد صورة
-        else -> {
-            holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+        holder.itemView.setOnClickListener {
+            onItemClick(product)
         }
     }
-
-    holder.itemView.setOnClickListener {
-        onItemClick(product)
-    }
-}
-   
 
     override fun getItemCount() = filteredProducts.size
 
@@ -99,7 +109,7 @@ class ProductAdapter(
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filteredProducts = if (constraint.isNullOrEmpty()) {
-                    products.toMutableList()   // ✅ العودة للقائمة الأصلية عند مسح النص
+                    products.toMutableList()
                 } else {
                     (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
                 }

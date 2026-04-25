@@ -34,8 +34,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchLayout: TextInputLayout
     private lateinit var searchField: EditText
     private lateinit var btnSearch: ImageView
+    
 
-    private var currentDialog: AddProductDialog? = null
+     private var currentDialog: AddProductDialog? = null
+     
+     private fun showDeleteDialog(product: Product, position: Int) {
+
+    AlertDialog.Builder(this)
+        .setTitle("حذف المنتج")
+        .setMessage("هل تريد حذف هذا المنتج؟")
+        .setPositiveButton("حذف") { _, _ ->
+
+            databaseHelper.deleteProduct(product.id)
+            adapter.removeAt(position)
+
+            Toast.makeText(this, "تم الحذف", Toast.LENGTH_SHORT).show()
+        }
+        .setNegativeButton("إلغاء") { dialog, _ ->
+            dialog.dismiss()
+            adapter.notifyItemChanged(position)
+        }
+        .show()
+}   
 
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
@@ -74,7 +94,52 @@ class MainActivity : AppCompatActivity() {
     )
 }
         recyclerView.adapter = adapter
+       val itemTouchHelper = ItemTouchHelper(object :
+    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean = false
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+        val position = viewHolder.adapterPosition
+        val product = adapter.getProductAt(position)
+
+        showDeleteDialog(product, position)
+    }
+
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
+        val itemView = viewHolder.itemView
+
+        val paint = Paint().apply {
+            color = Color.RED
+        }
+
+        // خلفية حمراء
+        c.drawRect(
+            itemView.left.toFloat(),
+            itemView.top.toFloat(),
+            itemView.left + dX,
+            itemView.bottom.toFloat(),
+            paint
+        )
+
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+    }
+})
+
+itemTouchHelper.attachToRecyclerView(recyclerView)
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             checkCameraPermissionAndOpenScanner()
