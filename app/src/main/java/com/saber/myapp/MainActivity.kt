@@ -66,8 +66,13 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         adapter = ProductAdapter(mutableListOf()) { product ->
-            openManualAddDialog(product.barcode, product.name, product.imagePath)
-        }
+    openManualAddDialog(
+        product.barcode,
+        product.name,
+        product.expiryDate,
+        product.imagePath
+    )
+}
         recyclerView.adapter = adapter
 
         fab = findViewById(R.id.fab)
@@ -106,22 +111,50 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "جاري البحث عن المنتج عالمياً...", Toast.LENGTH_SHORT).show()
 
         ApiClient.instance.getProduct(barcode).enqueue(object : Callback<ProductApiResponse> {
-            override fun onResponse(call: Call<ProductApiResponse>, response: Response<ProductApiResponse>) {
-                if (response.isSuccessful && response.body()?.status == 1) {
-                    val product = response.body()?.product
-                    openManualAddDialog(barcode, product?.productName ?: "", product?.imageUrl)
-                } else {
-                    openManualAddDialog(barcode, "", null)
-                }
-            }
 
-            override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "فشل الاتصال بالإنترنت", Toast.LENGTH_SHORT).show()
-                openManualAddDialog(barcode, "", null)
-            }
-        })
+    override fun onResponse(
+        call: Call<ProductApiResponse>,
+        response: Response<ProductApiResponse>
+    ) {
+        if (response.isSuccessful && response.body()?.status == 1) {
+
+            val product = response.body()?.product
+
+            openManualAddDialog(
+                barcode,
+                product?.productName ?: "",
+                "",   // 👈 لا يوجد تاريخ من الإنترنت
+                product?.imageUrl
+            )
+
+        } else {
+
+            openManualAddDialog(
+                barcode,
+                "",
+                "",   // 👈 تاريخ فارغ
+                null
+            )
+        }
     }
 
+    override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
+
+        Toast.makeText(
+            this@MainActivity,
+            "فشل الاتصال بالإنترنت",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        openManualAddDialog(
+            barcode,
+            "",
+            "",
+            null
+        )
+    }
+})
+}
     private fun openManualAddDialog(
     barcode: String,
     name: String,
