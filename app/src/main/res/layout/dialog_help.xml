@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@android:color/white">
+
+    <!-- الشعار -->
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:src="@drawable/logo"
+        android:contentDescription="logo" />
+
+    <!-- عنوان التطبيق -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="تطبيق تاريخ الصلاحية الذكي"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:paddingTop="10dp" />
+
+    <!-- الوصف -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="يمكنك من إدارة المخزون لديك بسهولة من خلال مسح الباركود وإدخال بيانات المنتج.
+
+كما يمكن للتطبيق قراءة التاريخ والتعرف عليه باستخدام الكاميرا والذكاء الاصطناعي.
+
+يمكنك تعديل أو حذف أي منتج من خلال الضغط عليه في القائمة.
+
+هذا التطبيق من إنتاج سوبر كود
+للجمهورية اليمنية - عدن"
+        android:textSize="14sp"
+        android:paddingTop="15dp" />
+
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import android.graphics.Canvas
@@ -62,7 +63,17 @@ class MainActivity : AppCompatActivity() {
         }
         .show()
 }   
+private fun showHelpDialog() {
 
+    val dialogView = layoutInflater.inflate(R.layout.dialog_help, null)
+
+    val dialog = AlertDialog.Builder(this)
+        .setView(dialogView)
+        .setPositiveButton("إغلاق", null)
+        .create()
+
+    dialog.show()
+}
     private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
         if (result.contents == null) {
             Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
@@ -90,7 +101,16 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+       val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+divider.setDrawable(
+    ContextCompat.getDrawable(this, android.R.drawable.divider_horizontal_dark)!!
+)
+recyclerView.addItemDecoration(divider)
+val btnHelp = findViewById<ImageView>(R.id.btnHelp)
 
+btnHelp.setOnClickListener {
+    showHelpDialog()
+}
         adapter = ProductAdapter(mutableListOf()) { product ->
     openManualAddDialog(
         product.barcode,
