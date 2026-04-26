@@ -101,10 +101,12 @@ private fun showHelpDialog() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-       val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+      val divider = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+
 divider.setDrawable(
-    ContextCompat.getDrawable(this, android.R.drawable.divider_horizontal_dark)!!
+    ContextCompat.getDrawable(this, R.drawable.divider_line)!!
 )
+
 recyclerView.addItemDecoration(divider)
 val btnHelp = findViewById<ImageView>(R.id.btnHelp)
 
