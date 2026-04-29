@@ -144,26 +144,51 @@ class DateScannerActivity : AppCompatActivity() {
     }
 
     private fun preprocessImage(bitmap: Bitmap): Bitmap {
-        val matrix = Matrix()
-        matrix.postScale(2f, 2f)
 
-        val scaled = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    // تكبير الصورة
+    val matrix = Matrix()
+    matrix.postScale(2f, 2f)
+    val scaled = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-        val grayBitmap = Bitmap.createBitmap(scaled.width, scaled.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(grayBitmap)
-        val paint = Paint()
+    // تحويل رمادي
+    val grayBitmap = Bitmap.createBitmap(scaled.width, scaled.height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(grayBitmap)
+    val paint = Paint()
 
-        val colorMatrix = ColorMatrix().apply {
-            setSaturation(0f)
-            setScale(1.3f, 1.3f, 1.3f, 1f)
-        }
-
-        paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
-        canvas.drawBitmap(scaled, 0f, 0f, paint)
-
-        return grayBitmap
+    val colorMatrix = ColorMatrix().apply {
+        setSaturation(0f)
     }
 
+    paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
+    canvas.drawBitmap(scaled, 0f, 0f, paint)
+
+    // 🔥 الجديد: تحويل أبيض وأسود
+    return toBlackWhite(grayBitmap)
+}
+   private fun toBlackWhite(bitmap: Bitmap): Bitmap {
+    val width = bitmap.width
+    val height = bitmap.height
+
+    val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+    for (x in 0 until width) {
+        for (y in 0 until height) {
+            val pixel = bitmap.getPixel(x, y)
+
+            val r = Color.red(pixel)
+            val g = Color.green(pixel)
+            val b = Color.blue(pixel)
+
+            val gray = (r + g + b) / 3
+
+            val newColor = if (gray > 140) Color.WHITE else Color.BLACK
+
+            result.setPixel(x, y, newColor)
+        }
+    }
+
+    return result
+}
     private fun recognizeDate(bitmap: Bitmap) {
 
         val cropped = cropCenter(bitmap)
@@ -201,21 +226,22 @@ class DateScannerActivity : AppCompatActivity() {
         )
 
         val patterns = listOf(
-            Regex("""[A-Z](\d{2})/(\d{2})/(\d{2})"""),
-            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
-            Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
-            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
-            Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
-            Regex("""[A-Z]{2}\s+(\d{2})\s+(\d{2})\s+(\d{2})"""),
-            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
-            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""),
-            Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""),
-            Regex("""[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""),
-            Regex("""\b(\d{8})\b"""),
-            Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
-            Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
-            Regex("""\b(\d{4})\b""")
-        )
+    Regex("""[A-Z](\d{2})/(\d{2})/(\d{2})"""),
+    Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
+    Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
+    Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
+    Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
+    Regex("""[A-Z]{2}\s+(\d{2})\s+(\d{2})\s+(\d{2})"""),
+    Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
+    Regex("""\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""),
+    Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""),
+    Regex("""[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""),
+    Regex("""\b(\d{8})\b"""),
+    Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
+    Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
+    Regex("""\b(\d{4})\b"""),
+    Regex("""\b(\d{6})\b""") // ✅ هذا مهم
+)
 
         val foundDates = mutableListOf<Pair<String, String>>()
 
@@ -244,6 +270,17 @@ class DateScannerActivity : AppCompatActivity() {
                         val day = groups[1].padStart(2, '0')
                         if (month.toInt() in 1..12 && day.toInt() in 1..31) "$year-$month-$day" else null
                     }
+                    groups.size == 2 && groups[1].length == 6 -> {
+    val numbers = groups[1]
+
+    val day = numbers.substring(0, 2)
+    val month = numbers.substring(2, 4)
+    val year = "20" + numbers.substring(4, 6)
+
+    if (month.toInt() in 1..12 && day.toInt() in 1..31) {
+        "$year-$month-$day"
+    } else null
+}
                     groups.size == 2 && groups[1].length == 8 -> {
                         val numbers = groups[1]
                         "${numbers.substring(0, 4)}-${numbers.substring(4, 6)}-${numbers.substring(6, 8)}"

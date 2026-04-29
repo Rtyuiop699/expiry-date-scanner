@@ -4,7 +4,6 @@ build/
 local.properties
 *.apk
 *.jpg
-*.png
 *.mp4
 *.zip
 *.log
