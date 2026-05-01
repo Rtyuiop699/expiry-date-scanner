@@ -1,0 +1,51 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
+        android:title="حفظ"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_print"
+        android:icon="@drawable/ic_print"
+        android:title="طباعة"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_delete_red"
+        android:title="حذف"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_pdf"
+        android:icon="@drawable/ic_pdf"
+        android:title="PDF"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_tag"
+        android:icon="@drawable/ic_tag_red"
+        android:title="وسم"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_calendar"
+        android:icon="@drawable/ic_calendar"
+        android:title="التقويم"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_barcode"
+        android:icon="@drawable/ic_barcode"
+        android:title="باركود"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_ocr"
+        android:icon="@drawable/ic_ocr"
+        android:title="OCR"
+        android:showAsAction="always" />
+
+</menu>
