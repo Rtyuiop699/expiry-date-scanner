@@ -18,36 +18,55 @@ class AddProductActivity : AppCompatActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
-        // 1. استقبال الباركود القادم من MainActivity
+        // 1. استلام الباركود وعرضه في الحقل المخصص
         val barcode = intent.getStringExtra("BARCODE_EXTRA") ?: ""
-        
-        // يمكنك تعيين الباركود في حقل نصي إذا كان لديك واحد في التصميم
-        // binding.etBarcode.setText(barcode)
+        binding.editTextBarcode.setText(barcode)
 
         setupToolbar()
 
-        // 2. منطق زر الحفظ (أضف هذا في دالة الحفظ لديك)
-        binding.btnSave.setOnClickListener {
-            saveProduct(barcode)
+        // 2. التعامل مع أزرار الصور الموجودة في الـ XML
+        binding.btnCaptureImage.setOnClickListener {
+            Toast.makeText(this, "سيتم تفعيل الكاميرا قريباً", Toast.LENGTH_SHORT).show()
         }
-    }
 
-    private fun saveProduct(barcode: String) {
-        // هنا تجمع البيانات من الواجهة (اسم المنتج، التاريخ، الخ)
-        // val name = binding.etProductName.text.toString()
-        
-        // بعد الحفظ في قاعدة البيانات:
-        // databaseHelper.addProduct(...)
-
-        // 3. إرسال إشارة النجاح للـ MainActivity لإخبارها بتحديث القائمة
-        setResult(RESULT_OK)
-        finish() // العودة للخلف
+        binding.btnChooseImage.setOnClickListener {
+            Toast.makeText(this, "سيتم تفعيل اختيار الصور قريباً", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setupToolbar() {
-        binding.topAppBar.setNavigationIcon(R.drawable.icarrowback)
         binding.topAppBar.setNavigationOnClickListener {
-            finish() // استخدام finish أفضل من onBackPressed هنا
+            finish()
         }
+
+        // التعامل مع زر الحفظ الموجود في "المنيو" العلوي
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                // افترضت أن ID زر الحفظ في ملف addproductmenu هو btnSaveAction
+                // تأكد من فتحه ومطابقة الـ ID
+                R.id.btnSaveAction -> {
+                    saveProduct()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun saveProduct() {
+        val name = binding.editTextProductName.text.toString()
+        val barcode = binding.editTextBarcode.text.toString()
+
+        if (name.isEmpty()) {
+            Toast.makeText(this, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // منطق الحفظ في قاعدة البيانات
+        // val newProduct = Product(barcode = barcode, name = name, ...)
+        // databaseHelper.addProduct(newProduct)
+
+        setResult(RESULT_OK)
+        finish()
     }
 }

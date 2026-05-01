@@ -9,7 +9,7 @@ class ProductListHandler(
 ) {
     private var adapter: ProductAdapter? = null
 
-    fun setup(products: List<Product>) {
+    fun setup(products: MutableList<Product>) {
         adapter = ProductAdapter(products) { product ->
             onProductClicked(product)
         }
