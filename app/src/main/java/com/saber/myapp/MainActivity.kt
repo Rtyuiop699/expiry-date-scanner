@@ -1,95 +1,31 @@
 package com.saber.myapp
 
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.ItemTouchHelper
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Color
-
-import android.Manifest
-import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.ImageView
 import android.widget.Toast
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.textfield.TextInputLayout
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanOptions
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    private val REQUEST_CAMERA_PERMISSION = 100
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ProductAdapter
+    // الملفات المساعدة (Helpers)
+    private lateinit var scannerHelper: BarcodeScannerHelper
+    private lateinit var permissionManager: PermissionManager
+    private lateinit var listHandler: ProductListHandler
     private lateinit var databaseHelper: DatabaseHelper
-    private lateinit var fab: FloatingActionButton
 
-    private lateinit var searchLayout: TextInputLayout
-    private lateinit var searchField: EditText
-    private lateinit var btnSearch: ImageView
-    
+    // البيانات
+    private val productList = mutableListOf<Product>()
 
-     private var currentDialog: AddProductDialog? = null
-     
-     private fun showDeleteDialog(product: Product, position: Int) {
-
-    AlertDialog.Builder(this)
-        .setTitle("حذف المنتج")
-        .setMessage("هل تريد حذف هذا المنتج؟")
-        .setPositiveButton("حذف") { _, _ ->
-
-            databaseHelper.deleteProduct(product.barcode)
-            adapter.removeAt(position)
-
-            Toast.makeText(this, "تم الحذف", Toast.LENGTH_SHORT).show()
-        }
-        .setNegativeButton("إلغاء") { dialog, _ ->
-            dialog.dismiss()
-            adapter.notifyItemChanged(position)
-        }
-        .show()
-}   
-private fun showHelpDialog() {
-
-    val dialogView = layoutInflater.inflate(R.layout.dialog_help, null)
-
-    val dialog = AlertDialog.Builder(this)
-        .setView(dialogView)
-        .setPositiveButton("إغلاق", null)
-        .create()
-
-    dialog.show()
-}
-    private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
-        if (result.contents == null) {
-            Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
-        } else {
-            val barcodeValue = result.contents
-            val existingProduct = databaseHelper.getProductByBarcode(barcodeValue)
-
-            if (existingProduct != null) {
-                Toast.makeText(
-                    this,
-                    "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                searchProductOnWeb(barcodeValue)
-            }
+    // مشغل استقبال النتيجة من صفحة إضافة المنتج
+    private val addProductLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // تحديث القائمة فور العودة من صفحة الإضافة بنجاح
+            loadProductsFromDatabase()
+            Toast.makeText(this, "تم حفظ المنتج بنجاح", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -97,246 +33,68 @@ private fun showHelpDialog() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 1. تهيئة قاعدة البيانات
         databaseHelper = DatabaseHelper(this)
 
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-      val divider = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
-
-divider.setDrawable(
-    ContextCompat.getDrawable(this, R.drawable.divider_line)!!
-)
-
-recyclerView.addItemDecoration(divider)
-val btnHelp = findViewById<ImageView>(R.id.btnHelp)
-
-btnHelp.setOnClickListener {
-    showHelpDialog()
-}
-        adapter = ProductAdapter(mutableListOf()) { product ->
-    openManualAddDialog(
-        product.barcode,
-        product.name,
-        product.expiryDate,
-        product.imagePath
-    )
-}
-        recyclerView.adapter = adapter
-       val itemTouchHelper = ItemTouchHelper(object :
-    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-
-    override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean = false
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-        val position = viewHolder.adapterPosition
-        val product = adapter.getProductAt(position)
-
-        showDeleteDialog(product, position)
-    }
-
-    override fun onChildDraw(
-        c: Canvas,
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        dX: Float,
-        dY: Float,
-        actionState: Int,
-        isCurrentlyActive: Boolean
-    ) {
-        val itemView = viewHolder.itemView
-
-        val paint = Paint().apply {
-            color = Color.RED
+        // 2. إعداد القائمة (عبر الملف المساعد الجديد)
+        listHandler = ProductListHandler(findViewById(R.id.recyclerView)) { product ->
+            Toast.makeText(this, "منتج: ${product.name}", Toast.LENGTH_SHORT).show()
         }
 
-        // خلفية حمراء
-        c.drawRect(
-            itemView.left.toFloat(),
-            itemView.top.toFloat(),
-            itemView.left + dX,
-            itemView.bottom.toFloat(),
-            paint
+        // 3. إعداد إدارة الباركود
+        scannerHelper = BarcodeScannerHelper(
+            activity = this,
+            onScanResult = { barcode -> handleBarcodeResult(barcode) },
+            onScanCancelled = { Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show() }
         )
 
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-    }
-})
+        // 4. إعداد مدير التصاريح
+        permissionManager = PermissionManager(
+            activity = this,
+            onPermissionGranted = { scannerHelper.startScanner() },
+            onPermissionDenied = { Toast.makeText(this, "عذراً، يجب الموافقة على تصريح الكاميرا", Toast.LENGTH_SHORT).show() }
+        )
 
-itemTouchHelper.attachToRecyclerView(recyclerView)
-        fab = findViewById(R.id.fab)
+        // 5. إعداد واجهة المستخدم (Toolbar & FAB)
+        setupToolbar()
+        
+        val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
-            checkCameraPermissionAndOpenScanner()
+            permissionManager.checkAndRequestCameraPermission()
         }
 
-        searchLayout = findViewById(R.id.searchLayout)
-        searchField = findViewById(R.id.searchField)
-        btnSearch = findViewById(R.id.btnSearch)
-
-        btnSearch.setOnClickListener {
-            if (searchLayout.visibility == android.view.View.GONE) {
-                searchLayout.visibility = android.view.View.VISIBLE
-                searchField.requestFocus()
-
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                imm.showSoftInput(searchField, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
-            } else {
-                searchLayout.visibility = android.view.View.GONE
-            }
-        }
-
-        searchField.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filter.filter(s)
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
+        // تحميل البيانات لأول مرة
         loadProductsFromDatabase()
     }
 
-    private fun searchProductOnWeb(barcode: String) {
-        Toast.makeText(this, "جاري البحث عن المنتج عالمياً...", Toast.LENGTH_SHORT).show()
-
-        ApiClient.instance.getProduct(barcode).enqueue(object : Callback<ProductApiResponse> {
-
-    override fun onResponse(
-        call: Call<ProductApiResponse>,
-        response: Response<ProductApiResponse>
-    ) {
-        if (response.isSuccessful && response.body()?.status == 1) {
-
-            val product = response.body()?.product
-
-            openManualAddDialog(
-                barcode,
-                product?.productName ?: "",
-                "",   // 👈 لا يوجد تاريخ من الإنترنت
-                product?.imageUrl
-            )
-
-        } else {
-
-            openManualAddDialog(
-                barcode,
-                "",
-                "",   // 👈 تاريخ فارغ
-                null
-            )
-        }
-    }
-
-    override fun onFailure(call: Call<ProductApiResponse>, t: Throwable) {
-
-        Toast.makeText(
-            this@MainActivity,
-            "فشل الاتصال بالإنترنت",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        openManualAddDialog(
-            barcode,
-            "",
-            "",
-            null
-        )
-    }
-})
-}
-    private fun openManualAddDialog(
-    barcode: String,
-    name: String,
-    expiryDate: String,
-    imagePath: String?
-) {
-
-        currentDialog = AddProductDialog(
-            this,
-            barcode,
-            name,
-            expiryDate,
-            imagePath
-        ) { finalName, finalExpiry, finalImagePath ->
-
-            val existing = databaseHelper.getProductByBarcode(barcode)
-
-            if (existing == null) {
-                // 🆕 إضافة منتج جديد
-                val newProduct = Product(
-                    barcode = barcode,
-                    name = finalName,
-                    expiryDate = finalExpiry,
-                    imagePath = finalImagePath
-                )
-
-                databaseHelper.addProduct(newProduct)
-                Toast.makeText(this, "تم إضافة المنتج", Toast.LENGTH_SHORT).show()
-
-            } else {
-                // ✏️ تعديل منتج موجود
-                val isChanged =
-                    existing.name != finalName ||
-                    existing.expiryDate != finalExpiry ||
-                    existing.imagePath != finalImagePath
-
-                if (isChanged) {
-                    val updatedProduct = Product(
-                        barcode = barcode,
-                        name = finalName,
-                        expiryDate = finalExpiry,
-                        imagePath = finalImagePath
-                    )
-
-                    databaseHelper.updateProduct(updatedProduct)
-                    Toast.makeText(this, "تم تحديث المنتج", Toast.LENGTH_SHORT).show()
-
-                } else {
-                    Toast.makeText(this, "⚠️ لم يتم اكتشاف تعديلات", Toast.LENGTH_SHORT).show()
-                }
+    private fun setupToolbar() {
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar.inflateMenu(R.menu.toolbar_menu)
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.btnSearch -> { /* منطق البحث */ true }
+                R.id.btnSettings -> { /* منطق الإعدادات */ true }
+                else -> false
             }
-
-            loadProductsFromDatabase()
         }
-
-        currentDialog?.show()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
+    private fun handleBarcodeResult(barcode: String) {
+        val existingProduct = databaseHelper.getProductByBarcode(barcode)
 
-    currentDialog?.handleActivityResult(requestCode, resultCode, data)
-}
-
-    private fun checkCameraPermissionAndOpenScanner() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CAMERA_PERMISSION
-            )
+        if (existingProduct != null) {
+            Toast.makeText(this, "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}", Toast.LENGTH_SHORT).show()
         } else {
-            openScanner()
+            // فتح صفحة الإضافة الجديدة وتمرير الباركود لها
+            val intent = Intent(this, AddProductActivity::class.java)
+            intent.putExtra("BARCODE_EXTRA", barcode)
+            addProductLauncher.launch(intent)
         }
-    }
-
-    private fun openScanner() {
-        val options = ScanOptions()
-        options.setPrompt("وجه الكاميرا نحو الباركود")
-        options.setBeepEnabled(true)
-        options.setOrientationLocked(true)
-        options.setCaptureActivity(PortraitScanActivity::class.java)
-        barcodeLauncher.launch(options)
     }
 
     private fun loadProductsFromDatabase() {
-        val products = databaseHelper.getAllProducts()
-        adapter.setProducts(products)
+        productList.clear()
+        productList.addAll(databaseHelper.getAllProducts())
+        listHandler.setup(productList) // تحديث الواجهة عبر المساعد
     }
 }
