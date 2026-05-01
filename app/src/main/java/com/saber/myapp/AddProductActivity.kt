@@ -18,13 +18,13 @@ class AddProductActivity : AppCompatActivity() {
 
         databaseHelper = DatabaseHelper(this)
 
-        // 1. استلام الباركود وعرضه في الحقل المخصص
+        // استقبال الباركود
         val barcode = intent.getStringExtra("BARCODE_EXTRA") ?: ""
         binding.editTextBarcode.setText(barcode)
 
         setupToolbar()
 
-        // 2. التعامل مع أزرار الصور الموجودة في الـ XML
+        // أزرار الصور
         binding.btnCaptureImage.setOnClickListener {
             Toast.makeText(this, "سيتم تفعيل الكاميرا قريباً", Toast.LENGTH_SHORT).show()
         }
@@ -39,11 +39,8 @@ class AddProductActivity : AppCompatActivity() {
             finish()
         }
 
-        // التعامل مع زر الحفظ الموجود في "المنيو" العلوي
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                // افترضت أن ID زر الحفظ في ملف addproductmenu هو btnSaveAction
-                // تأكد من فتحه ومطابقة الـ ID
                 R.id.btnSaveAction -> {
                     saveProduct()
                     true
@@ -62,9 +59,8 @@ class AddProductActivity : AppCompatActivity() {
             return
         }
 
-        // منطق الحفظ في قاعدة البيانات
-        // val newProduct = Product(barcode = barcode, name = name, ...)
-        // databaseHelper.addProduct(newProduct)
+        // هنا يمكنك إضافة منطق الحفظ الفعلي في قاعدة البيانات
+        // databaseHelper.addProduct(Product(barcode, name, "", ""))
 
         setResult(RESULT_OK)
         finish()

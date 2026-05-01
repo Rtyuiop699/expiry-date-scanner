@@ -1,10 +1,9 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_save" android:icon="@drawable/icsave" android:title="حفظ" android:showAsAction="always" />
-    <item android:id="@+id/action_print" android:icon="@drawable/icprint" android:title="طباعة" android:showAsAction="always" />
-    <item android:id="@+id/action_delete" android:icon="@drawable/icdeletered" android:title="حذف" android:showAsAction="always" />
-    <item android:id="@+id/action_pdf" android:icon="@drawable/icpdf" android:title="PDF" android:showAsAction="always" />
-    <item android:id="@+id/action_tag" android:icon="@drawable/ictagred" android:title="وسم" android:showAsAction="always" />
-    <item android:id="@+id/action_calendar" android:icon="@drawable/iccalendar" android:title="التقويم" android:showAsAction="always" />
-    <item android:id="@+id/action_barcode" android:icon="@drawable/icbarcode" android:title="باركود" android:showAsAction="always" />
-    <item android:id="@+id/action_ocr" android:icon="@drawable/icocr" android:title="OCR" android:showAsAction="always" />
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/btnSaveAction"
+        android:title="حفظ"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="ifRoom" />
 </menu>
