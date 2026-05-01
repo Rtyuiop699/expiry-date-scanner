@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIcon="@drawable/icarrowback"
         app:title=""
         app:menu="@menu/addproductmenu" />
 
@@ -72,7 +72,7 @@
                     android:id="@+id/editTextProductName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_tag_red"
+                    android:drawableStart="@drawable/ictagred"
                     android:hint="ادخل اسم الصنف هنا"/>
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,7 +87,7 @@
                     android:id="@+id/editTextBarcode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_barcode"
+                    android:drawableStart="@drawable/icbarcode"
                     android:focusable="false"
                     android:clickable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
