@@ -14,7 +14,7 @@ class AddProductActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // استخدام الاسم الصحيح المولّد من activity_add_product.xml
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -24,8 +24,8 @@ class AddProductActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         // تأكد أن الأيقونة icarrowback موجودة في drawable
-        binding.toolbar.setNavigationIcon(R.drawable.icarrowback)
-        binding.toolbar.setNavigationOnClickListener {
+        binding.topAppBar.setNavigationIcon(R.drawable.icarrowback)
+        binding.topAppBar.setNavigationOnClickListener {
             onBackPressed()
         }
     }
