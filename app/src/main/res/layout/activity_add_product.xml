@@ -8,16 +8,16 @@
     android:layoutDirection="rtl">
 
     <!-- الشريط العلوي الأخضر -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#4CAF50"
-        app:title="إضافة منتج"
-        app:titleTextColor="#FFFFFF"
-        app:iconTint="#FFFFFF"
-        app:navigationIcon="@drawable/icarrowback"
-        app:menu="@menu/addproductmenu"/>
+     <com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/topAppBar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@drawable/toolbar_border"
+    android:elevation="0dp"
+    app:navigationIcon="@drawable/icarrowback"
+    app:title="إضافة منتج"
+    app:titleTextColor="#000000"
+    app:menu="@menu/addproductmenu" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,41 +31,41 @@
 
             <!-- الصورة + الأزرار -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="end|center_vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="end"
+    android:layout_margin="12dp">
 
-                <!-- الصورة (يمين أقصى شيء) -->
-                <ImageView
-                    android:id="@+id/imageViewProduct"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:scaleType="centerCrop"
-                    android:background="#DDDDDD"
-                    android:layout_marginStart="12dp"/>
+    <!-- الأزرار (يسار الصورة) -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp">
 
-                <!-- الأزرار -->
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnCaptureImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="التقاط صورة"/>
 
-                    <Button
-                        android:id="@+id/btnCaptureImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="التقاط صورة"/>
+        <Button
+            android:id="@+id/btnChooseImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="اختيار صورة"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
 
-                    <Button
-                        android:id="@+id/btnChooseImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="اختيار صورة"
-                        android:layout_marginTop="8dp"/>
-                </LinearLayout>
-
-            </LinearLayout>
+    <!-- الصورة (أقصى اليمين) -->
+    <ImageView
+        android:id="@+id/imageViewProduct"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:background="#DDDDDD"/>
+</LinearLayout>
 
             <!-- اسم المنتج + أيقونة خارج الحقل -->
             <LinearLayout
