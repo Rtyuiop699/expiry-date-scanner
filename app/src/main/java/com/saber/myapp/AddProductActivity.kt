@@ -12,7 +12,7 @@ class AddProductActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -34,21 +34,52 @@ class AddProductActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupToolbar() {
-        binding.topAppBar.setNavigationOnClickListener {
-            finish()
-        }
+private fun setupToolbar() {
 
-        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.btnSaveAction -> {
-                    saveProduct()
-                    true
-                }
-                else -> false
+    // ربط التولبار كـ ActionBar
+    setSupportActionBar(binding.topAppBar)
+    supportActionBar?.setDisplayShowTitleEnabled(false)
+
+    // تحميل ملف العنوان
+    val inflater = LayoutInflater.from(this)
+    val customTitle = inflater.inflate(R.layout.toolbar_title, null)
+
+    // إضافته داخل التولبار
+    binding.topAppBar.addView(customTitle)
+
+    // زر الرجوع
+    binding.topAppBar.setNavigationOnClickListener {
+        finish()
+    }
+
+    // أزرار القائمة
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+
+            R.id.btnSaveAction -> {
+                saveProduct()
+                true
             }
+
+            R.id.btnPrint -> {
+                Toast.makeText(this, "طباعة", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            R.id.btnPdf -> {
+                Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            R.id.btnDelete -> {
+                Toast.makeText(this, "حذف", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            else -> false
         }
     }
+}
 
     private fun saveProduct() {
         val name = binding.editTextProductName.text.toString()
