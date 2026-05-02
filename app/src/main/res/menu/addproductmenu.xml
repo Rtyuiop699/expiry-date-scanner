@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- حفظ -->
     <item
         android:id="@+id/btnSaveAction"
         android:title="حفظ"
-        android:icon="@android:drawable/ic_menu_save"
-        app:showAsAction="ifRoom" />
+        android:icon="@drawable/icsave"
+        app:showAsAction="always" />
+
+    <!-- حذف -->
+    <item
+        android:id="@+id/btnDelete"
+        android:title="حذف"
+        android:icon="@drawable/icdeletered"
+        app:showAsAction="always" />
+
+    <!-- طباعة -->
+    <item
+        android:id="@+id/btnPrint"
+        android:title="طباعة"
+        android:icon="@drawable/icprint"
+        app:showAsAction="always" />
+
+    <!-- PDF -->
+    <item
+        android:id="@+id/btnPdf"
+        android:title="PDF"
+        android:icon="@drawable/icpdf"
+        app:showAsAction="always" />
+
 </menu>
