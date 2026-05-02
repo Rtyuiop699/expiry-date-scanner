@@ -7,19 +7,18 @@
     android:background="#FFFFFF"
     android:layoutDirection="rtl">
 
-    <!-- الشريط العلوي -->
+    <!-- الشريط العلوي الأخضر -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
-        app:navigationIcon="@drawable/icarrowback"
+        android:background="#4CAF50"
         app:title="إضافة منتج"
-        app:titleTextColor="#000000"
-        app:menu="@menu/addproductmenu" />
+        app:titleTextColor="#FFFFFF"
+        app:iconTint="#FFFFFF"
+        app:navigationIcon="@drawable/icarrowback"
+        app:menu="@menu/addproductmenu"/>
 
-    <!-- محتوى الصفحة -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,17 +31,25 @@
 
             <!-- الصورة + الأزرار -->
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical">
 
-                <!-- الأزرار (يسار) -->
+                <!-- الصورة (يمين أقصى شيء) -->
+                <ImageView
+                    android:id="@+id/imageViewProduct"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:background="#DDDDDD"
+                    android:layout_marginStart="12dp"/>
+
+                <!-- الأزرار -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp">
+                    android:layout_height="wrap_content">
 
                     <Button
                         android:id="@+id/btnCaptureImage"
@@ -54,54 +61,71 @@
                         android:id="@+id/btnChooseImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="اختر صورة"
+                        android:text="اختيار صورة"
                         android:layout_marginTop="8dp"/>
                 </LinearLayout>
 
-                <!-- الصورة (يمين) -->
-                <ImageView
-                    android:id="@+id/imageViewProduct"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:scaleType="centerCrop"
-                    android:background="@android:color/darker_gray"/>
             </LinearLayout>
 
-            <!-- اسم المنتج -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutName"
+            <!-- اسم المنتج + أيقونة خارج الحقل -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="اسم المنتج"
-                app:boxBackgroundMode="outline"
-                app:boxStrokeColor="#4CAF50"
-                app:startIconDrawable="@drawable/ictagred">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextProductName"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:hint="اسم المنتج"
+                    app:boxBackgroundMode="outline">
 
-            <!-- الباركود -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutBarcode"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextProductName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- أيقونة الاسم (خارج الحقل) -->
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ictagred"
+                    android:layout_marginStart="8dp"
+                    android:tint="#F44336"/>
+            </LinearLayout>
+
+            <!-- الباركود + أيقونة خارج الحقل -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="رمز الباركود"
-                app:boxBackgroundMode="outline"
-                app:boxStrokeColor="#4CAF50"
-                app:endIconDrawable="@drawable/icbarcode">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextBarcode"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:focusable="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:hint="رمز الباركود"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextBarcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- أيقونة الباركود (خارج الحقل - خطوط أسود/أبيض) -->
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/icbarcode"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
