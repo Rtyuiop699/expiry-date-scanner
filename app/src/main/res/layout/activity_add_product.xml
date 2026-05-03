@@ -12,7 +12,9 @@
     android:id="@+id/topAppBar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
+       
     android:background="@drawable/toolbar_border"
+    android:background="#FF0000"
     android:elevation="0dp"
     app:navigationIcon="@drawable/icarrowback"
     app:title="إضافة منتج"
