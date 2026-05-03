@@ -80,7 +80,15 @@ private fun setupToolbar() {
         }
     }
 }
-
+override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.addproductmenu, menu)
+    return true
+}
+override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    menu.clear()
+    menuInflater.inflate(R.menu.addproductmenu, menu)
+    return true
+} 
     private fun saveProduct() {
         val name = binding.editTextProductName.text.toString()
         val barcode = binding.editTextBarcode.text.toString()
