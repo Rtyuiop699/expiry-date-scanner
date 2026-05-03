@@ -5,7 +5,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.saber.myapp.databinding.ActivityAddProductBinding
 import android.view.LayoutInflater
-
+import android.view.Menu
+import android.view.MenuItem
 class AddProductActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddProductBinding
