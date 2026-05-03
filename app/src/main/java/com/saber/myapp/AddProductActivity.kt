@@ -46,7 +46,6 @@ private fun setupToolbar() {
     val customTitle = inflater.inflate(R.layout.toolbar_title, null)
 
     // إضافته داخل التولبار
-    binding.topAppBar.addView(customTitle)
 
     // زر الرجوع
     binding.topAppBar.setNavigationOnClickListener {
