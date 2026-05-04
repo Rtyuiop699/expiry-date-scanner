@@ -154,7 +154,7 @@
         android:id="@+id/btnOpenCalendar"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:src="@drawable/ic_calendar"
+        android:src="@drawable/iccalendar"
         android:layout_marginStart="8dp"
         android:tint="#4CAF50"/>
 </LinearLayout>
