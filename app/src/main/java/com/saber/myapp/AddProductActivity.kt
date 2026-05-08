@@ -205,21 +205,21 @@ private fun saveProduct() {
     }
 
     // 🔁 دوال التاريخ (من الديالوج)
-    private fun normalizeDate(input: String): String? {
-        return extractDateFromText(input)
-    }
+   // private fun normalizeDate(input: String): String? {
+    //    return extractDateFromText(input)
+  //  }
 
-    private fun extractDateFromText(text: String): String? {
-        val cleanedText = fixCommonOCRMistakes(
-            text.replace("\n", " ").replace(",", " ").trim()
-        )
+  //  private fun extractDateFromText(text: String): String? {
+     //   val cleanedText = fixCommonOCRMistakes(
+     //       text.replace("\n", " ").replace(",", " ").trim()
+    //    )
         // انسخ الـ Regex والدوال المساعدة من AddProductDialog هنا
-        return null
-    }
+      //  return null
+  //  }
 
-    private fun fixCommonOCRMistakes(text: String): String {
-        return text.replace("O", "0").replace("I", "1").replace("S", "5")
-    }
+ //   private fun fixCommonOCRMistakes(text: String): String {
+   //     return text.replace("O", "0").replace("I", "1").replace("S", "5")
+  //  }
     // 🔁 دوال التاريخ (تم دمجها وتجهيزها بالكامل)
 
     private fun normalizeDate(input: String): String? {
