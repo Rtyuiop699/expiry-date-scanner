@@ -31,7 +31,8 @@ class AddProductActivity : AppCompatActivity() {
         databaseHelper = DatabaseHelper(this)
 
         // استقبال البيانات من Intent
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
+        val barcodeInt = barcode.toIntOrNull() ?: 0
+databaseHelper.addProduct(Product(barcodeInt, name, normalizedDate, currentImagePath!!))
         val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
         val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
         val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
@@ -72,9 +73,9 @@ class AddProductActivity : AppCompatActivity() {
         }
 
         // زر الحفظ
-        binding.btnSaveProduct.setOnClickListener {
-            saveProduct()
-        }
+      //  binding.btnSaveProduct.setOnClickListener {
+      //      saveProduct()
+   //     }
 
         // زر يوجد باكت ✔️
         binding.btnHasPack.setOnClickListener {
