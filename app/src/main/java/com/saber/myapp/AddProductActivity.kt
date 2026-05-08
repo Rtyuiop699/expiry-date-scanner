@@ -23,42 +23,43 @@ class AddProductActivity : AppCompatActivity() {
         private const val REQUEST_DATE_SCAN = 201
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         databaseHelper = DatabaseHelper(this)
 
-        // استقبال البيانات من Intent
-        val barcodeInt = barcode.toIntOrNull() ?: 0
-databaseHelper.addProduct(Product(barcodeInt, name, normalizedDate, currentImagePath!!))
+        // 1. استقبال البيانات القادمة من Intent (مثلاً من الماسح الضوئي)
+        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
         val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
         val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
         val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
 
+        // 2. وضع البيانات في حقول النصوص (EditText)
         binding.editTextBarcode.setText(barcodeValue)
         binding.editTextProductName.setText(nameValue)
         binding.editTextDate.setText(expiryValue)
 
-        // تحميل الصورة إذا موجودة
+        // 3. تحميل الصورة إذا كانت موجودة
         if (!imagePathValue.isNullOrEmpty()) {
+            currentImagePath = imagePathValue // تحديث المسار الحالي
             if (imagePathValue.startsWith("http")) {
                 Glide.with(this)
                     .load(imagePathValue)
                     .placeholder(android.R.drawable.progress_horizontal)
                     .error(android.R.drawable.ic_menu_report_image)
                     .into(binding.imageViewProduct)
-                currentImagePath = imagePathValue
             } else {
                 val file = File(imagePathValue)
                 if (file.exists()) {
                     val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                     binding.imageViewProduct.setImageBitmap(bitmap)
-                    currentImagePath = imagePathValue
                 }
             }
         }
+    
+        
 
         // زر الكاميرا
         binding.btnCaptureImage.setOnClickListener {
