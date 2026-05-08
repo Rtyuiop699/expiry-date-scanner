@@ -90,23 +90,44 @@ class AddProductActivity : AppCompatActivity() {
 
         setupToolbar()
     }
+private fun setupToolbar() {
+    // 1. شحن المنيو يدوياً باستخدام اسم الملف الصحيح
+    binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
 
-    private fun setupToolbar() {
-        setSupportActionBar(binding.topAppBar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+    // 2. تأكد من حذف سطر setSupportActionBar(binding.topAppBar) إذا كان موجوداً
 
-        binding.topAppBar.setNavigationOnClickListener { finish() }
+    binding.topAppBar.setNavigationOnClickListener { finish() }
 
-        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.btnSaveAction -> { saveProduct(); true }
-                R.id.btnPrint -> { Toast.makeText(this, "طباعة", Toast.LENGTH_SHORT).show(); true }
-                R.id.btnPdf -> { Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show(); true }
-                R.id.btnDelete -> { Toast.makeText(this, "حذف", Toast.LENGTH_SHORT).show(); true }
-                else -> false
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+            // استخدام الـ IDs الموجودة داخل ملف الـ XML الخاص بك
+            R.id.action_save -> { 
+                saveProduct()
+                true 
             }
+            R.id.action_print -> { 
+                Toast.makeText(this, "طباعة", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.action_pdf -> { 
+                Toast.makeText(this, "توليد ملف PDF", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.action_delete -> { 
+                Toast.makeText(this, "حذف المنتج", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.action_barcode -> {
+                // يمكنك إضافة أكشن هنا لفتح الكاميرا للباركود
+                Toast.makeText(this, "فتح الماسح الضوئي", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> false
         }
     }
+}
+
+
 private fun saveProduct() {
     val name = binding.editTextProductName.text.toString().trim()
     val rawDate = binding.editTextDate.text.toString().trim()
