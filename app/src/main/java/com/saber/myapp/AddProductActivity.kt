@@ -106,38 +106,45 @@ databaseHelper.addProduct(Product(barcodeInt, name, normalizedDate, currentImage
             }
         }
     }
+private fun saveProduct() {
+    val name = binding.editTextProductName.text.toString().trim()
+    val rawDate = binding.editTextDate.text.toString().trim()
+    val normalizedDate = normalizeDate(rawDate)
+    val barcodeValue = binding.editTextBarcode.text.toString().trim()
 
-    private fun saveProduct() {
-        val name = binding.editTextProductName.text.toString().trim()
-        val rawDate = binding.editTextDate.text.toString().trim()
-        val normalizedDate = normalizeDate(rawDate)
-        val barcode = binding.editTextBarcode.text.toString()
-
-        if (name.isBlank()) {
-            Toast.makeText(this, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (rawDate.isBlank()) {
-            Toast.makeText(this, "يرجى إدخال تاريخ الصلاحية", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (normalizedDate == null) {
-            Toast.makeText(this, "❌ صيغة التاريخ غير مفهومة", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (currentImagePath == null) {
-            Toast.makeText(this, "يرجى إضافة صورة", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        Toast.makeText(this, "✅ تم تحويل التاريخ إلى: $normalizedDate", Toast.LENGTH_LONG).show()
-
-        // حفظ في قاعدة البيانات
-        databaseHelper.addProduct(Product(barcode, name, normalizedDate, currentImagePath!!))
-
-        setResult(RESULT_OK)
-        finish()
+    if (name.isBlank()) {
+        Toast.makeText(this, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
+        return
     }
+    if (rawDate.isBlank()) {
+        Toast.makeText(this, "يرجى إدخال تاريخ الصلاحية", Toast.LENGTH_SHORT).show()
+        return
+    }
+    if (normalizedDate == null) {
+        Toast.makeText(this, "❌ صيغة التاريخ غير مفهومة", Toast.LENGTH_SHORT).show()
+        return
+    }
+    if (currentImagePath == null) {
+        Toast.makeText(this, "يرجى إضافة صورة", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    // ⚡ هنا نمرر كل الباراميترات المطلوبة
+    val product = Product(
+        id = 0, // يترك افتراضي
+        barcode = barcodeValue,
+        name = name,
+        expiryDate = normalizedDate,
+        quantity = 1, // أو احسبه من حقول الكمية إذا أردت
+        imagePath = currentImagePath!!
+    )
+
+    databaseHelper.addProduct(product)
+
+    setResult(RESULT_OK)
+    finish()
+}
+    
 
     private fun calculateQuantity() {
         val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
