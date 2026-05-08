@@ -58,7 +58,54 @@ class AddProductActivity : AppCompatActivity() {
                 }
             }
         }
-    
+    private lateinit var spinnerCategories: Spinner
+private lateinit var btnClassify: Button
+private lateinit var btnAddCategory: Button
+
+private val categories = mutableListOf(
+    "عصائر",
+    "مشروبات غازية",
+    "خضار معلبة ومخللات",
+    "أسماك معلبة",
+    "كيك وبسكويت",
+    "آيسكريم ومثلجات"
+)
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val binding = ActivityAddProductBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    spinnerCategories = binding.spinnerCategories
+    btnClassify = binding.btnClassify
+    btnAddCategory = binding.btnAddCategory
+
+    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+    spinnerCategories.adapter = adapter
+
+    // عند الضغط على زر "تصنيف" تظهر القائمة + زر الإضافة
+    btnClassify.setOnClickListener {
+        spinnerCategories.visibility = View.VISIBLE
+        btnAddCategory.visibility = View.VISIBLE
+    }
+
+    // زر + لإضافة تصنيف جديد
+    btnAddCategory.setOnClickListener {
+        val editText = EditText(this)
+        AlertDialog.Builder(this)
+            .setTitle("إضافة تصنيف جديد")
+            .setView(editText)
+            .setPositiveButton("إضافة") { _, _ ->
+                val newCategory = editText.text.toString().trim()
+                if (newCategory.isNotEmpty()) {
+                    categories.add(newCategory)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+            .setNegativeButton("إلغاء", null)
+            .show()
+    }
+}
         
 
         // زر الكاميرا
