@@ -93,6 +93,7 @@ class AddProductActivity : AppCompatActivity() {
 
 
 private fun setupToolbar() {
+   binding.topAppBar.menu.clear() 
     // 1. شحن المنيو يدوياً باستخدام اسم الملف
     binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
 
