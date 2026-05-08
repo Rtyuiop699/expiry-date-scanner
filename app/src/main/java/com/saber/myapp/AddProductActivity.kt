@@ -110,7 +110,7 @@ private fun saveProduct() {
     val name = binding.editTextProductName.text.toString().trim()
     val rawDate = binding.editTextDate.text.toString().trim()
     val normalizedDate = normalizeDate(rawDate)
-    val barcodeValue = binding.editTextBarcode.text.toString().trim()
+    val barcode = binding.editTextBarcode.text.toString().trim()
 
     if (name.isBlank()) {
         Toast.makeText(this, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
@@ -129,13 +129,21 @@ private fun saveProduct() {
         return
     }
 
-    // ⚡ هنا نمرر كل الباراميترات المطلوبة
+    // حساب الكمية من الحقول الجديدة
+    val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
+    val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
+    val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
+    val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
+
+    Toast.makeText(this, "✅ تم تحويل التاريخ إلى: $normalizedDate", Toast.LENGTH_LONG).show()
+
+    // إنشاء المنتج وتمرير كل الباراميترات المطلوبة
     val product = Product(
-        id = 0, // يترك افتراضي
-        barcode = barcodeValue,
+        id = 0, // افتراضي
+        barcode = barcode,
         name = name,
         expiryDate = normalizedDate,
-        quantity = 1, // أو احسبه من حقول الكمية إذا أردت
+        quantity = quantity,
         imagePath = currentImagePath!!
     )
 
@@ -144,7 +152,6 @@ private fun saveProduct() {
     setResult(RESULT_OK)
     finish()
 }
-    
 
     private fun calculateQuantity() {
         val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
