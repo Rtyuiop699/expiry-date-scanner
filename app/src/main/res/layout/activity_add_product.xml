@@ -158,7 +158,108 @@
         android:layout_marginStart="8dp"
         android:tint="#4CAF50"/>
 </LinearLayout>
-            
+   <!-- الكمية (كرتون / باكت / حبة) -->
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <!-- الصف الأول: العناوين -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="3">
+
+                    <TextView
+                        android:text="كرتون"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:text="باكت في الكرتون"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:text="حبة في الباكت"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- الصف الثاني: حقول الإدخال -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="3"
+                    android:layout_marginTop="8dp">
+
+                    <EditText
+                        android:id="@+id/editCarton"
+                        android:hint="عدد الكراتين"
+                        android:inputType="number"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+
+                    <EditText
+                        android:id="@+id/editPack"
+                        android:hint="عدد الباكت"
+                        android:inputType="number"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+
+                    <EditText
+                        android:id="@+id/editPiece"
+                        android:hint="عدد الحبات"
+                        android:inputType="number"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- زر يوجد باكت -->
+                <Button
+                    android:id="@+id/btnHasPack"
+                    android:text="يوجد باكت ✔️"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"/>
+
+                <!-- زر احسب + حقل النتيجة -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+
+                    <Button
+                        android:id="@+id/btnCalculate"
+                        android:text="احسب"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <EditText
+                        android:id="@+id/editResult"
+                        android:hint="النتيجة"
+                        android:enabled="false"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
+            </LinearLayout>         
         </LinearLayout>
     
     </ScrollView>
