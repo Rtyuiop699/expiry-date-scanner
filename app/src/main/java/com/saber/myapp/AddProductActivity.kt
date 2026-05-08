@@ -10,6 +10,12 @@ import com.saber.myapp.databinding.ActivityAddProductBinding
 import java.io.File
 import java.util.Calendar
 import java.util.Locale
+import android.widget.Spinner
+import android.widget.Button
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.app.AlertDialog
+import android.view.View
 
 class AddProductActivity : AppCompatActivity() {
 
@@ -17,6 +23,18 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
 
     private var currentImagePath: String? = null
+private lateinit var spinnerCategories: Spinner
+private lateinit var btnClassify: Button
+private lateinit var btnAddCategory: Button
+
+private val categories = mutableListOf(
+    "عصائر",
+    "مشروبات غازية",
+    "خضار معلبة ومخللات",
+    "أسماك معلبة",
+    "كيك وبسكويت",
+    "آيسكريم ومثلجات"
+)
 
     companion object {
         private const val REQUEST_PRODUCT_CAMERA = 202
@@ -58,19 +76,7 @@ class AddProductActivity : AppCompatActivity() {
                 }
             }
         }
-    private lateinit var spinnerCategories: Spinner
-private lateinit var btnClassify: Button
-private lateinit var btnAddCategory: Button
-
-private val categories = mutableListOf(
-    "عصائر",
-    "مشروبات غازية",
-    "خضار معلبة ومخللات",
-    "أسماك معلبة",
-    "كيك وبسكويت",
-    "آيسكريم ومثلجات"
-)
-
+    
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val binding = ActivityAddProductBinding.inflate(layoutInflater)
