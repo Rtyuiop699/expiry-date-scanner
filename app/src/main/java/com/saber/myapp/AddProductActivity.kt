@@ -90,43 +90,39 @@ class AddProductActivity : AppCompatActivity() {
 
         setupToolbar()
     }
+
+
 private fun setupToolbar() {
-    // 1. شحن المنيو يدوياً باستخدام اسم الملف الصحيح
+    // 1. شحن المنيو يدوياً باستخدام اسم الملف
     binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
 
-    // 2. تأكد من حذف سطر setSupportActionBar(binding.topAppBar) إذا كان موجوداً
-
+    // 2. تفعيل زر الرجوع في التولبار
     binding.topAppBar.setNavigationOnClickListener { finish() }
 
+    // 3. ربط الأزرار بالمعرفات (IDs) الصحيحة الموجودة في ملف الـ XML
     binding.topAppBar.setOnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {
-            // استخدام الـ IDs الموجودة داخل ملف الـ XML الخاص بك
-            R.id.action_save -> { 
+            R.id.btnSaveAction -> { 
                 saveProduct()
                 true 
             }
-            R.id.action_print -> { 
-                Toast.makeText(this, "طباعة", Toast.LENGTH_SHORT).show()
+            R.id.btnPrint -> { 
+                Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show()
                 true 
             }
-            R.id.action_pdf -> { 
-                Toast.makeText(this, "توليد ملف PDF", Toast.LENGTH_SHORT).show()
+            R.id.btnPdf -> { 
+                Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show()
                 true 
             }
-            R.id.action_delete -> { 
-                Toast.makeText(this, "حذف المنتج", Toast.LENGTH_SHORT).show()
+            R.id.btnDelete -> { 
+                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
+                // هنا يمكنك إضافة كود الحذف الفعلي إذا أردت
                 true 
-            }
-            R.id.action_barcode -> {
-                // يمكنك إضافة أكشن هنا لفتح الكاميرا للباركود
-                Toast.makeText(this, "فتح الماسح الضوئي", Toast.LENGTH_SHORT).show()
-                true
             }
             else -> false
         }
     }
 }
-
 
 private fun saveProduct() {
     val name = binding.editTextProductName.text.toString().trim()
