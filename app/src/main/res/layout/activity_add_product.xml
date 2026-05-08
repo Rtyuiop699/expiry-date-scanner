@@ -57,6 +57,28 @@
             android:layout_height="wrap_content"
             android:text="اختيار صورة"
             android:layout_marginTop="8dp"/>
+       <Button
+    android:id="@+id/btnClassify"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="تصنيف"
+    android:layout_marginTop="8dp"/>
+
+<Spinner
+    android:id="@+id/spinnerCategories"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:visibility="gone"/>
+
+<Button
+    android:id="@+id/btnAddCategory"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="+"
+    android:layout_marginTop="8dp"
+    android:visibility="gone"/>
+    
     </LinearLayout>
 
     <!-- الصورة (أقصى اليمين) -->
