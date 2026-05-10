@@ -1,124 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:layoutDirection="rtl">
+    android:layoutDirection="rtl"
+    android:orientation="vertical">
 
-    <!-- الشريط العلوي الأخضر -->
-     <com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/topAppBar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@drawable/toolbar_border"
-    
-    android:elevation="0dp"
-    app:navigationIcon="@drawable/icarrowback"
-    app:title="إضافة منتج"
-    app:titleTextColor="#000000"
-    app:menu="@menu/addproductmenu" />
+    <!-- 1. الشريط العلوي -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/toolbar_border"
+        android:elevation="0dp"
+        app:navigationIcon="@drawable/icarrowback"
+        app:title="إضافة منتج"
+        app:titleTextColor="#000000"
+        app:menu="@menu/addproductmenu" />
 
+    <!-- 2. منطقة التمرير -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:fillViewport="true">
 
-        <!-- الحاوية الرئيسية لكل العناصر -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <!-- القسم الأول: الأزرار والصورة -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginBottom="16dp">
-
-        <!-- حاوية الأزرار (يسار الصورة) -->
+        <!-- الحاوية الرئيسية لكل العناصر (يجب أن يكون هناك عنصر واحد فقط داخل ScrollView) -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginEnd="12dp"
-            android:gravity="center">
+            android:padding="16dp">
 
-            <Button
-                android:id="@+id/btnCaptureImage"
+            <!-- القسم الأول: الأزرار والصورة -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="التقاط صورة"/>
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/btnChooseImage"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="12dp"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btnCaptureImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="التقاط صورة"/>
+
+                    <Button
+                        android:id="@+id/btnChooseImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="اختيار صورة"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp">
+                    <ImageView
+                        android:id="@+id/imageViewProduct"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" 
+                        android:background="#DDDDDD"
+                        android:src="@android:drawable/ic_menu_camera"/>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- القسم الثاني: حقل التصنيف المنسدل وزر الإضافة -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="اختيار صورة"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
-        <!-- الصورة (يمين الشاشة) -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
-            
-            <ImageView
-                android:id="@+id/imageViewProduct"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" 
-                android:background="#DDDDDD"
-                android:src="@android:drawable/ic_menu_camera"/>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuCategories"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="التصنيف">
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteCategories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" 
+                        android:padding="16dp"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- القسم الثاني: حقل التصنيف المنسدل وزر الإضافة -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/menuCategories"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="التصنيف">
-
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteCategories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" 
-                android:padding="16dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- زر الإضافة (مربع صغير بجانب الحقل) -->
-        <Button
-            android:id="@+id/btnAddCategory"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="55dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="+"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-</LinearLayout>
+                <Button
+                    android:id="@+id/btnAddCategory"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="+"
+                    android:textSize="20sp" />
+            </LinearLayout>
     
-
             <!-- اسم المنتج + أيقونة خارج الحقل -->
             <LinearLayout
                 android:layout_width="match_parent"
