@@ -42,61 +42,25 @@ private val categories = mutableListOf(
     }
 
         override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAddProductBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        databaseHelper = DatabaseHelper(this)
-
-        // 1. استقبال البيانات القادمة من Intent (مثلاً من الماسح الضوئي)
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
-        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
-        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
-        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
-
-        // 2. وضع البيانات في حقول النصوص (EditText)
-        binding.editTextBarcode.setText(barcodeValue)
-        binding.editTextProductName.setText(nameValue)
-        binding.editTextDate.setText(expiryValue)
-
-        // 3. تحميل الصورة إذا كانت موجودة
-        if (!imagePathValue.isNullOrEmpty()) {
-            currentImagePath = imagePathValue // تحديث المسار الحالي
-            if (imagePathValue.startsWith("http")) {
-                Glide.with(this)
-                    .load(imagePathValue)
-                    .placeholder(android.R.drawable.progress_horizontal)
-                    .error(android.R.drawable.ic_menu_report_image)
-                    .into(binding.imageViewProduct)
-            } else {
-                val file = File(imagePathValue)
-                if (file.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                    binding.imageViewProduct.setImageBitmap(bitmap)
-                }
-            }
-        }
-    
-override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val binding = ActivityAddProductBinding.inflate(layoutInflater)
+    // 1. إعداد الـ View Binding (تأكد أن binding معرف كـ property في الكلاس)
+    binding = ActivityAddProductBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
-    spinnerCategories = binding.spinnerCategories
-    btnClassify = binding.btnClassify
-    btnAddCategory = binding.btnAddCategory
+    databaseHelper = DatabaseHelper(this)
 
+    // --- القسم الأول: إعداد الـ Spinner والتصنيفات ---
     val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-    spinnerCategories.adapter = adapter
+    binding.spinnerCategories.adapter = adapter
 
-    // عند الضغط على زر "تصنيف" تظهر القائمة + زر الإضافة
-    btnClassify.setOnClickListener {
-        spinnerCategories.visibility = View.VISIBLE
-        btnAddCategory.visibility = View.VISIBLE
+    // عند الضغط على زر "تصنيف" تظهر القائمة وزر الإضافة
+    binding.btnClassify.setOnClickListener {
+        binding.spinnerCategories.visibility = View.VISIBLE
+        binding.btnAddCategory.visibility = View.VISIBLE
     }
 
-    // زر + لإضافة تصنيف جديد
-    btnAddCategory.setOnClickListener {
+    // زر إضافة تصنيف جديد عبر AlertDialog
+    binding.btnAddCategory.setOnClickListener {
         val editText = EditText(this)
         AlertDialog.Builder(this)
             .setTitle("إضافة تصنيف جديد")
@@ -111,9 +75,38 @@ override fun onCreate(savedInstanceState: Bundle?) {
             .setNegativeButton("إلغاء", null)
             .show()
     }
-}
-        
 
+    // --- القسم الثاني: استقبال البيانات القادمة من Intent ---
+    val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
+    val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
+    val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
+    val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
+
+    // وضع البيانات في الحقول
+    binding.editTextBarcode.setText(barcodeValue)
+    binding.editTextProductName.setText(nameValue)
+    binding.editTextDate.setText(expiryValue)
+
+    // معالجة الصورة
+    if (!imagePathValue.isNullOrEmpty()) {
+        currentImagePath = imagePathValue
+        if (imagePathValue.startsWith("http")) {
+            Glide.with(this)
+                .load(imagePathValue)
+                .placeholder(android.R.drawable.progress_horizontal)
+                .error(android.R.drawable.ic_menu_report_image)
+                .into(binding.imageViewProduct)
+        } else {
+            val file = File(imagePathValue)
+            if (file.exists()) {
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                binding.imageViewProduct.setImageBitmap(bitmap)
+            }
+        }
+    }
+        
+        
+        
         // زر الكاميرا
         binding.btnCaptureImage.setOnClickListener {
             val intent = Intent(this, ProductCameraActivity::class.java)
