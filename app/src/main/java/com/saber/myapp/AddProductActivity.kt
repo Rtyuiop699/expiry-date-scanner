@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.app.AlertDialog
 import android.view.View
+import android.widget.AutoCompleteTextView
 
 class AddProductActivity : AppCompatActivity() {
 
@@ -23,87 +24,86 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
 
     private var currentImagePath: String? = null
-private lateinit var spinnerCategories: Spinner
-private lateinit var btnClassify: Button
-private lateinit var btnAddCategory: Button
 
-private val categories = mutableListOf(
-    "عصائر",
-    "مشروبات غازية",
-    "خضار معلبة ومخللات",
-    "أسماك معلبة",
-    "كيك وبسكويت",
-    "آيسكريم ومثلجات"
-)
+    // القائمة الأساسية للتصنيفات
+    private val categories = mutableListOf(
+        "عصائر",
+        "مشروبات غازية",
+        "خضار معلبة ومخللات",
+        "أسماك معلبة",
+        "كيك وبسكويت",
+        "آيسكريم ومثلجات"
+    )
 
-    companion object {
-        private const val REQUEST_PRODUCT_CAMERA = 202
-        private const val REQUEST_DATE_SCAN = 201
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAddProductBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    // 1. إعداد الـ View Binding (تأكد أن binding معرف كـ property في الكلاس)
-    binding = ActivityAddProductBinding.inflate(layoutInflater)
-    setContentView(binding.root)
+        databaseHelper = DatabaseHelper(this)
 
-    databaseHelper = DatabaseHelper(this)
+        // --- القسم الأول: إعداد الـ MaterialAutoCompleteTextView ---
+        
+        // 1. إعداد الـ Adapter (استخدم layout بسيط للعناصر)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)
+        
+        // 2. ربط الـ Adapter بالحقل
+        val autoComplete = binding.autoCompleteCategories
+        autoComplete.setAdapter(adapter)
 
-    // --- القسم الأول: إعداد الـ Spinner والتصنيفات ---
-    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-    binding.spinnerCategories.adapter = adapter
-
-    // عند الضغط على زر "تصنيف" تظهر القائمة وزر الإضافة
-    binding.btnClassify.setOnClickListener {
-        binding.spinnerCategories.visibility = View.VISIBLE
-        binding.btnAddCategory.visibility = View.VISIBLE
-    }
-
-    // زر إضافة تصنيف جديد عبر AlertDialog
-    binding.btnAddCategory.setOnClickListener {
-        val editText = EditText(this)
-        AlertDialog.Builder(this)
-            .setTitle("إضافة تصنيف جديد")
-            .setView(editText)
-            .setPositiveButton("إضافة") { _, _ ->
-                val newCategory = editText.text.toString().trim()
-                if (newCategory.isNotEmpty()) {
-                    categories.add(newCategory)
-                    adapter.notifyDataSetChanged()
+        // 3. زر إضافة تصنيف جديد عبر AlertDialog
+        binding.btnAddCategory.setOnClickListener {
+            val editText = EditText(this)
+            AlertDialog.Builder(this)
+                .setTitle("إضافة تصنيف جديد")
+                .setView(editText)
+                .setPositiveButton("إضافة") { _, _ ->
+                    val newCategory = editText.text.toString().trim()
+                    if (newCategory.isNotEmpty()) {
+                        categories.add(newCategory)
+                        adapter.notifyDataSetChanged()
+                        
+                        // اختيار التصنيف الجديد فوراً في الحقل
+                        autoComplete.setText(newCategory, false)
+                    }
                 }
-            }
-            .setNegativeButton("إلغاء", null)
-            .show()
+                .setNegativeButton("إلغاء", null)
+                .show()
+        }
+
+        // --- القسم الثاني: استقبال البيانات من الـ Intent ---
+        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
+        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
+        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
+        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
+
+        binding.editTextBarcode.setText(barcodeValue)
+        binding.editTextProductName.setText(nameValue)
+        binding.editTextDate.setText(expiryValue)
+
+        // معالجة الصورة
+        processProductImage(imagePathValue)
     }
 
-    // --- القسم الثاني: استقبال البيانات القادمة من Intent ---
-    val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
-    val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
-    val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
-    val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
-
-    // وضع البيانات في الحقول
-    binding.editTextBarcode.setText(barcodeValue)
-    binding.editTextProductName.setText(nameValue)
-    binding.editTextDate.setText(expiryValue)
-
-    // معالجة الصورة
-    if (!imagePathValue.isNullOrEmpty()) {
-        currentImagePath = imagePathValue
-        if (imagePathValue.startsWith("http")) {
-            Glide.with(this)
-                .load(imagePathValue)
-                .placeholder(android.R.drawable.progress_horizontal)
-                .error(android.R.drawable.ic_menu_report_image)
-                .into(binding.imageViewProduct)
-        } else {
-            val file = File(imagePathValue)
-            if (file.exists()) {
-                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                binding.imageViewProduct.setImageBitmap(bitmap)
+    private fun processProductImage(imagePathValue: String?) {
+        if (!imagePathValue.isNullOrEmpty()) {
+            currentImagePath = imagePathValue
+            if (imagePathValue.startsWith("http")) {
+                Glide.with(this)
+                    .load(imagePathValue)
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .into(binding.imageViewProduct)
+            } else {
+                val file = File(imagePathValue)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    binding.imageViewProduct.setImageBitmap(bitmap)
+                }
             }
         }
     }
+}
         
         
         
