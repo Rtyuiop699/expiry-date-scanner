@@ -1,4 +1,6 @@
-package com.saber.myapp
+
+    // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
+   package com.saber.myapp
 
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -24,7 +26,8 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
 
     private var currentImagePath: String? = null
-
+private val REQUEST_PRODUCT_CAMERA = 1001
+private val REQUEST_DATE_SCAN = 1002
     // القائمة الأساسية للتصنيفات
     private val categories = mutableListOf(
         "عصائر",
@@ -35,14 +38,17 @@ class AddProductActivity : AppCompatActivity() {
         "آيسكريم ومثلجات"
     )
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
   // 1. بداية الكلاس
 //class YourActivity : AppCompatActivity() {
 
     // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // ... (binding setup)
+    super.onCreate(savedInstanceState)
+
+    binding = ActivityAddProductBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    databaseHelper = DatabaseHelper(this)
 
         // زر الكاميرا
         binding.btnCaptureImage.setOnClickListener {
@@ -92,39 +98,6 @@ class AddProductActivity : AppCompatActivity() {
 
 } // <-- هذا القوس الأخير يغلق الكلاس بالكامل
 
-
-private fun setupToolbar() {
-   binding.topAppBar.menu.clear() 
-    // 1. شحن المنيو يدوياً باستخدام اسم الملف
-    binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
-
-    // 2. تفعيل زر الرجوع في التولبار
-    binding.topAppBar.setNavigationOnClickListener { finish() }
-
-    // 3. ربط الأزرار بالمعرفات (IDs) الصحيحة الموجودة في ملف الـ XML
-    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-        when (menuItem.itemId) {
-            R.id.btnSaveAction -> { 
-                saveProduct()
-                true 
-            }
-            R.id.btnPrint -> { 
-                Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show()
-                true 
-            }
-            R.id.btnPdf -> { 
-                Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show()
-                true 
-            }
-            R.id.btnDelete -> { 
-                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
-                // هنا يمكنك إضافة كود الحذف الفعلي إذا أردت
-                true 
-            }
-            else -> false
-        }
-    }
-}
 
 private fun saveProduct() {
     val name = binding.editTextProductName.text.toString().trim()
