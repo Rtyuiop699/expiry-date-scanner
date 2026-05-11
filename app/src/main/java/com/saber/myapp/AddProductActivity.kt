@@ -35,9 +35,9 @@ class AddProductActivity : AppCompatActivity() {
         "آيسكريم ومثلجات"
     )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+//    override fun onCreate(savedInstanceState: Bundle?) {
   // 1. بداية الكلاس
-class YourActivity : AppCompatActivity() {
+//class YourActivity : AppCompatActivity() {
 
     // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
     override fun onCreate(savedInstanceState: Bundle?) {
