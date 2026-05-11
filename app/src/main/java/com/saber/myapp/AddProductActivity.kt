@@ -1,6 +1,4 @@
-
-    // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
-   package com.saber.myapp
+package com.saber.myapp
 
 import android.content.Intent
 import android.graphics.BitmapFactory
