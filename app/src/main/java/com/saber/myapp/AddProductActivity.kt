@@ -96,8 +96,7 @@ private val REQUEST_DATE_SCAN = 1002
         }
     } // <-- هذا القوس يغلق دالة processProductImage
 
-} // <-- هذا القوس الأخير يغلق الكلاس بالكامل
-
+} 
 
 private fun saveProduct() {
     val name = binding.editTextProductName.text.toString().trim()
