@@ -36,55 +36,41 @@ class AddProductActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+  // 1. بداية الكلاس
+class YourActivity : AppCompatActivity() {
+
+    // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddProductBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        // ... (binding setup)
 
-        databaseHelper = DatabaseHelper(this)
-
-        // --- القسم الأول: إعداد الـ MaterialAutoCompleteTextView ---
-        
-        // 1. إعداد الـ Adapter (استخدم layout بسيط للعناصر)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)
-        
-        // 2. ربط الـ Adapter بالحقل
-        val autoComplete = binding.autoCompleteCategories
-        autoComplete.setAdapter(adapter)
-
-        // 3. زر إضافة تصنيف جديد عبر AlertDialog
-        binding.btnAddCategory.setOnClickListener {
-            val editText = EditText(this)
-            AlertDialog.Builder(this)
-                .setTitle("إضافة تصنيف جديد")
-                .setView(editText)
-                .setPositiveButton("إضافة") { _, _ ->
-                    val newCategory = editText.text.toString().trim()
-                    if (newCategory.isNotEmpty()) {
-                        categories.add(newCategory)
-                        adapter.notifyDataSetChanged()
-                        
-                        // اختيار التصنيف الجديد فوراً في الحقل
-                        autoComplete.setText(newCategory, false)
-                    }
-                }
-                .setNegativeButton("إلغاء", null)
-                .show()
+        // زر الكاميرا
+        binding.btnCaptureImage.setOnClickListener {
+            val intent = Intent(this, ProductCameraActivity::class.java)
+            startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
 
-        // --- القسم الثاني: استقبال البيانات من الـ Intent ---
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
-        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
-        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
-        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
+        // زر الماسح للتاريخ
+        binding.btnOpenCalendar.setOnClickListener {
+            val intent = Intent(this, DateScannerActivity::class.java)
+            startActivityForResult(intent, REQUEST_DATE_SCAN)
+        }
 
-        binding.editTextBarcode.setText(barcodeValue)
-        binding.editTextProductName.setText(nameValue)
-        binding.editTextDate.setText(expiryValue)
+        // زر يوجد باكت
+        binding.btnHasPack.setOnClickListener {
+            Toast.makeText(this, "تم تحديد أن المنتج يحتوي على باكت", Toast.LENGTH_SHORT).show()
+        }
 
-        // معالجة الصورة
-        processProductImage(imagePathValue)
-    }
+        // زر احسب
+        binding.btnCalculate.setOnClickListener {
+            calculateQuantity()
+        }
 
+        setupToolbar()
+        
+    } // <-- هذا القوس يغلق دالة onCreate فقط
+
+    // 3. هذه الدالة يجب أن تكون خارج onCreate ولكن داخل الكلاس
     private fun processProductImage(imagePathValue: String?) {
         if (!imagePathValue.isNullOrEmpty()) {
             currentImagePath = imagePathValue
@@ -102,40 +88,9 @@ class AddProductActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-}
-        
-        
-        
-        // زر الكاميرا
-        binding.btnCaptureImage.setOnClickListener {
-            val intent = Intent(this, ProductCameraActivity::class.java)
-            startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
-        }
+    } // <-- هذا القوس يغلق دالة processProductImage
 
-        // زر الماسح للتاريخ
-        binding.btnOpenCalendar.setOnClickListener {
-            val intent = Intent(this, DateScannerActivity::class.java)
-            startActivityForResult(intent, REQUEST_DATE_SCAN)
-        }
-
-        // زر الحفظ
-      //  binding.btnSaveProduct.setOnClickListener {
-      //      saveProduct()
-   //     }
-
-        // زر يوجد باكت ✔️
-        binding.btnHasPack.setOnClickListener {
-            Toast.makeText(this, "تم تحديد أن المنتج يحتوي على باكت", Toast.LENGTH_SHORT).show()
-        }
-
-        // زر احسب
-        binding.btnCalculate.setOnClickListener {
-            calculateQuantity()
-        }
-
-        setupToolbar()
-    }
+} // <-- هذا القوس الأخير يغلق الكلاس بالكامل
 
 
 private fun setupToolbar() {
