@@ -141,7 +141,38 @@ private fun saveProduct() {
     setResult(RESULT_OK)
     finish()
 }
+private fun setupToolbar() {
+   binding.topAppBar.menu.clear() 
+    // 1. شحن المنيو يدوياً باستخدام اسم الملف
+    binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
 
+    // 2. تفعيل زر الرجوع في التولبار
+    binding.topAppBar.setNavigationOnClickListener { finish() }
+
+    // 3. ربط الأزرار بالمعرفات (IDs) الصحيحة الموجودة في ملف الـ XML
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+            R.id.btnSaveAction -> { 
+                saveProduct()
+                true 
+            }
+            R.id.btnPrint -> { 
+                Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.btnPdf -> { 
+                Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.btnDelete -> { 
+                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
+                // هنا يمكنك إضافة كود الحذف الفعلي إذا أردت
+                true 
+            }
+            else -> false
+        }
+    }
+}
     private fun calculateQuantity() {
         val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
         val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
