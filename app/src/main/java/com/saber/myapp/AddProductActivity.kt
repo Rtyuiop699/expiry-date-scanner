@@ -305,7 +305,7 @@ private fun saveProduct() {
             else -> null
         }
     }
-    
+}      
   
    // باقي الدوال: chooseBestDate, formatCalendar, isValidDateFromString, monthNameToNumber
 
