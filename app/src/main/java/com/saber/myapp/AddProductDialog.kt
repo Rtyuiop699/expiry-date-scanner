@@ -103,7 +103,38 @@ class AddProductActivity : AppCompatActivity() {
             }
         }
     }
+private fun setupToolbar() {
+   binding.topAppBar.menu.clear() 
+    // 1. شحن المنيو يدوياً باستخدام اسم الملف
+    binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
 
+    // 2. تفعيل زر الرجوع في التولبار
+    binding.topAppBar.setNavigationOnClickListener { finish() }
+
+    // 3. ربط الأزرار بالمعرفات (IDs) الصحيحة الموجودة في ملف الـ XML
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+            R.id.btnSaveAction -> { 
+                saveProduct()
+                true 
+            }
+            R.id.btnPrint -> { 
+                Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.btnPdf -> { 
+                Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show()
+                true 
+            }
+            R.id.btnDelete -> { 
+                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
+                // هنا يمكنك إضافة كود الحذف الفعلي إذا أردت
+                true 
+            }
+            else -> false
+        }
+    }
+}
     private fun saveProduct() {
 
         val name = binding.editTextProductName.text.toString().trim()
