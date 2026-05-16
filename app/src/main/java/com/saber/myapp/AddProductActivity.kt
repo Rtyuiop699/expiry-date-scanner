@@ -36,19 +36,48 @@ private val REQUEST_DATE_SCAN = 1002
         "آيسكريم ومثلجات"
     )
 
-  // 1. بداية الكلاس
-//class YourActivity : AppCompatActivity() {
 
     // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
-    override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+        override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    binding = ActivityAddProductBinding.inflate(layoutInflater)
-    setContentView(binding.root)
+        // 1. إعداد الـ View Binding والـ Database
+        binding = ActivityAddProductBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    databaseHelper = DatabaseHelper(this)
+        databaseHelper = DatabaseHelper(this)
 
-        // زر الكاميرا
+        // 2. --- القسم الأول: إعداد الـ Spinner والتصنيفات ومحول البيانات (Adapter) ---
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
+        binding.spinnerCategories.adapter = adapter
+
+        // 3. --- القسم الثاني: الـ Listeners (أحداث ضغط الأزرار) ---
+
+        // عند الضغط على زر "تصنيف" تظهر القائمة وتفتح تلقائياً
+        binding.btnClassify.setOnClickListener {
+            binding.spinnerCategories.visibility = View.VISIBLE
+            binding.btnAddCategory.visibility = View.VISIBLE
+            binding.spinnerCategories.performClick() // لفتح القائمة المنسدلة فوراً للأسفل
+        }
+
+        // زر إضافة تصنيف جديد عبر AlertDialog
+        binding.btnAddCategory.setOnClickListener {
+            val editText = EditText(this)
+            AlertDialog.Builder(this)
+                .setTitle("إضافة تصنيف جديد")
+                .setView(editText)
+                .setPositiveButton("إضافة") { _, _ ->
+                    val newCategory = editText.text.toString().trim()
+                    if (newCategory.isNotEmpty()) {
+                        categories.add(newCategory)
+                        adapter.notifyDataSetChanged() // تحديث القائمة فوراً
+                    }
+                }
+                .setNegativeButton("إلغاء", null)
+                .show()
+        }
+
+        // زر الكاميرا (الموجود في دالتك الحالية)
         binding.btnCaptureImage.setOnClickListener {
             val intent = Intent(this, ProductCameraActivity::class.java)
             startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
@@ -70,9 +99,40 @@ private val REQUEST_DATE_SCAN = 1002
             calculateQuantity()
         }
 
+
+        // 4. --- القسم الثالث: استقبال البيانات القادمة من الـ Intent (في حال تعديل منتج أو تمرير بيانات) ---
+        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
+        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
+        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
+        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
+
+        // وضع البيانات المستلمة في الحقول المخصصة لها
+        binding.editTextBarcode.setText(barcodeValue)
+        binding.editTextProductName.setText(nameValue)
+        binding.editTextDate.setText(expiryValue)
+
+        // معالجة الصورة المستلمة إن وجدت
+        if (!imagePathValue.isNullOrEmpty()) {
+            currentImagePath = imagePathValue
+            if (imagePathValue.startsWith("http")) {
+                Glide.with(this)
+                    .load(imagePathValue)
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .into(binding.imageViewProduct)
+            } else {
+                val file = File(imagePathValue)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    binding.imageViewProduct.setImageBitmap(bitmap)
+                }
+            }
+        }
+
         setupToolbar()
         
-    } // <-- هذا القوس يغلق دالة onCreate فقط
+    } // نهاية دالة onCreate
+        
 
     // 3. هذه الدالة يجب أن تكون خارج onCreate ولكن داخل الكلاس
     private fun processProductImage(imagePathValue: String?) {
