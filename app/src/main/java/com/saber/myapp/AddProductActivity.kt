@@ -262,7 +262,8 @@ class AddProductActivity : AppCompatActivity() {
                 }
             } else {
                 Toast.makeText(this, "المنتج غير موجود في قاعدة البيانات", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
+             }
+         }
+      }
+   } 
+}
