@@ -246,21 +246,23 @@ class AddProductActivity : AppCompatActivity() {
 
     // الدالة المضافة حديثاً
     private fun fetchProductFromApi(barcode: String) {
-        Toast.makeText(this, "جاري البحث عن المنتج...", Toast.LENGTH_SHORT).show()
-        
-        OpenFoodFactsApi.getProduct(barcode) { productResponse ->
-            runOnUiThread {
-                if (productResponse != null && productResponse.status == 1) {
-                    val product = productResponse.product
-                    binding.editTextProductName.setText(product.product_name ?: "")
-                    product.image_url?.let { 
+    Toast.makeText(this, "جاري البحث عن المنتج...", Toast.LENGTH_SHORT).show()
+    
+    OpenFoodFactsApi.getProduct(barcode) { productResponse ->
+        runOnUiThread {
+            if (productResponse != null && productResponse.status == 1) {
+                val product = productResponse.product
+                if (product != null) {
+                    // استخدم productName و imageUrl الجداد
+                    binding.editTextProductName.setText(product.productName ?: "")
+                    product.imageUrl?.let { 
                         processProductImage(it) 
                     }
-                    Toast.makeText(this, "تم جلب بيانات: ${product.product_name}", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "المنتج غير موجود في قاعدة البيانات", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "تم جلب بيانات: ${product.productName}", Toast.LENGTH_LONG).show()
                 }
+            } else {
+                Toast.makeText(this, "المنتج غير موجود في قاعدة البيانات", Toast.LENGTH_SHORT).show()
             }
         }
     }
-}
+    }
