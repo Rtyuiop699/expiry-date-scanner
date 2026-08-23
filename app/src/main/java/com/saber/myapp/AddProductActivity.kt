@@ -87,33 +87,7 @@ class AddProductActivity : AppCompatActivity() {
         setupToolbar()
     }
 
-    private fun loadIntentData() {
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA")?: ""
-        val nameValue = intent.getStringExtra("NAME_EXTRA")?: ""
-        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA")?: ""
-        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
-
-        binding.editTextBarcode.setText(barcodeValue)
-        binding.editTextProductName.setText(nameValue)
-        binding.editTextDate.setText(expiryValue)
-        processProductImage(imagePathValue)
-    }
-
-    private fun processProductImage(imagePathValue: String?) {
-        if (!imagePathValue.isNullOrEmpty()) {
-            currentImagePath = imagePathValue
-            if (imagePathValue.startsWith("http")) {
-                Glide.with(this).load(imagePathValue).into(binding.imageViewProduct)
-            } else {
-                val file = File(imagePathValue)
-                if (file.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                    binding.imageViewProduct.setImageBitmap(bitmap)
-                }
-            }
-        }
-    }
-
+    
     private fun saveProduct() {
         val name = binding.editTextProductName.text.toString().trim()
         val rawDate = binding.editTextDate.text.toString().trim()
@@ -125,6 +99,38 @@ class AddProductActivity : AppCompatActivity() {
             Toast.makeText(this, "يرجى ملء جميع الحقول وإضافة صورة", Toast.LENGTH_SHORT).show()
             return
         }
+        private fun loadIntentData() { 
+    val barcodeValue = intent.getStringExtra("BARCODE_EXTRA")?: "" 
+    val nameValue = intent.getStringExtra("NAME_EXTRA")?: "" 
+    val expiryValue = intent.getStringExtra("EXPIRY_EXTRA")?: "" 
+    val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA") 
+
+    binding.editTextBarcode.setText(barcodeValue) 
+    binding.editTextProductName.setText(nameValue) 
+    binding.editTextDate.setText(expiryValue) 
+    processProductImage(imagePathValue) // 1. اعرض صورة الكاميرا لو موجودة
+
+    if (barcodeValue.isNotEmpty() && nameValue.isBlank()) { 
+        fetchProductFromApi(barcodeValue) // 2. جيب بيانات من النت
+    }
+}
+
+// خلي دي زي ما هي بالظبط
+private fun processProductImage(imagePathValue: String?) { 
+    if (!imagePathValue.isNullOrEmpty()) { 
+        currentImagePath = imagePathValue 
+        if (imagePathValue.startsWith("http")) { 
+            Glide.with(this).load(imagePathValue).into(binding.imageViewProduct) 
+        } else { 
+            val file = File(imagePathValue) 
+            if (file.exists()) { 
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath) 
+                binding.imageViewProduct.setImageBitmap(bitmap) 
+            } 
+        } 
+    } 
+}
+
 
         val carton = binding.editCarton.text.toString().toIntOrNull()?: 0
         val pack = binding.editPack.text.toString().toIntOrNull()?: 0
