@@ -41,7 +41,6 @@ class AddProductActivity : AppCompatActivity() {
         binding.autoCompleteCategories.setAdapter(categoriesAdapter)
 
         // 2. --- Listeners ---
-        // زر إضافة تصنيف جديد
         binding.btnAddCategory.setOnClickListener {
             val editText = EditText(this)
             AlertDialog.Builder(this)
@@ -52,25 +51,22 @@ class AddProductActivity : AppCompatActivity() {
                     if (newCategory.isNotEmpty()) {
                         categories.add(newCategory)
                         categoriesAdapter.notifyDataSetChanged()
-                        binding.autoCompleteCategories.setText(newCategory, false) // اختاره تلقائي
+                        binding.autoCompleteCategories.setText(newCategory, false)
                     }
                 }
                .setNegativeButton("إلغاء", null)
                .show()
         }
 
-        // زر الكاميرا
         binding.btnCaptureImage.setOnClickListener {
             val intent = Intent(this, ProductCameraActivity::class.java)
             startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
 
-        // زر اختيار صورة من المعرض - ضيف Activity لو حابب
         binding.btnChooseImage.setOnClickListener {
             Toast.makeText(this, "ميزة اختيار من المعرض قريباً", Toast.LENGTH_SHORT).show()
         }
 
-        // زر مسح التاريخ بالكاميرا - الأيقونة
         binding.btnOpenCalendar.setOnClickListener {
             val intent = Intent(this, DateScannerActivity::class.java)
             startActivityForResult(intent, REQUEST_DATE_SCAN)
@@ -87,54 +83,52 @@ class AddProductActivity : AppCompatActivity() {
         setupToolbar()
     }
 
-    
+    private fun loadIntentData() { 
+        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: "" 
+        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: "" 
+        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: "" 
+        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA") 
+
+        binding.editTextBarcode.setText(barcodeValue) 
+        binding.editTextProductName.setText(nameValue) 
+        binding.editTextDate.setText(expiryValue) 
+        processProductImage(imagePathValue) 
+
+        if (barcodeValue.isNotEmpty() && nameValue.isBlank()) { 
+            fetchProductFromApi(barcodeValue) 
+        }
+    }
+
+    private fun processProductImage(imagePathValue: String?) { 
+        if (!imagePathValue.isNullOrEmpty()) { 
+            currentImagePath = imagePathValue 
+            if (imagePathValue.startsWith("http")) { 
+                Glide.with(this).load(imagePathValue).into(binding.imageViewProduct) 
+            } else { 
+                val file = File(imagePathValue) 
+                if (file.exists()) { 
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath) 
+                    binding.imageViewProduct.setImageBitmap(bitmap) 
+                } 
+            } 
+        } 
+    }
+
     private fun saveProduct() {
         val name = binding.editTextProductName.text.toString().trim()
         val rawDate = binding.editTextDate.text.toString().trim()
         val normalizedDate = normalizeDate(rawDate)
         val barcode = binding.editTextBarcode.text.toString().trim()
-        val category = binding.autoCompleteCategories.text.toString() // جبنا التصنيف
+        val category = binding.autoCompleteCategories.text.toString()
 
         if (name.isBlank() || rawDate.isBlank() || normalizedDate == null || currentImagePath == null) {
             Toast.makeText(this, "يرجى ملء جميع الحقول وإضافة صورة", Toast.LENGTH_SHORT).show()
             return
         }
-        private fun loadIntentData() { 
-    val barcodeValue = intent.getStringExtra("BARCODE_EXTRA")?: "" 
-    val nameValue = intent.getStringExtra("NAME_EXTRA")?: "" 
-    val expiryValue = intent.getStringExtra("EXPIRY_EXTRA")?: "" 
-    val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA") 
 
-    binding.editTextBarcode.setText(barcodeValue) 
-    binding.editTextProductName.setText(nameValue) 
-    binding.editTextDate.setText(expiryValue) 
-    processProductImage(imagePathValue) // 1. اعرض صورة الكاميرا لو موجودة
-
-    if (barcodeValue.isNotEmpty() && nameValue.isBlank()) { 
-        fetchProductFromApi(barcodeValue) // 2. جيب بيانات من النت
-    }
-}
-
-// خلي دي زي ما هي بالظبط
-private fun processProductImage(imagePathValue: String?) { 
-    if (!imagePathValue.isNullOrEmpty()) { 
-        currentImagePath = imagePathValue 
-        if (imagePathValue.startsWith("http")) { 
-            Glide.with(this).load(imagePathValue).into(binding.imageViewProduct) 
-        } else { 
-            val file = File(imagePathValue) 
-            if (file.exists()) { 
-                val bitmap = BitmapFactory.decodeFile(file.absolutePath) 
-                binding.imageViewProduct.setImageBitmap(bitmap) 
-            } 
-        } 
-    } 
-}
-
-
-        val carton = binding.editCarton.text.toString().toIntOrNull()?: 0
-        val pack = binding.editPack.text.toString().toIntOrNull()?: 0
-        val piece = binding.editPiece.text.toString().toIntOrNull()?: 0
+        val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
+        val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
+        val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
         val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
 
         val product = Product(0, barcode, name, normalizedDate, quantity, currentImagePath!!)
@@ -158,9 +152,9 @@ private fun processProductImage(imagePathValue: String?) {
     }
 
     private fun calculateQuantity() {
-        val carton = binding.editCarton.text.toString().toIntOrNull()?: 0
-        val pack = binding.editPack.text.toString().toIntOrNull()?: 0
-        val piece = binding.editPiece.text.toString().toIntOrNull()?: 0
+        val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
+        val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
+        val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
         binding.editResult.setText((carton * pack * piece).toString())
     }
 
@@ -184,6 +178,7 @@ private fun processProductImage(imagePathValue: String?) {
 
     // === دوال التاريخ OCR ===
     private fun normalizeDate(input: String): String? { return extractDateFromText(input) }
+    
     private fun extractDateFromText(text: String): String? {
         val cleanedText = fixCommonOCRMistakes(text.replace("\n", " ").replace(",", " ").trim())
         val patterns = listOf(
@@ -209,15 +204,16 @@ private fun processProductImage(imagePathValue: String?) {
                     g.size == 3 && g[2].length == 4 -> "${g[2]}-${g[1].padStart(2, '0')}-01"
                     g.size == 2 && g[1].length == 6 -> { val n = g[1]; val day = n.substring(0, 2); val month = n.substring(2, 4); val year = "20" + n.substring(4, 6); if (month.toInt() in 1..12 && day.toInt() in 1..31) "$year-$month-$day" else null }
                     g.size == 2 && g[1].length == 8 -> { val n = g[1]; "${n.substring(0, 4)}-${n.substring(4, 6)}-${n.substring(6, 8)}" }
-                    g.size == 3 && g[1].matches(Regex("[A-Za-z]+")) -> { val month = monthNameToNumber(g[1]); val year = g[2]; if (month!= null) "$year-$month-01" else null }
+                    g.size == 3 && g[1].matches(Regex("[A-Za-z]+")) -> { val month = monthNameToNumber(g[1]); val year = g[2]; if (month != null) "$year-$month-01" else null }
                     g.size == 2 && g[1].length == 4 -> "${g[1]}-01-01"
                     else -> null
                 }
-                if (result!= null && isValidDateFromString(result)) { foundDates.add(Pair(result, cleanedText)) }
+                if (result != null && isValidDateFromString(result)) { foundDates.add(Pair(result, cleanedText)) }
             }
         }
         return chooseBestDate(foundDates)
     }
+
     private fun chooseBestDate(dates: List<Pair<String, String>>): String? {
         if (dates.isEmpty()) return null
         val today = Calendar.getInstance()
@@ -225,8 +221,46 @@ private fun processProductImage(imagePathValue: String?) {
         val future = parsed.filter { it.first.after(today) }
         return if (future.isNotEmpty()) { formatCalendar(future.minByOrNull { it.first.timeInMillis }!!.first) } else { formatCalendar(parsed.maxByOrNull { it.first.timeInMillis }!!.first) }
     }
+
     private fun formatCalendar(cal: Calendar): String { return String.format(Locale.ENGLISH, "%04d-%02d-%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)) }
     private fun fixCommonOCRMistakes(text: String): String { return text.replace("O", "0").replace("I", "1").replace("S", "5") }
-    private fun isValidDateFromString(date: String): Boolean { val parts = date.split("-"); if (parts.size!= 3) return false; val year = parts[0].toIntOrNull()?: return false; val month = parts[1].toIntOrNull()?: return false; val day = parts[2].toIntOrNull()?: return false; return year in 2000..2100 && month in 1..12 && day in 1..31 }
-    private fun monthNameToNumber(month: String): String? { return when (month.uppercase(Locale.ENGLISH)) { "JAN", "JANUARY" -> "01" "FEB", "FEBRUARY" -> "02" "MAR", "MARCH" -> "03" "APR", "APRIL" -> "04" "MAY" -> "05" "JUN", "JUNE" -> "06" "JUL", "JULY" -> "07" "AUG", "AUGUST" -> "08" "SEP", "SEPT", "SEPTEMBER" -> "09" "OCT", "OCTOBER" -> "10" "NOV", "NOVEMBER" -> "11" "DEC", "DECEMBER" -> "12" else -> null } }
+    private fun isValidDateFromString(date: String): Boolean { val parts = date.split("-"); if (parts.size != 3) return false; val year = parts[0].toIntOrNull() ?: return false; val month = parts[1].toIntOrNull() ?: return false; val day = parts[2].toIntOrNull() ?: return false; return year in 2000..2100 && month in 1..12 && day in 1..31 }
+
+    private fun monthNameToNumber(month: String): String? { 
+        return when (month.uppercase(Locale.ENGLISH)) { 
+            "JAN", "JANUARY" -> "01" 
+            "FEB", "FEBRUARY" -> "02" 
+            "MAR", "MARCH" -> "03" 
+            "APR", "APRIL" -> "04" 
+            "MAY" -> "05" 
+            "JUN", "JUNE" -> "06" 
+            "JUL", "JULY" -> "07" 
+            "AUG", "AUGUST" -> "08" 
+            "SEP", "SEPT", "SEPTEMBER" -> "09" 
+            "OCT", "OCTOBER" -> "10" 
+            "NOV", "NOVEMBER" -> "11" 
+            "DEC", "DECEMBER" -> "12" 
+            else -> null 
+        } 
+    }
+
+    // الدالة المضافة حديثاً
+    private fun fetchProductFromApi(barcode: String) {
+        Toast.makeText(this, "جاري البحث عن المنتج...", Toast.LENGTH_SHORT).show()
+        
+        OpenFoodFactsApi.getProduct(barcode) { productResponse ->
+            runOnUiThread {
+                if (productResponse != null && productResponse.status == 1) {
+                    val product = productResponse.product
+                    binding.editTextProductName.setText(product.product_name ?: "")
+                    product.image_url?.let { 
+                        processProductImage(it) 
+                    }
+                    Toast.makeText(this, "تم جلب بيانات: ${product.product_name}", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "المنتج غير موجود في قاعدة البيانات", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 }
