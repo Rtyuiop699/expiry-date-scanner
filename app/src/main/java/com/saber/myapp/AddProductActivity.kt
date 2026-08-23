@@ -10,140 +10,100 @@ import com.saber.myapp.databinding.ActivityAddProductBinding
 import java.io.File
 import java.util.Calendar
 import java.util.Locale
-import android.widget.Spinner
-import android.widget.Button
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.View
-import android.widget.AutoCompleteTextView
 
 class AddProductActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddProductBinding
     private lateinit var databaseHelper: DatabaseHelper
-
     private var currentImagePath: String? = null
-private val REQUEST_PRODUCT_CAMERA = 1001
-private val REQUEST_DATE_SCAN = 1002
+    private val REQUEST_PRODUCT_CAMERA = 1001
+    private val REQUEST_DATE_SCAN = 1002
+    private lateinit var categoriesAdapter: ArrayAdapter<String>
+
     // القائمة الأساسية للتصنيفات
     private val categories = mutableListOf(
-        "عصائر",
-        "مشروبات غازية",
-        "خضار معلبة ومخللات",
-        "أسماك معلبة",
-        "كيك وبسكويت",
-        "آيسكريم ومثلجات"
+        "عصائر", "مشروبات غازية", "خضار معلبة ومخللات",
+        "أسماك معلبة", "كيك وبسكويت", "آيسكريم ومثلجات"
     )
 
-
-    // 2. دالة onCreate هي المكان الذي نضع فيه الـ Listeners (أزرار الضغط)
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 1. إعداد الـ View Binding والـ Database
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         databaseHelper = DatabaseHelper(this)
 
-        // 2. --- القسم الأول: إعداد الـ Spinner والتصنيفات ومحول البيانات (Adapter) ---
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories)
-        binding.spinnerCategories.adapter = adapter
+        // 1. --- إعداد الـ AutoCompleteTextView للتصنيفات ---
+        categoriesAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        binding.autoCompleteCategories.setAdapter(categoriesAdapter)
 
-        // 3. --- القسم الثاني: الـ Listeners (أحداث ضغط الأزرار) ---
-
-        // عند الضغط على زر "تصنيف" تظهر القائمة وتفتح تلقائياً
-        binding.btnClassify.setOnClickListener {
-            binding.spinnerCategories.visibility = View.VISIBLE
-            binding.btnAddCategory.visibility = View.VISIBLE
-            binding.spinnerCategories.performClick() // لفتح القائمة المنسدلة فوراً للأسفل
-        }
-
-        // زر إضافة تصنيف جديد عبر AlertDialog
+        // 2. --- Listeners ---
+        // زر إضافة تصنيف جديد
         binding.btnAddCategory.setOnClickListener {
             val editText = EditText(this)
             AlertDialog.Builder(this)
-                .setTitle("إضافة تصنيف جديد")
-                .setView(editText)
-                .setPositiveButton("إضافة") { _, _ ->
+               .setTitle("إضافة تصنيف جديد")
+               .setView(editText)
+               .setPositiveButton("إضافة") { _, _ ->
                     val newCategory = editText.text.toString().trim()
                     if (newCategory.isNotEmpty()) {
                         categories.add(newCategory)
-                        adapter.notifyDataSetChanged() // تحديث القائمة فوراً
+                        categoriesAdapter.notifyDataSetChanged()
+                        binding.autoCompleteCategories.setText(newCategory, false) // اختاره تلقائي
                     }
                 }
-                .setNegativeButton("إلغاء", null)
-                .show()
+               .setNegativeButton("إلغاء", null)
+               .show()
         }
 
-        // زر الكاميرا (الموجود في دالتك الحالية)
+        // زر الكاميرا
         binding.btnCaptureImage.setOnClickListener {
             val intent = Intent(this, ProductCameraActivity::class.java)
             startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
         }
 
-        // زر الماسح للتاريخ
+        // زر اختيار صورة من المعرض - ضيف Activity لو حابب
+        binding.btnChooseImage.setOnClickListener {
+            Toast.makeText(this, "ميزة اختيار من المعرض قريباً", Toast.LENGTH_SHORT).show()
+        }
+
+        // زر مسح التاريخ بالكاميرا - الأيقونة
         binding.btnOpenCalendar.setOnClickListener {
             val intent = Intent(this, DateScannerActivity::class.java)
             startActivityForResult(intent, REQUEST_DATE_SCAN)
         }
 
-        // زر يوجد باكت
         binding.btnHasPack.setOnClickListener {
             Toast.makeText(this, "تم تحديد أن المنتج يحتوي على باكت", Toast.LENGTH_SHORT).show()
         }
 
-        // زر احسب
-        binding.btnCalculate.setOnClickListener {
-            calculateQuantity()
-        }
+        binding.btnCalculate.setOnClickListener { calculateQuantity() }
 
+        // 3. --- استقبال البيانات من Intent ---
+        loadIntentData()
+        setupToolbar()
+    }
 
-        // 4. --- القسم الثالث: استقبال البيانات القادمة من الـ Intent (في حال تعديل منتج أو تمرير بيانات) ---
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: ""
-        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: ""
-        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: ""
+    private fun loadIntentData() {
+        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA")?: ""
+        val nameValue = intent.getStringExtra("NAME_EXTRA")?: ""
+        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA")?: ""
         val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA")
 
-        // وضع البيانات المستلمة في الحقول المخصصة لها
         binding.editTextBarcode.setText(barcodeValue)
         binding.editTextProductName.setText(nameValue)
         binding.editTextDate.setText(expiryValue)
+        processProductImage(imagePathValue)
+    }
 
-        // معالجة الصورة المستلمة إن وجدت
-        if (!imagePathValue.isNullOrEmpty()) {
-            currentImagePath = imagePathValue
-            if (imagePathValue.startsWith("http")) {
-                Glide.with(this)
-                    .load(imagePathValue)
-                    .placeholder(android.R.drawable.progress_horizontal)
-                    .error(android.R.drawable.ic_menu_report_image)
-                    .into(binding.imageViewProduct)
-            } else {
-                val file = File(imagePathValue)
-                if (file.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                    binding.imageViewProduct.setImageBitmap(bitmap)
-                }
-            }
-        }
-
-        setupToolbar()
-        
-    } // نهاية دالة onCreate
-        
-
-    // 3. هذه الدالة يجب أن تكون خارج onCreate ولكن داخل الكلاس
     private fun processProductImage(imagePathValue: String?) {
         if (!imagePathValue.isNullOrEmpty()) {
             currentImagePath = imagePathValue
             if (imagePathValue.startsWith("http")) {
-                Glide.with(this)
-                    .load(imagePathValue)
-                    .placeholder(android.R.drawable.progress_horizontal)
-                    .error(android.R.drawable.ic_menu_report_image)
-                    .into(binding.imageViewProduct)
+                Glide.with(this).load(imagePathValue).into(binding.imageViewProduct)
             } else {
                 val file = File(imagePathValue)
                 if (file.exists()) {
@@ -152,108 +112,59 @@ private val REQUEST_DATE_SCAN = 1002
                 }
             }
         }
-    } // <-- هذا القوس يغلق دالة processProductImage
- 
-
-private fun saveProduct() {
-    val name = binding.editTextProductName.text.toString().trim()
-    val rawDate = binding.editTextDate.text.toString().trim()
-    val normalizedDate = normalizeDate(rawDate)
-    val barcode = binding.editTextBarcode.text.toString().trim()
-
-    if (name.isBlank()) {
-        Toast.makeText(this, "يرجى إدخال اسم المنتج", Toast.LENGTH_SHORT).show()
-        return
-    }
-    if (rawDate.isBlank()) {
-        Toast.makeText(this, "يرجى إدخال تاريخ الصلاحية", Toast.LENGTH_SHORT).show()
-        return
-    }
-    if (normalizedDate == null) {
-        Toast.makeText(this, "❌ صيغة التاريخ غير مفهومة", Toast.LENGTH_SHORT).show()
-        return
-    }
-    if (currentImagePath == null) {
-        Toast.makeText(this, "يرجى إضافة صورة", Toast.LENGTH_SHORT).show()
-        return
     }
 
-    // حساب الكمية من الحقول الجديدة
-    val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
-    val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
-    val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
-    val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
+    private fun saveProduct() {
+        val name = binding.editTextProductName.text.toString().trim()
+        val rawDate = binding.editTextDate.text.toString().trim()
+        val normalizedDate = normalizeDate(rawDate)
+        val barcode = binding.editTextBarcode.text.toString().trim()
+        val category = binding.autoCompleteCategories.text.toString() // جبنا التصنيف
 
-    Toast.makeText(this, "✅ تم تحويل التاريخ إلى: $normalizedDate", Toast.LENGTH_LONG).show()
+        if (name.isBlank() || rawDate.isBlank() || normalizedDate == null || currentImagePath == null) {
+            Toast.makeText(this, "يرجى ملء جميع الحقول وإضافة صورة", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-    // إنشاء المنتج وتمرير كل الباراميترات المطلوبة
-    val product = Product(
-        id = 0, // افتراضي
-        barcode = barcode,
-        name = name,
-        expiryDate = normalizedDate,
-        quantity = quantity,
-        imagePath = currentImagePath!!
-    )
+        val carton = binding.editCarton.text.toString().toIntOrNull()?: 0
+        val pack = binding.editPack.text.toString().toIntOrNull()?: 0
+        val piece = binding.editPiece.text.toString().toIntOrNull()?: 0
+        val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
 
-    databaseHelper.addProduct(product)
+        val product = Product(0, barcode, name, normalizedDate, quantity, currentImagePath!!)
+        databaseHelper.addProduct(product)
+        Toast.makeText(this, "تم الحفظ: $name - $category", Toast.LENGTH_SHORT).show()
+        setResult(RESULT_OK)
+        finish()
+    }
 
-    setResult(RESULT_OK)
-    finish()
-}
-private fun setupToolbar() {
-   binding.topAppBar.menu.clear() 
-    // 1. شحن المنيو يدوياً باستخدام اسم الملف
-    binding.topAppBar.inflateMenu(R.menu.addproductmenu) 
-
-    // 2. تفعيل زر الرجوع في التولبار
-    binding.topAppBar.setNavigationOnClickListener { finish() }
-
-    // 3. ربط الأزرار بالمعرفات (IDs) الصحيحة الموجودة في ملف الـ XML
-    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-        when (menuItem.itemId) {
-            R.id.btnSaveAction -> { 
-                saveProduct()
-                true 
+    private fun setupToolbar() {
+        binding.topAppBar.setNavigationOnClickListener { finish() }
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.btnSaveAction -> { saveProduct(); true }
+                R.id.btnPrint -> { Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show(); true }
+                R.id.btnPdf -> { Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show(); true }
+                R.id.btnDelete -> { Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show(); true }
+                else -> false
             }
-            R.id.btnPrint -> { 
-                Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show()
-                true 
-            }
-            R.id.btnPdf -> { 
-                Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show()
-                true 
-            }
-            R.id.btnDelete -> { 
-                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
-                // هنا يمكنك إضافة كود الحذف الفعلي إذا أردت
-                true 
-            }
-            else -> false
         }
     }
-}
-    private fun calculateQuantity() {
-        val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
-        val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
-        val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
 
-        val result = carton * pack * piece
-        binding.editResult.setText(result.toString())
+    private fun calculateQuantity() {
+        val carton = binding.editCarton.text.toString().toIntOrNull()?: 0
+        val pack = binding.editPack.text.toString().toIntOrNull()?: 0
+        val piece = binding.editPiece.text.toString().toIntOrNull()?: 0
+        binding.editResult.setText((carton * pack * piece).toString())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_PRODUCT_CAMERA) {
                 val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
-                if (!imagePath.isNullOrEmpty()) {
-                    currentImagePath = imagePath
-                    val bitmap = BitmapFactory.decodeFile(imagePath)
-                    binding.imageViewProduct.setImageBitmap(bitmap)
-                    Toast.makeText(this, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
-                }
+                processProductImage(imagePath)
+                Toast.makeText(this, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
             }
             if (requestCode == REQUEST_DATE_SCAN) {
                 val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
@@ -265,48 +176,22 @@ private fun setupToolbar() {
         }
     }
 
-    // 🔁 دوال التاريخ (من الديالوج)
-   // private fun normalizeDate(input: String): String? {
-    //    return extractDateFromText(input)
-  //  }
-
-  //  private fun extractDateFromText(text: String): String? {
-     //   val cleanedText = fixCommonOCRMistakes(
-     //       text.replace("\n", " ").replace(",", " ").trim()
-    //    )
-        // انسخ الـ Regex والدوال المساعدة من AddProductDialog هنا
-      //  return null
-  //  }
-
- //   private fun fixCommonOCRMistakes(text: String): String {
-   //     return text.replace("O", "0").replace("I", "1").replace("S", "5")
-  //  }
-    // 🔁 دوال التاريخ (تم دمجها وتجهيزها بالكامل)
-
-    private fun normalizeDate(input: String): String? {
-        return extractDateFromText(input)
-    }
-
+    // === دوال التاريخ OCR ===
+    private fun normalizeDate(input: String): String? { return extractDateFromText(input) }
     private fun extractDateFromText(text: String): String? {
-        val cleanedText = fixCommonOCRMistakes(
-            text.replace("\n", " ").replace(",", " ").trim()
-        )
-
+        val cleanedText = fixCommonOCRMistakes(text.replace("\n", " ").replace(",", " ").trim())
         val patterns = listOf(
             Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
             Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
             Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
             Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
             Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
-            Regex("""\b(\d{8})\b"""),
-            Regex("""\b(\d{6})\b"""),
+            Regex("""\b(\d{8})\b"""), Regex("""\b(\d{6})\b"""),
             Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
             Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
             Regex("""\b(\d{4})\b""")
         )
-
         val foundDates = mutableListOf<Pair<String, String>>()
-
         for (pattern in patterns) {
             val matches = pattern.findAll(cleanedText)
             for (match in matches) {
@@ -316,89 +201,26 @@ private fun setupToolbar() {
                     g.size == 4 && g[1].length == 4 -> "${g[1]}-${g[2].padStart(2, '0')}-${g[3].padStart(2, '0')}"
                     g.size == 4 && g[3].length == 2 -> "20${g[3]}-${g[2].padStart(2, '0')}-${g[1].padStart(2, '0')}"
                     g.size == 3 && g[2].length == 4 -> "${g[2]}-${g[1].padStart(2, '0')}-01"
-                    g.size == 2 && g[1].length == 6 -> {
-                        val n = g[1]
-                        val day = n.substring(0, 2); val month = n.substring(2, 4); val year = "20" + n.substring(4, 6)
-                        if (month.toInt() in 1..12 && day.toInt() in 1..31) "$year-$month-$day" else null
-                    }
-                    g.size == 2 && g[1].length == 8 -> {
-                        val n = g[1]
-                        "${n.substring(0, 4)}-${n.substring(4, 6)}-${n.substring(6, 8)}"
-                    }
-                    g.size == 3 && g[1].matches(Regex("[A-Za-z]+")) -> {
-                        val month = monthNameToNumber(g[1])
-                        val year = g[2]
-                        if (month != null) "$year-$month-01" else null
-                    }
+                    g.size == 2 && g[1].length == 6 -> { val n = g[1]; val day = n.substring(0, 2); val month = n.substring(2, 4); val year = "20" + n.substring(4, 6); if (month.toInt() in 1..12 && day.toInt() in 1..31) "$year-$month-$day" else null }
+                    g.size == 2 && g[1].length == 8 -> { val n = g[1]; "${n.substring(0, 4)}-${n.substring(4, 6)}-${n.substring(6, 8)}" }
+                    g.size == 3 && g[1].matches(Regex("[A-Za-z]+")) -> { val month = monthNameToNumber(g[1]); val year = g[2]; if (month!= null) "$year-$month-01" else null }
                     g.size == 2 && g[1].length == 4 -> "${g[1]}-01-01"
                     else -> null
                 }
-                if (result != null && isValidDateFromString(result)) {
-                    foundDates.add(Pair(result, cleanedText))
-                }
+                if (result!= null && isValidDateFromString(result)) { foundDates.add(Pair(result, cleanedText)) }
             }
         }
         return chooseBestDate(foundDates)
     }
-
     private fun chooseBestDate(dates: List<Pair<String, String>>): String? {
         if (dates.isEmpty()) return null
         val today = Calendar.getInstance()
-        val parsed = dates.mapNotNull {
-            try {
-                val parts = it.first.split("-")
-                val cal = Calendar.getInstance().apply {
-                    set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
-                }
-                Pair(cal, it.second)
-            } catch (e: Exception) { null }
-        }
+        val parsed = dates.mapNotNull { try { val parts = it.first.split("-"); val cal = Calendar.getInstance().apply { set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt()) }; Pair(cal, it.second) } catch (e: Exception) { null } }
         val future = parsed.filter { it.first.after(today) }
-        return if (future.isNotEmpty()) {
-            formatCalendar(future.minByOrNull { it.first.timeInMillis }!!.first)
-        } else {
-            formatCalendar(parsed.maxByOrNull { it.first.timeInMillis }!!.first)
-        }
+        return if (future.isNotEmpty()) { formatCalendar(future.minByOrNull { it.first.timeInMillis }!!.first) } else { formatCalendar(parsed.maxByOrNull { it.first.timeInMillis }!!.first) }
     }
-
-    private fun formatCalendar(cal: Calendar): String {
-        return String.format(Locale.ENGLISH, "%04d-%02d-%02d", 
-            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH))
-    }
-
-    private fun fixCommonOCRMistakes(text: String): String {
-        return text.replace("O", "0").replace("I", "1").replace("S", "5")
-    }
-
-    private fun isValidDateFromString(date: String): Boolean {
-        val parts = date.split("-")
-        if (parts.size != 3) return false
-        val year = parts[0].toIntOrNull() ?: return false
-        val month = parts[1].toIntOrNull() ?: return false
-        val day = parts[2].toIntOrNull() ?: return false
-        return year in 2000..2100 && month in 1..12 && day in 1..31
-    }
-
-    private fun monthNameToNumber(month: String): String? {
-        return when (month.uppercase(Locale.ENGLISH)) {
-            "JAN", "JANUARY" -> "01"
-            "FEB", "FEBRUARY" -> "02"
-            "MAR", "MARCH" -> "03"
-            "APR", "APRIL" -> "04"
-            "MAY" -> "05"
-            "JUN", "JUNE" -> "06"
-            "JUL", "JULY" -> "07"
-            "AUG", "AUGUST" -> "08"
-            "SEP", "SEPT", "SEPTEMBER" -> "09"
-            "OCT", "OCTOBER" -> "10"
-            "NOV", "NOVEMBER" -> "11"
-            "DEC", "DECEMBER" -> "12"
-            else -> null
-        }
-    }
-}      
-  
-   // باقي الدوال: chooseBestDate, formatCalendar, isValidDateFromString, monthNameToNumber
-
-
-
+    private fun formatCalendar(cal: Calendar): String { return String.format(Locale.ENGLISH, "%04d-%02d-%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)) }
+    private fun fixCommonOCRMistakes(text: String): String { return text.replace("O", "0").replace("I", "1").replace("S", "5") }
+    private fun isValidDateFromString(date: String): Boolean { val parts = date.split("-"); if (parts.size!= 3) return false; val year = parts[0].toIntOrNull()?: return false; val month = parts[1].toIntOrNull()?: return false; val day = parts[2].toIntOrNull()?: return false; return year in 2000..2100 && month in 1..12 && day in 1..31 }
+    private fun monthNameToNumber(month: String): String? { return when (month.uppercase(Locale.ENGLISH)) { "JAN", "JANUARY" -> "01" "FEB", "FEBRUARY" -> "02" "MAR", "MARCH" -> "03" "APR", "APRIL" -> "04" "MAY" -> "05" "JUN", "JUNE" -> "06" "JUL", "JULY" -> "07" "AUG", "AUGUST" -> "08" "SEP", "SEPT", "SEPTEMBER" -> "09" "OCT", "OCTOBER" -> "10" "NOV", "NOVEMBER" -> "11" "DEC", "DECEMBER" -> "12" else -> null } }
+}
