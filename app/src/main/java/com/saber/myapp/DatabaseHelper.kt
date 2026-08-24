@@ -1,38 +1,41 @@
 package com.saber.myapp
-
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "products.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2 // <-- 1. زودنا الرقم عشان يعمل ترقية
         private const val TABLE_PRODUCTS = "products"
-
         private const val COL_ID = "id"
         private const val COL_BARCODE = "barcode"
         private const val COL_NAME = "name"
         private const val COL_EXPIRY = "expiryDate"
         private const val COL_IMAGE = "imagePath"
+        private const val COL_CATEGORY = "category" // <-- 2. ضفنا العمود الجديد
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createTable = """
+        val createTable = """ 
             CREATE TABLE $TABLE_PRODUCTS (
                 $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COL_BARCODE TEXT,
                 $COL_NAME TEXT,
                 $COL_EXPIRY TEXT,
-                $COL_IMAGE TEXT
-            )
+                $COL_IMAGE TEXT,
+                $COL_CATEGORY TEXT DEFAULT 'الكل' -- <-- 3. ضفناه هنا
+            ) 
         """.trimIndent()
         db.execSQL(createTable)
     }
 
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE_PRODUCTS ADD COLUMN $COL_CATEGORY TEXT DEFAULT 'الكل'") // <-- 4. لو التطبيق نزل قبل كده
+        }
+    }
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_PRODUCTS")
         onCreate(db)
