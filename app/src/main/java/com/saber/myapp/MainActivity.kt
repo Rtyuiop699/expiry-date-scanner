@@ -109,4 +109,5 @@ private fun loadProductsFromDatabase() {
     productList.clear()
     productList.addAll(databaseHelper.getAllProducts())
     listHandler.setup(productList)
+  }
 }
