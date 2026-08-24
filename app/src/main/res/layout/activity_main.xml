@@ -6,55 +6,89 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- شريط علوي -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="إدارة المخزون "
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    
+    <!-- الشريط العلوي -->
+<com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/toolbar"
+    android:layout_width="0dp"
+    android:layout_height="64dp"
+    android:background="@android:color/white"
+    android:elevation="0dp"
+    app:title="إدارة المخزون"
+    app:titleTextColor="@android:color/black"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- أيقونات داخل الشريط -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_gravity="end">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="end">
 
-            <!-- بحث -->
-            <ImageView
-                android:id="@+id/btnSearch"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_search"
-                android:contentDescription="Search"/>
+        <!-- بحث -->
+        <ImageView
+            android:id="@+id/btnSearch"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_search"
+            android:tint="#2E7D32"
+            android:contentDescription="بحث"
+            android:clickable="true"
+            android:focusable="true"/>
 
-            <!-- مساعدة -->
-            <ImageView
-                android:id="@+id/btnHelp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_help"
-                android:contentDescription="Help"/>
+        <!-- مساعدة -->
+        <ImageView
+            android:id="@+id/btnHelp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_help"
+            android:tint="#1976D2"
+            android:contentDescription="مساعدة"
+            android:clickable="true"
+            android:focusable="true"/>
 
-            <!-- إعدادات -->
-            <ImageView
-                android:id="@+id/btnSettings"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_settings"
-                android:contentDescription="Settings"/>
+        <!-- إعدادات -->
+        <ImageView
+            android:id="@+id/btnSettings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_settings"
+            android:tint="#555555"
+            android:contentDescription="إعدادات"
+            android:clickable="true"
+            android:focusable="true"/>
 
-        </LinearLayout>
+        <!-- PDF -->
+        <ImageView
+            android:id="@+id/btnPdf"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_pdf"
+            android:tint="#E53935"
+            android:contentDescription="PDF"
+            android:clickable="true"
+            android:focusable="true"/>
 
-    </com.google.android.material.appbar.MaterialToolbar>
+    </LinearLayout>
+
+</com.google.android.material.appbar.MaterialToolbar>
+
+<!-- خط سفلي رفيع -->
+<View
+    android:id="@+id/toolbarDivider"
+    android:layout_width="0dp"
+    android:layout_height="1dp"
+    android:background="#333333"
+    app:layout_constraintTop_toBottomOf="@id/toolbar"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/>
+     
    
       <!-- حقل البحث يظهر عند الضغط على أيقونة البحث -->
     <com.google.android.material.textfield.TextInputLayout
