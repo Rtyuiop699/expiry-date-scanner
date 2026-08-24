@@ -69,7 +69,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="8dp"
-            android:src="@drawable/ic_pdf"
+            android:src="@drawable/icpdf"
             android:tint="#E53935"
             android:contentDescription="PDF"
             android:clickable="true"
