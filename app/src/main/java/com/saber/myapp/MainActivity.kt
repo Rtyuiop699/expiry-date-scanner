@@ -60,32 +60,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        
-        // إذا لم يكن المنيو منفوخاً في XML، نقوم بنفخه هنا
-        if (toolbar.menu.size() == 0) {
-            toolbar.inflateMenu(R.menu.toolbar_menu)
-        }
 
-        toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.btnSearch -> {
-                    Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.btnHelp -> {
-                    Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.btnSettings -> {
-                    Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
-            }
-        }
+    val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+
+    // بحث
+    findViewById<ImageView>(R.id.btnSearch).setOnClickListener {
+        Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
     }
 
+    // مساعدة
+    findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
+        Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
+    }
+
+    // إعدادات
+    findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
+        Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
+    }
+
+    // PDF
+    findViewById<ImageView>(R.id.btnPdf).setOnClickListener {
+        Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
+    }
+    }
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
         if (existingProduct != null) {
