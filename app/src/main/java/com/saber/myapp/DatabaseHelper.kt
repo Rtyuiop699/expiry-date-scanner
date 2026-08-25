@@ -10,7 +10,8 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "products.db"
-        private const val DATABASE_VERSION = 1
+        // تم رفع رقم الإصدار إلى 2 بسبب إضافة عمود جديد
+        private const val DATABASE_VERSION = 2
         private const val TABLE_PRODUCTS = "products"
 
         private const val COL_ID = "id"
@@ -18,6 +19,7 @@ class DatabaseHelper(context: Context) :
         private const val COL_NAME = "name"
         private const val COL_EXPIRY = "expiryDate"
         private const val COL_IMAGE = "imagePath"
+        private const val COL_CATEGORY = "category" // إضـافـة عمود الفئة
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -27,7 +29,8 @@ class DatabaseHelper(context: Context) :
                 $COL_BARCODE TEXT,
                 $COL_NAME TEXT,
                 $COL_EXPIRY TEXT,
-                $COL_IMAGE TEXT
+                $COL_IMAGE TEXT,
+                $COL_CATEGORY TEXT
             )
         """.trimIndent()
         db.execSQL(createTable)
@@ -45,6 +48,7 @@ class DatabaseHelper(context: Context) :
             put(COL_NAME, product.name)
             put(COL_EXPIRY, product.expiryDate)
             put(COL_IMAGE, product.imagePath)
+            put(COL_CATEGORY, product.category)
         }
         db.insert(TABLE_PRODUCTS, null, values)
         db.close()
@@ -62,7 +66,8 @@ class DatabaseHelper(context: Context) :
                         barcode = cursor.getString(cursor.getColumnIndexOrThrow(COL_BARCODE)),
                         name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
                         expiryDate = cursor.getString(cursor.getColumnIndexOrThrow(COL_EXPIRY)),
-                        imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE))
+                        imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE)),
+                        category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CATEGORY)) ?: ""
                     )
                 )
             } while (cursor.moveToNext())
@@ -88,7 +93,8 @@ class DatabaseHelper(context: Context) :
                 barcode = cursor.getString(cursor.getColumnIndexOrThrow(COL_BARCODE)),
                 name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
                 expiryDate = cursor.getString(cursor.getColumnIndexOrThrow(COL_EXPIRY)),
-                imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE))
+                imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COL_IMAGE)),
+                category = cursor.getString(cursor.getColumnIndexOrThrow(COL_CATEGORY)) ?: ""
             )
         } else null
 
@@ -98,8 +104,30 @@ class DatabaseHelper(context: Context) :
     }
 
     // =========================
-    // ✔️ دالة التحديث المضافة
+    // ✔️ دالة جلب كل الفئات (لحل خطأ Unresolved reference: getAllCategories)
     // =========================
+    fun getAllCategories(): List<String> {
+        val categories = mutableListOf<String>()
+        val db = readableDatabase
+        val cursor = db.query(
+            true, // Distinct
+            TABLE_PRODUCTS,
+            arrayOf(COL_CATEGORY),
+            "$COL_CATEGORY IS NOT NULL AND $COL_CATEGORY != ''",
+            null, null, null, "$COL_CATEGORY ASC", null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(cursor.getColumnIndexOrThrow(COL_CATEGORY)))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return categories
+    }
+
     fun updateProduct(product: Product): Int {
         val db = writableDatabase
 
@@ -108,6 +136,7 @@ class DatabaseHelper(context: Context) :
             put(COL_NAME, product.name)
             put(COL_EXPIRY, product.expiryDate)
             put(COL_IMAGE, product.imagePath)
+            put(COL_CATEGORY, product.category)
         }
 
         return db.update(
@@ -117,4 +146,5 @@ class DatabaseHelper(context: Context) :
             arrayOf(product.barcode)
         )
     }
-}
+    }
+    
