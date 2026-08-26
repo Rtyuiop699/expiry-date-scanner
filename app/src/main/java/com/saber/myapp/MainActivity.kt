@@ -137,13 +137,37 @@ class MainActivity : AppCompatActivity() {
 
             chip.setOnCheckedChangeListener { button, isChecked ->
                 if (isChecked) {
-                    button.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#025144")) // أخضر
-                    button.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#025144"))
+
+                    button.setChipBackgroundColor(
+                        ColorStateList.valueOf(
+                            Color.parseColor("#025144")
+                        )
+                    )
+
+                    button.setChipStrokeColor(
+                        ColorStateList.valueOf(
+                            Color.parseColor("#025144")
+                        )
+                    )
+
                     button.setTextColor(Color.WHITE)
+
                     filterProducts(category)
+
                 } else {
-                    button.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
-                    button.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+
+                    button.setChipBackgroundColor(
+                        ColorStateList.valueOf(
+                            Color.TRANSPARENT
+                        )
+                    )
+
+                    button.setChipStrokeColor(
+                        ColorStateList.valueOf(
+                            Color.parseColor("#CCCCCC")
+                        )
+                    )
+
                     button.setTextColor(Color.BLACK)
                 }
             }
@@ -158,11 +182,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterProducts(category: String) {
         val allProducts = databaseHelper.getAllProducts()
+
         val filteredList = if (category == "الكل") {
             allProducts
         } else {
             allProducts.filter { it.category == category }
         }
-        listHandler.setup(filteredList)
+
+        listHandler.setup(filteredList.toMutableList())
     }
 }
