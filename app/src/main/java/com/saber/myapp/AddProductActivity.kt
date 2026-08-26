@@ -25,10 +25,7 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var categoriesAdapter: ArrayAdapter<String>
 
     // القائمة الأساسية للتصنيفات
-    private val categories = mutableListOf(
-        "عصائر", "مشروبات غازية", "خضار معلبة ومخللات",
-        "أسماك معلبة", "كيك وبسكويت", "آيسكريم ومثلجات"
-    )
+    private val categories = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +95,13 @@ class AddProductActivity : AppCompatActivity() {
             fetchProductFromApi(barcodeValue) 
         }
     }
+private fun loadCategories() {
 
+    categories.clear()
+    categories.addAll(databaseHelper.getAllCategories())
+
+    categoriesAdapter.notifyDataSetChanged()
+}
     private fun processProductImage(imagePathValue: String?) { 
         if (!imagePathValue.isNullOrEmpty()) { 
             currentImagePath = imagePathValue 
