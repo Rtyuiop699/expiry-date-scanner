@@ -32,7 +32,7 @@ class AddProductActivity : AppCompatActivity() {
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
         databaseHelper = DatabaseHelper(this)
-
+        loadCategories()
         // 1. --- إعداد الـ AutoCompleteTextView للتصنيفات ---
         categoriesAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
         binding.autoCompleteCategories.setAdapter(categoriesAdapter)
