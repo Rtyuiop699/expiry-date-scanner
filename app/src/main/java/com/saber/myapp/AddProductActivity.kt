@@ -39,20 +39,61 @@ class AddProductActivity : AppCompatActivity() {
 
         // 2. --- Listeners ---
         binding.btnAddCategory.setOnClickListener {
-            val editText = EditText(this)
-            AlertDialog.Builder(this)
-               .setTitle("إضافة تصنيف جديد")
-               .setView(editText)
-               .setPositiveButton("إضافة") { _, _ ->
-                    val newCategory = editText.text.toString().trim()
-                    if (newCategory.isNotEmpty()) {
-                        categories.add(newCategory)
-                        categoriesAdapter.notifyDataSetChanged()
-                        binding.autoCompleteCategories.setText(newCategory, false)
-                    }
-                }
-               .setNegativeButton("إلغاء", null)
-               .show()
+
+    val editText = EditText(this)
+
+    AlertDialog.Builder(this)
+        .setTitle("إضافة تصنيف جديد")
+        .setView(editText)
+        .setPositiveButton("إضافة") { _, _ ->
+
+            val newCategory = editText.text.toString().trim()
+
+            if (newCategory.isEmpty()) {
+                Toast.makeText(
+                    this,
+                    "يرجى كتابة اسم التصنيف",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setPositiveButton
+            }
+
+            val added = databaseHelper.addCategory(newCategory)
+
+            if (added) {
+
+                loadCategories()
+
+                binding.autoCompleteCategories.setText(
+                    newCategory,
+                    false
+                )
+
+                Toast.makeText(
+                    this,
+                    "تمت إضافة التصنيف: $newCategory",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                // التصنيف موجود مسبقاً
+                loadCategories()
+
+                binding.autoCompleteCategories.setText(
+                    newCategory,
+                    false
+                )
+
+                Toast.makeText(
+                    this,
+                    "التصنيف موجود مسبقاً",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        .setNegativeButton("إلغاء", null)
+        .show()
         }
 
         binding.btnCaptureImage.setOnClickListener {
