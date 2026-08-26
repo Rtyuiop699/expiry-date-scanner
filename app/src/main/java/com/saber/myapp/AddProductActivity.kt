@@ -131,7 +131,15 @@ class AddProductActivity : AppCompatActivity() {
         val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
         val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
 
-        val product = Product(0, barcode, name, normalizedDate, quantity, currentImagePath!!)
+        val product = Product(
+    0,
+    barcode,
+    name,
+    normalizedDate,
+    quantity,
+    currentImagePath!!,
+    category
+)
         databaseHelper.addProduct(product)
         Toast.makeText(this, "تم الحفظ: $name - $category", Toast.LENGTH_SHORT).show()
         setResult(RESULT_OK)
