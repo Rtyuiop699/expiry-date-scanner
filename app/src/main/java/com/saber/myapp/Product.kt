@@ -6,5 +6,6 @@ data class Product(
     val name: String,
     val expiryDate: String,
     val quantity: Int = 1,
-    val imagePath: String
+    val imagePath: String,
+    val category: String = ""
 )
