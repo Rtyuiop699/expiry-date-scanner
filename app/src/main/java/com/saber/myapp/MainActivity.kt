@@ -116,68 +116,75 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupChips() {
-        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
-        chipGroup.removeAllViews() // مسح العناصر القديمة
+    val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
+    chipGroup.removeAllViews()
 
-        val categories = databaseHelper.getAllCategories() // جلب الأصناف من القاعدة
+    val categories = databaseHelper.getAllCategories()
 
-        categories.forEach { category ->
-            val chip = Chip(this)
-            chip.text = category
-            chip.isCheckable = true
-            chip.textSize = 14f
+    categories.forEach { category ->
 
-            // ستايل شفاف
-            chip.setTextColor(Color.BLACK)
-            chip.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
-            chip.chipStrokeWidth = 1.5f
-            chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
-            chip.setChipCornerRadius(50f)
-            chip.setPadding(16, 8, 16, 8)
+        val chip = Chip(this)
 
-            chip.setOnCheckedChangeListener { button, isChecked ->
-                if (isChecked) {
+        chip.text = category
+        chip.isCheckable = true
+        chip.textSize = 14f
 
-                    button.setChipBackgroundColor(
-                        ColorStateList.valueOf(
-                            Color.parseColor("#025144")
-                        )
+        // الشكل الافتراضي
+        chip.setTextColor(Color.BLACK)
+
+        chip.chipBackgroundColor =
+            ColorStateList.valueOf(Color.TRANSPARENT)
+
+        chip.chipStrokeWidth = 1.5f
+
+        chip.chipStrokeColor =
+            ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+
+        chip.setChipCornerRadius(50f)
+
+        chip.setPadding(16, 8, 16, 8)
+
+        chip.setOnCheckedChangeListener { _, isChecked ->
+
+            if (isChecked) {
+
+                // اللون عند الاختيار
+                chip.chipBackgroundColor =
+                    ColorStateList.valueOf(
+                        Color.parseColor("#025144")
                     )
 
-                    button.setChipStrokeColor(
-                        ColorStateList.valueOf(
-                            Color.parseColor("#025144")
-                        )
+                chip.chipStrokeColor =
+                    ColorStateList.valueOf(
+                        Color.parseColor("#025144")
                     )
 
-                    button.setTextColor(Color.WHITE)
+                chip.setTextColor(Color.WHITE)
 
-                    filterProducts(category)
+                filterProducts(category)
 
-                } else {
+            } else {
 
-                    button.setChipBackgroundColor(
-                        ColorStateList.valueOf(
-                            Color.TRANSPARENT
-                        )
+                // اللون عند عدم الاختيار
+                chip.chipBackgroundColor =
+                    ColorStateList.valueOf(Color.TRANSPARENT)
+
+                chip.chipStrokeColor =
+                    ColorStateList.valueOf(
+                        Color.parseColor("#CCCCCC")
                     )
 
-                    button.setChipStrokeColor(
-                        ColorStateList.valueOf(
-                            Color.parseColor("#CCCCCC")
-                        )
-                    )
-
-                    button.setTextColor(Color.BLACK)
-                }
+                chip.setTextColor(Color.BLACK)
             }
-            chipGroup.addView(chip)
         }
 
-        // اختيار "الكل" افتراضياً
-        if (chipGroup.childCount > 0) {
-            (chipGroup.getChildAt(0) as Chip).isChecked = true
-        }
+        chipGroup.addView(chip)
+    }
+
+    // اختيار "الكل" افتراضياً
+    if (chipGroup.childCount > 0) {
+        (chipGroup.getChildAt(0) as Chip).isChecked = true
+    }
     }
 
     private fun filterProducts(category: String) {
