@@ -281,11 +281,7 @@ private fun loadCategories() {
     }
 
     // === دوال التاريخ OCR ===
-    private fun normalizeDate(input: String): String? {
-    return extractDateFromText(input)
-}
-
-private fun extractDateFromText(text: String): String? {
+    private fun extractDateFromText(text: String): String? {
 
     val cleanedText = fixCommonOCRMistakes(
         text.replace("\n", " ")
@@ -293,230 +289,150 @@ private fun extractDateFromText(text: String): String? {
             .trim()
     )
 
+    // تعريف الأنماط بشكل منفصل لسهولة الربط والتميز
+    val regexFullDateDMY = Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b""")
+    val regexFullDateYMD = Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b""")
+    val regexFullDateShortYear = Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b""")
+    val regexSpacesDMY = Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{4})\b""")
+    val regexYYYYMMDD = Regex("""\b(\d{4})(\d{2})(\d{2})\b""")
+    val regexDDMMYY = Regex("""\b(\d{2})(\d{2})(\d{2})\b""")
+    val regexMonthYYYY = Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE)
+    val regexExpPrefix = Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE)
+    val regexMonthYearOnly = Regex("""\b(\d{1,2})[/-](\d{4})\b""")
+    val regexYearOnly = Regex("""\b(\d{4})\b""")
+
     val patterns = listOf(
-
-        // DD/MM/YYYY أو DD-MM-YYYY
-        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
-
-        // YYYY/MM/DD أو YYYY-MM-DD
-        Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
-
-        // DD/MM/YY أو DD-MM-YY
-        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
-
-        // DD MM YYYY
-        Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{4})\b"""),
-
-        // YYYYMMDD
-        Regex("""\b(\d{8})\b"""),
-
-        // DDMMYY
-        Regex("""\b(\d{6})\b"""),
-
-        // Month YYYY مثل SEP 2026
-        Regex(
-            """(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""",
-            RegexOption.IGNORE_CASE
-        ),
-
-        // EXP 11/09/2026
-        Regex(
-            """(?:EXP|BEST BEFORE|صلاحية|ينتهي)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""",
-            RegexOption.IGNORE_CASE
-        ),
-
-        // MM/YYYY فقط
-        // هنا فقط نضع اليوم 01 لأنه غير موجود أصلاً
-        Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
-
-        // السنة فقط
-        Regex("""\b(\d{4})\b""")
+        regexFullDateDMY,
+        regexFullDateYMD,
+        regexFullDateShortYear,
+        regexSpacesDMY,
+        regexYYYYMMDD,
+        regexDDMMYY,
+        regexMonthYYYY,
+        regexExpPrefix,
+        regexMonthYearOnly,
+        regexYearOnly
     )
 
     val foundDates = mutableListOf<Pair<String, String>>()
 
     for (pattern in patterns) {
-
         val matches = pattern.findAll(cleanedText)
 
         for (match in matches) {
-
             val g = match.groupValues
 
-            val result: String? = when {
+            val result: String? = when (pattern) {
 
-                // DD/MM/YYYY
-                g.size == 4 &&
-                        g[1].length <= 2 &&
-                        g[2].length <= 2 &&
-                        g[3].length == 4 -> {
-
+                // DD/MM/YYYY أو DD-MM-YYYY أو DD MM YYYY
+                regexFullDateDMY, regexSpacesDMY -> {
                     val day = g[1].toIntOrNull()
                     val month = g[2].toIntOrNull()
                     val year = g[3].toIntOrNull()
 
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
-                // YYYY/MM/DD
-                g.size == 4 &&
-                        g[1].length == 4 -> {
-
+                // YYYY/MM/DD أو YYYY-MM-DD
+                regexFullDateYMD -> {
                     val year = g[1].toIntOrNull()
                     val month = g[2].toIntOrNull()
                     val day = g[3].toIntOrNull()
 
-                    if (year != null && month != null && day != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
-                // DD/MM/YY
-                g.size == 4 &&
-                        g[3].length == 2 -> {
-
+                // DD/MM/YY أو DD-MM-YY
+                regexFullDateShortYear -> {
                     val day = g[1].toIntOrNull()
                     val month = g[2].toIntOrNull()
                     val year = g[3].toIntOrNull()
 
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "20%02d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "20%02d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
-                // DD MM YYYY
-                g.size == 4 &&
-                        g[3].length == 4 -> {
-
+                // EXP 11/09/2026 أو EXP 11/09/26
+                regexExpPrefix -> {
                     val day = g[1].toIntOrNull()
                     val month = g[2].toIntOrNull()
-                    val year = g[3].toIntOrNull()
+                    var yearStr = g[3]
 
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
+                    if (yearStr.length == 2) {
+                        yearStr = "20$yearStr"
                     }
+                    val year = yearStr.toIntOrNull()
+
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
                 // YYYYMMDD
-                g.size == 2 &&
-                        g[1].length == 8 -> {
+                regexYYYYMMDD -> {
+                    val year = g[1].toIntOrNull()
+                    val month = g[2].toIntOrNull()
+                    val day = g[3].toIntOrNull()
 
-                    val n = g[1]
-
-                    "${n.substring(0, 4)}-" +
-                            "${n.substring(4, 6)}-" +
-                            n.substring(6, 8)
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
                 // DDMMYY
-                g.size == 2 &&
-                        g[1].length == 6 -> {
+                regexDDMMYY -> {
+                    val day = g[1].toIntOrNull()
+                    val month = g[2].toIntOrNull()
+                    val year = g[3].toIntOrNull()
 
-                    val n = g[1]
-
-                    val day = n.substring(0, 2)
-                    val month = n.substring(2, 4)
-                    val year = "20" + n.substring(4, 6)
-
-                    if (
-                        month.toIntOrNull() in 1..12 &&
-                        day.toIntOrNull() in 1..31
-                    ) {
-                        "$year-$month-$day"
-                    } else {
-                        null
-                    }
+                    if (day in 1..31 && month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "20%02d-%02d-%02d", year, month, day)
+                    } else null
                 }
 
-                // Month YYYY
-                g.size == 3 &&
-                        g[1].matches(Regex("[A-Za-z]+")) -> {
-
+                // Month YYYY (مثل SEP 2026) -> هنا فقط يوضع اليوم 01
+                regexMonthYYYY -> {
                     val month = monthNameToNumber(g[1])
                     val year = g[2]
 
-                    if (month != null) {
-                        "$year-$month-01"
-                    } else {
-                        null
-                    }
+                    if (month != null) "$year-$month-01" else null
                 }
 
-                // MM/YYYY
-                // اليوم غير موجود، لذلك فقط هنا نستخدم 01
-                g.size == 3 &&
-                        g[2].length == 4 -> {
-
+                // MM/YYYY -> هنا فقط يوضع اليوم 01
+                regexMonthYearOnly -> {
                     val month = g[1].toIntOrNull()
                     val year = g[2].toIntOrNull()
 
-                    if (month != null &&
-                        year != null &&
-                        month in 1..12
-                    ) {
-                        "$year-${month.toString().padStart(2, '0')}-01"
-                    } else {
-                        null
-                    }
+                    if (month in 1..12 && year != null) {
+                        String.format(Locale.ENGLISH, "%04d-%02d-01", year, month)
+                    } else null
                 }
 
-                // السنة فقط
-                g.size == 2 &&
-                        g[1].length == 4 -> {
-
-                    "${g[1]}-01-01"
+                // YYYY فقط -> يوضع بداية السنة
+                regexYearOnly -> {
+                    val year = g[1].toIntOrNull()
+                    if (year != null) "$year-01-01" else null
                 }
 
                 else -> null
             }
 
-            if (
-                result != null &&
-                isValidDateFromString(result)
-            ) {
-                foundDates.add(
-                    Pair(result, cleanedText)
-                )
+            if (result != null && isValidDateFromString(result)) {
+                foundDates.add(Pair(result, cleanedText))
             }
         }
     }
 
     return chooseBestDate(foundDates)
-}
+    }
+    
+
+                
     private fun chooseBestDate(dates: List<Pair<String, String>>): String? {
         if (dates.isEmpty()) return null
         val today = Calendar.getInstance()
