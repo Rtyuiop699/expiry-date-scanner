@@ -88,9 +88,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // إعدادات
-    findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
-        showSettingsMenu(it)
-    }
+findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
+    showSettingsMenu(it)
+}
 
     // PDF
     findViewById<ImageView>(R.id.btnPdf).setOnClickListener {
@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity() {
 
     popup.show()
    }
+
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
         if (existingProduct != null) {
