@@ -15,41 +15,50 @@
         android:paddingEnd="8dp">
 
         <!-- الاسم -->
-        <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Product Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+        <!-- الاسم -->
+<TextView
+    android:id="@+id/textViewName"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Product Name"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:textColor="@android:color/black" />
 
-        <!-- التاريخ تحت الاسم -->
-        <TextView
-            android:id="@+id/textViewExpiry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expiry Date"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
+<!-- عبارة تاريخ الانتهاء -->
+<TextView
+    android:id="@+id/textViewExpiryLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="تاريخ الانتهاء"
+    android:textSize="13sp"
+    android:textColor="@android:color/darker_gray"
+    android:layout_marginTop="4dp" />
 
-        <!-- الباركود تحت التاريخ -->
-        <TextView
-            android:id="@+id/textViewBarcode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Barcode: 123456"
-            android:textSize="13sp"
-            android:textColor="@android:color/darker_gray" />
-    </LinearLayout>
+<!-- تاريخ الانتهاء -->
+<TextView
+    android:id="@+id/textViewExpiry"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="2026-08-11"
+    android:textSize="14sp"
+    android:textColor="@android:color/black" />
 
-    <!-- صورة المنتج (يمين) -->
-    <ImageView
-        android:id="@+id/imageViewProduct"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_report_image"
-        android:background="@android:color/darker_gray" />
+<!-- الأيام المتبقية -->
+<TextView
+    android:id="@+id/textViewRemaining"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="متبقي 20 يوم"
+    android:textSize="14sp"
+    android:textColor="@android:color/black"
+    android:layout_marginTop="2dp" />
 
-</LinearLayout>
+<!-- الباركود -->
+<TextView
+    android:id="@+id/textViewBarcode"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Barcode: 123456"
+    android:textSize="13sp"
+    android:textColor="@android:color/darker_gray" />
