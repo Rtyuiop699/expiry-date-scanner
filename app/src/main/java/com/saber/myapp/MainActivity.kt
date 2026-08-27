@@ -76,12 +76,12 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
-    private fun setupToolbar() {
+        private fun setupToolbar() {
         // تم حذف زر البحث تماماً
 
-        // مساعدة
+        // مساعدة (عرض نافذة المساعدة بدلاً من Toast)
         findViewById<ImageView>(R.id.btnHelp)?.setOnClickListener {
-            Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
+            showHelpDialog()
         }
 
         // إعدادات (تظهر القائمة عند الضغط عليها)
@@ -93,6 +93,23 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.btnPdf)?.setOnClickListener {
             Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // دالة عرض نافذة المساعدة
+    private fun showHelpDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialoghelp, null)
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+
+        val dialog = builder.create()
+
+        // زر الإغلاق داخل نافذة المساعدة
+        dialogView.findViewById<android.widget.Button>(R.id.btnCloseHelp)?.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showSettingsMenu(anchor: View) {
@@ -124,6 +141,7 @@ class MainActivity : AppCompatActivity() {
 
         popup.show()
     }
+    
 
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
