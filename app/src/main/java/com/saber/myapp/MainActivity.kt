@@ -117,9 +117,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupChips() {
     val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
+
     chipGroup.removeAllViews()
 
-    val categories = databaseHelper.getAllCategories()
+    // إنشاء قائمة التصنيفات
+    val categories = mutableListOf<String>()
+
+    // إضافة "الكل" أولاً
+    categories.add("الكل")
+
+    // إضافة التصنيفات من قاعدة البيانات
+    categories.addAll(databaseHelper.getAllCategories())
 
     categories.forEach { category ->
 
@@ -138,7 +146,9 @@ class MainActivity : AppCompatActivity() {
         chip.chipStrokeWidth = 1.5f
 
         chip.chipStrokeColor =
-            ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+            ColorStateList.valueOf(
+                Color.parseColor("#CCCCCC")
+            )
 
         chip.setChipCornerRadius(50f)
 
@@ -161,6 +171,7 @@ class MainActivity : AppCompatActivity() {
 
                 chip.setTextColor(Color.WHITE)
 
+                // عرض المنتجات حسب التصنيف
                 filterProducts(category)
 
             } else {
@@ -181,11 +192,13 @@ class MainActivity : AppCompatActivity() {
         chipGroup.addView(chip)
     }
 
-    // اختيار "الكل" افتراضياً
+    // تحديد "الكل" افتراضياً
     if (chipGroup.childCount > 0) {
-        (chipGroup.getChildAt(0) as Chip).isChecked = true
+        val allChip = chipGroup.getChildAt(0) as Chip
+        allChip.isChecked = true
     }
     }
+    
 
     private fun filterProducts(category: String) {
         val allProducts = databaseHelper.getAllProducts()
