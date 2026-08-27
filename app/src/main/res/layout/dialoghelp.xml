@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:layout_margin="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- عنوان الصفحة -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="تعليمات الاستخدام"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#025144"
+            android:layout_marginBottom="16dp" />
+
+        <!-- نص الشرح -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="أهلاً بكم في تطبيق إدارة المخزون لإدارة المنتجات والأصناف في المتاجر والبقالات.\n\nمن خلال إدارة المخزون هذا يمكنك تصنيف منتجات المواد الغذائية وتواريخ الانتهاء بسبولة، كل ما عليك فعله هو الضغط على زر (+) الموجود في أسفل يمين الشاشة وسيفتح لك ماسح الباركود، بعد ذلك قم بإدخال البيانات في الحقول ثم الضغط على أيقونة الحفظ في الأعلى.\n\nكما يمكن لتطبيقنا التعرف على تاريخ الصلاحية تلقائياً من خلال الكاميرا، قم بالضغط على زر OCR الموجود أمام حقل التاريخ ثم توجيه الكاميرا نحو التاريخ على العبوة وسيقوم بقرائته وطباعته تلقائياً."
+            android:textSize="15sp"
+            android:textColor="#333333"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- ملاحظة الميزة المدفوعة -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ملاحظة: ميزة التعرف التلقائي على التاريخ مدفوعة مع ثلاث مرات مجانية عند أول استخدام للتطبيق."
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#D32F2F"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- حقوق التطوير -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="هذا التطبيق من إنتاج سوبر كود\nاليمن - عدن"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:textColor="#777777"
+            android:layout_marginBottom="20dp" />
+
+        <!-- زر الإغلاق -->
+        <Button
+            android:id="@+id/btnCloseHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="حسناً، فهمت"
+            android:backgroundTint="#025144"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+</ScrollView>
+          
