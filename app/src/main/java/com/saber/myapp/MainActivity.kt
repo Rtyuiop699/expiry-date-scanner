@@ -75,13 +75,9 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
-    private fun setupToolbar() {
+    private fun setupToolbar() 
 
-    // بحث
-    findViewById<ImageView>(R.id.btnSearch).setOnClickListener {
-        Toast.makeText(this, "البحث", Toast.LENGTH_SHORT).show()
-    }
-
+    
     // مساعدة
     findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
         Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
