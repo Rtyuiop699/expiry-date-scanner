@@ -28,99 +28,151 @@ class AddProductActivity : AppCompatActivity() {
     private val categories = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAddProductBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        databaseHelper = DatabaseHelper(this)
-        loadCategories()
-        // 1. --- إعداد الـ AutoCompleteTextView للتصنيفات ---
-        categoriesAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
-        binding.autoCompleteCategories.setAdapter(categoriesAdapter)
+    super.onCreate(savedInstanceState)
 
-        // 2. --- Listeners ---
-        binding.btnAddCategory.setOnClickListener {
+    binding = ActivityAddProductBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
-    val editText = EditText(this)
+    databaseHelper = DatabaseHelper(this)
 
-    AlertDialog.Builder(this)
-        .setTitle("إضافة تصنيف جديد")
-        .setView(editText)
-        .setPositiveButton("إضافة") { _, _ ->
+    // 1. --- إعداد Adapter التصنيفات أولاً ---
+    categoriesAdapter = ArrayAdapter(
+        this,
+        android.R.layout.simple_dropdown_item_1line,
+        categories
+    )
 
-            val newCategory = editText.text.toString().trim()
+    binding.autoCompleteCategories.setAdapter(categoriesAdapter)
 
-            if (newCategory.isEmpty()) {
-                Toast.makeText(
-                    this,
-                    "يرجى كتابة اسم التصنيف",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setPositiveButton
+    // تحميل التصنيفات من قاعدة البيانات بعد تهيئة الـ Adapter
+    loadCategories()
+
+    // 2. --- إضافة تصنيف جديد ---
+    binding.btnAddCategory.setOnClickListener {
+
+        val editText = EditText(this)
+
+        AlertDialog.Builder(this)
+            .setTitle("إضافة تصنيف جديد")
+            .setView(editText)
+            .setPositiveButton("إضافة") { _, _ ->
+
+                val newCategory = editText.text.toString().trim()
+
+                // التأكد من أن الاسم ليس فارغاً
+                if (newCategory.isEmpty()) {
+
+                    Toast.makeText(
+                        this,
+                        "يرجى كتابة اسم التصنيف",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setPositiveButton
+                }
+
+                // إضافة التصنيف إلى قاعدة البيانات
+                val added = databaseHelper.addCategory(newCategory)
+
+                if (added) {
+
+                    // إعادة تحميل التصنيفات
+                    loadCategories()
+
+                    // اختيار التصنيف الجديد مباشرة
+                    binding.autoCompleteCategories.setText(
+                        newCategory,
+                        false
+                    )
+
+                    Toast.makeText(
+                        this,
+                        "تمت إضافة التصنيف: $newCategory",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                } else {
+
+                    // التصنيف موجود مسبقاً
+                    loadCategories()
+
+                    binding.autoCompleteCategories.setText(
+                        newCategory,
+                        false
+                    )
+
+                    Toast.makeText(
+                        this,
+                        "التصنيف موجود مسبقاً",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-
-            val added = databaseHelper.addCategory(newCategory)
-
-            if (added) {
-
-                loadCategories()
-
-                binding.autoCompleteCategories.setText(
-                    newCategory,
-                    false
-                )
-
-                Toast.makeText(
-                    this,
-                    "تمت إضافة التصنيف: $newCategory",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            } else {
-
-                // التصنيف موجود مسبقاً
-                loadCategories()
-
-                binding.autoCompleteCategories.setText(
-                    newCategory,
-                    false
-                )
-
-                Toast.makeText(
-                    this,
-                    "التصنيف موجود مسبقاً",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        .setNegativeButton("إلغاء", null)
-        .show()
-        }
-
-        binding.btnCaptureImage.setOnClickListener {
-            val intent = Intent(this, ProductCameraActivity::class.java)
-            startActivityForResult(intent, REQUEST_PRODUCT_CAMERA)
-        }
-
-        binding.btnChooseImage.setOnClickListener {
-            Toast.makeText(this, "ميزة اختيار من المعرض قريباً", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnOpenCalendar.setOnClickListener {
-            val intent = Intent(this, DateScannerActivity::class.java)
-            startActivityForResult(intent, REQUEST_DATE_SCAN)
-        }
-
-        binding.btnHasPack.setOnClickListener {
-            Toast.makeText(this, "تم تحديد أن المنتج يحتوي على باكت", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnCalculate.setOnClickListener { calculateQuantity() }
-
-        // 3. --- استقبال البيانات من Intent ---
-        loadIntentData()
-        setupToolbar()
+            .setNegativeButton("إلغاء", null)
+            .show()
     }
 
+    // 3. --- التقاط صورة المنتج ---
+    binding.btnCaptureImage.setOnClickListener {
+
+        val intent = Intent(
+            this,
+            ProductCameraActivity::class.java
+        )
+
+        startActivityForResult(
+            intent,
+            REQUEST_PRODUCT_CAMERA
+        )
+    }
+
+    // 4. --- اختيار صورة من المعرض ---
+    binding.btnChooseImage.setOnClickListener {
+
+        Toast.makeText(
+            this,
+            "ميزة اختيار من المعرض قريباً",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    // 5. --- فتح قارئ تاريخ الصلاحية ---
+    binding.btnOpenCalendar.setOnClickListener {
+
+        val intent = Intent(
+            this,
+            DateScannerActivity::class.java
+        )
+
+        startActivityForResult(
+            intent,
+            REQUEST_DATE_SCAN
+        )
+    }
+
+    // 6. --- زر الباكت ---
+    binding.btnHasPack.setOnClickListener {
+
+        Toast.makeText(
+            this,
+            "تم تحديد أن المنتج يحتوي على باكت",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    // 7. --- حساب الكمية ---
+    binding.btnCalculate.setOnClickListener {
+        calculateQuantity()
+    }
+
+    // 8. --- استقبال البيانات القادمة من Intent ---
+    loadIntentData()
+
+    // 9. --- إعداد شريط الأدوات ---
+    setupToolbar()
+    }
+
+                
     private fun loadIntentData() { 
         val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: "" 
         val nameValue = intent.getStringExtra("NAME_EXTRA") ?: "" 
