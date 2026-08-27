@@ -1,5 +1,6 @@
 package com.saber.myapp
-
+import android.view.View
+import android.widget.PopupMenu
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -75,26 +76,79 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
 
-        
-
-        // مساعدة
-        findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
-            Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
-        }
-
-        // إعدادات
-        findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
-            Toast.makeText(this, "إعدادات", Toast.LENGTH_SHORT).show()
-        }
-
-        // PDF
-        findViewById<ImageView>(R.id.btnPdf).setOnClickListener {
-            Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
-        }
+    // بحث
+    findViewById<ImageView>(R.id.btnSearch).setOnClickListener {
+        Toast.makeText(this, "البحث", Toast.LENGTH_SHORT).show()
     }
 
+    // مساعدة
+    findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
+        Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
+    }
+
+    // إعدادات
+    findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
+        showSettingsMenu(it)
+    }
+
+    // PDF
+    findViewById<ImageView>(R.id.btnPdf).setOnClickListener {
+        Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
+    }
+    }
+
+   private fun showSettingsMenu(anchor: View) {
+
+    val popup = PopupMenu(this, anchor)
+
+    popup.menu.add("اللغة")
+    popup.menu.add("المظهر")
+    popup.menu.add("تصدير المنتجات إلى قاعدة البيانات العالمية")
+    popup.menu.add("تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا")
+
+    popup.setOnMenuItemClickListener { item ->
+
+        when (item.title.toString()) {
+
+            "اللغة" -> {
+                Toast.makeText(
+                    this,
+                    "إعداد اللغة",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            "المظهر" -> {
+                Toast.makeText(
+                    this,
+                    "إعداد المظهر",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            "تصدير المنتجات إلى قاعدة البيانات العالمية" -> {
+                Toast.makeText(
+                    this,
+                    "تصدير المنتجات",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            "تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا" -> {
+                Toast.makeText(
+                    this,
+                    "تصدير صور OCR",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        true
+    }
+
+    popup.show()
+   }
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
         if (existingProduct != null) {
