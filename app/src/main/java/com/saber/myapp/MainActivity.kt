@@ -77,10 +77,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupToolbar() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
 
-        // بحث
-        findViewById<ImageView>(R.id.btnSearch).setOnClickListener {
-            Toast.makeText(this, "بحث", Toast.LENGTH_SHORT).show()
-        }
+        
 
         // مساعدة
         findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
