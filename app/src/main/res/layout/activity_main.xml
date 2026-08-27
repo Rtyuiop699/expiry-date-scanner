@@ -88,15 +88,17 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"/>
 
-<!-- القائمة الافقية -->
+<!-- القائمة الأفقية القابلة للتمرير -->
 <HorizontalScrollView
     android:id="@+id/categoriesScroll"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:scrollbars="none"
     android:fillViewport="false"
+    android:scrollbars="none"
     android:overScrollMode="never"
+    android:clipToPadding="false"
+    android:layoutDirection="rtl"
     app:layout_constraintTop_toBottomOf="@id/toolbarDivider"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent">
@@ -111,9 +113,9 @@
         android:paddingBottom="8dp"
         android:background="@android:color/white"
         app:singleSelection="true"
+        app:singleLine="true"
         app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="0dp"
-        app:singleLine="true"/>
+        app:chipSpacingVertical="0dp" />
 
 </HorizontalScrollView>
 
@@ -123,10 +125,10 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:visibility="gone"
-    app:layout_constraintTop_toBottomOf="@id/chipGroupCategories" 
+    app:layout_constraintTop_toBottomOf="@id/categoriesScroll"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent">
-    
+
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/searchField"
         android:layout_width="match_parent"
@@ -135,6 +137,7 @@
         android:background="@android:color/transparent"
         android:inputType="text"
         android:textColor="@android:color/black"/>
+
 </com.google.android.material.textfield.TextInputLayout>
     <!-- الكاميرا -->
     <androidx.camera.view.PreviewView
