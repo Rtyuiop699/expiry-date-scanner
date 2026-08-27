@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:gravity="center_vertical">
 
-    <!-- المعلومات -->
+    <!-- معلومات المنتج -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -14,54 +16,74 @@
         android:orientation="vertical"
         android:paddingEnd="8dp">
 
-        <!-- اسم المنتج -->
-        <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="wrap_content"
+        <!-- الصف الأول -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <!-- عبارة تاريخ الانتهاء -->
-        <TextView
-            android:id="@+id/textViewExpiryLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="تاريخ الانتهاء"
-            android:textSize="13sp"
-            android:textColor="@android:color/darker_gray" />
+            <!-- تاريخ الانتهاء -->
+            <TextView
+                android:id="@+id/textViewExpiryLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="تاريخ الانتهاء"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
 
-        <!-- تاريخ الانتهاء -->
-        <TextView
-            android:id="@+id/textViewExpiry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2026-08-11"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
+            <TextView
+                android:id="@+id/textViewExpiry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="11/9/2026"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
 
-        <!-- الأيام المتبقية -->
-        <TextView
-            android:id="@+id/textViewRemaining"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="متبقي 20 يوم"
-            android:textSize="14sp"
-            android:textColor="@android:color/black" />
+            <!-- اسم المنتج -->
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ايسكريم نانا"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
-        <!-- الباركود -->
-        <TextView
-            android:id="@+id/textViewBarcode"
-            android:layout_width="wrap_content"
+        </LinearLayout>
+
+        <!-- الصف الثاني -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Barcode: 123456"
-            android:textSize="13sp"
-            android:textColor="@android:color/darker_gray" />
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- المتبقي -->
+            <TextView
+                android:id="@+id/textViewRemaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="متبقي 5 أيام"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+
+            <!-- الباركود -->
+            <TextView
+                android:id="@+id/textViewBarcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="846046484"
+                android:textSize="13sp"
+                android:textColor="@android:color/darker_gray"
+                android:gravity="end" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
