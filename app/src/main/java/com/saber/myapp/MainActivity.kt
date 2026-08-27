@@ -1,11 +1,12 @@
 package com.saber.myapp
-import android.view.View
-import android.widget.PopupMenu
+
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         // إعداد الـ Chips
         setupChips()
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
             permissionManager.checkAndRequestCameraPermission()
         }
 
@@ -75,76 +76,54 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
-    private fun setupToolbar() 
+    private fun setupToolbar() {
+        // تم حذف زر البحث تماماً
 
-    
-    // مساعدة
-    findViewById<ImageView>(R.id.btnHelp).setOnClickListener {
-        Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
-    }
-
-    // إعدادات
-findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
-    showSettingsMenu(it)
-}
-
-    // PDF
-    findViewById<ImageView>(R.id.btnPdf).setOnClickListener {
-        Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
-    }
-    }
-
-   private fun showSettingsMenu(anchor: View) {
-
-    val popup = PopupMenu(this, anchor)
-
-    popup.menu.add("اللغة")
-    popup.menu.add("المظهر")
-    popup.menu.add("تصدير المنتجات إلى قاعدة البيانات العالمية")
-    popup.menu.add("تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا")
-
-    popup.setOnMenuItemClickListener { item ->
-
-        when (item.title.toString()) {
-
-            "اللغة" -> {
-                Toast.makeText(
-                    this,
-                    "إعداد اللغة",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            "المظهر" -> {
-                Toast.makeText(
-                    this,
-                    "إعداد المظهر",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            "تصدير المنتجات إلى قاعدة البيانات العالمية" -> {
-                Toast.makeText(
-                    this,
-                    "تصدير المنتجات",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            "تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا" -> {
-                Toast.makeText(
-                    this,
-                    "تصدير صور OCR",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        // مساعدة
+        findViewById<ImageView>(R.id.btnHelp)?.setOnClickListener {
+            Toast.makeText(this, "مساعدة", Toast.LENGTH_SHORT).show()
         }
 
-        true
+        // إعدادات (تظهر القائمة عند الضغط عليها)
+        findViewById<ImageView>(R.id.btnSettings)?.setOnClickListener { anchorView ->
+            showSettingsMenu(anchorView)
+        }
+
+        // PDF
+        findViewById<ImageView>(R.id.btnPdf)?.setOnClickListener {
+            Toast.makeText(this, "PDF", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    popup.show()
-   }
+    private fun showSettingsMenu(anchor: View) {
+        val popup = PopupMenu(this, anchor)
+
+        // إضافة عناصر القائمة المطلوب ظهورها
+        popup.menu.add("اللغة")
+        popup.menu.add("المظهر")
+        popup.menu.add("تصدير المنتجات إلى قاعدة البيانات العالمية")
+        popup.menu.add("تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا")
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.title.toString()) {
+                "اللغة" -> {
+                    Toast.makeText(this, "إعداد اللغة", Toast.LENGTH_SHORT).show()
+                }
+                "المظهر" -> {
+                    Toast.makeText(this, "إعداد المظهر", Toast.LENGTH_SHORT).show()
+                }
+                "تصدير المنتجات إلى قاعدة البيانات العالمية" -> {
+                    Toast.makeText(this, "تصدير المنتجات", Toast.LENGTH_SHORT).show()
+                }
+                "تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا" -> {
+                    Toast.makeText(this, "تصدير صور OCR", Toast.LENGTH_SHORT).show()
+                }
+            }
+            true
+        }
+
+        popup.show()
+    }
 
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
@@ -164,89 +143,49 @@ findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
     }
 
     private fun setupChips() {
-    val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
+        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
 
-    chipGroup.removeAllViews()
+        chipGroup.removeAllViews()
 
-    // إنشاء قائمة التصنيفات
-    val categories = mutableListOf<String>()
+        val categories = mutableListOf<String>()
+        categories.add("الكل")
+        categories.addAll(databaseHelper.getAllCategories())
 
-    // إضافة "الكل" أولاً
-    categories.add("الكل")
+        categories.forEach { category ->
+            val chip = Chip(this)
 
-    // إضافة التصنيفات من قاعدة البيانات
-    categories.addAll(databaseHelper.getAllCategories())
+            chip.text = category
+            chip.isCheckable = true
+            chip.textSize = 14f
 
-    categories.forEach { category ->
+            chip.setTextColor(Color.BLACK)
+            chip.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
+            chip.chipStrokeWidth = 1.5f
+            chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+            chip.setChipCornerRadius(50f)
+            chip.setPadding(16, 8, 16, 8)
 
-        val chip = Chip(this)
-
-        chip.text = category
-        chip.isCheckable = true
-        chip.textSize = 14f
-
-        // الشكل الافتراضي
-        chip.setTextColor(Color.BLACK)
-
-        chip.chipBackgroundColor =
-            ColorStateList.valueOf(Color.TRANSPARENT)
-
-        chip.chipStrokeWidth = 1.5f
-
-        chip.chipStrokeColor =
-            ColorStateList.valueOf(
-                Color.parseColor("#CCCCCC")
-            )
-
-        chip.setChipCornerRadius(50f)
-
-        chip.setPadding(16, 8, 16, 8)
-
-        chip.setOnCheckedChangeListener { _, isChecked ->
-
-            if (isChecked) {
-
-                // اللون عند الاختيار
-                chip.chipBackgroundColor =
-                    ColorStateList.valueOf(
-                        Color.parseColor("#025144")
-                    )
-
-                chip.chipStrokeColor =
-                    ColorStateList.valueOf(
-                        Color.parseColor("#025144")
-                    )
-
-                chip.setTextColor(Color.WHITE)
-
-                // عرض المنتجات حسب التصنيف
-                filterProducts(category)
-
-            } else {
-
-                // اللون عند عدم الاختيار
-                chip.chipBackgroundColor =
-                    ColorStateList.valueOf(Color.TRANSPARENT)
-
-                chip.chipStrokeColor =
-                    ColorStateList.valueOf(
-                        Color.parseColor("#CCCCCC")
-                    )
-
-                chip.setTextColor(Color.BLACK)
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#025144"))
+                    chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#025144"))
+                    chip.setTextColor(Color.WHITE)
+                    filterProducts(category)
+                } else {
+                    chip.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
+                    chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+                    chip.setTextColor(Color.BLACK)
+                }
             }
+
+            chipGroup.addView(chip)
         }
 
-        chipGroup.addView(chip)
+        if (chipGroup.childCount > 0) {
+            val allChip = chipGroup.getChildAt(0) as Chip
+            allChip.isChecked = true
+        }
     }
-
-    // تحديد "الكل" افتراضياً
-    if (chipGroup.childCount > 0) {
-        val allChip = chipGroup.getChildAt(0) as Chip
-        allChip.isChecked = true
-    }
-    }
-    
 
     private fun filterProducts(category: String) {
         val allProducts = databaseHelper.getAllProducts()
