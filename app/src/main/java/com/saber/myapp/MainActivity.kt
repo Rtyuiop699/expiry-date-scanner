@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                     showLanguageDialog()
                 }
                 "المظهر" -> {
-                    Toast.makeText(this, "إعداد المظهر", Toast.LENGTH_SHORT).show()
+                    showThemeDialog() // فتح نافذة تغيير المظهر
                 }
                 "تصدير المنتجات إلى قاعدة البيانات العالمية" -> {
                     Toast.makeText(this, "تصدير المنتجات", Toast.LENGTH_SHORT).show()
@@ -141,6 +141,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         popup.show()
+    }
+
+    // نافذة اختيار المظهر (فاتح / داكن)
+    private fun showThemeDialog() {
+        val themes = arrayOf("فاتح", "داكن")
+
+        AlertDialog.Builder(this)
+            .setTitle("اختر المظهر")
+            .setItems(themes) { _, which ->
+                when (which) {
+                    0 -> {
+                        // الوضع الفاتح (Light Mode)
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    }
+                    1 -> {
+                        // الوضع الداكن (Dark Mode)
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                }
+            }
+            .show()
     }
 
     // نافذة اختيار اللغة
