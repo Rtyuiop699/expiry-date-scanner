@@ -176,7 +176,22 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
+    android:layoutDirection="ltr"
     android:layout_marginTop="16dp">
+
+    <!-- زر OCR - في اليسار -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnScanDate"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:minHeight="0dp"
+        android:text="OCR"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:contentDescription="مسح تاريخ الانتهاء"
+        app:cornerRadius="8dp"
+        app:iconPadding="0dp" />
 
     <!-- حقل التاريخ -->
     <com.google.android.material.textfield.TextInputLayout
@@ -194,7 +209,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- أيقونة التقويم - للعرض فقط -->
+    <!-- أيقونة التقويم - في اليمين للعرض فقط -->
     <ImageView
         android:id="@+id/iconCalendar"
         android:layout_width="28dp"
@@ -204,21 +219,8 @@
         android:tint="#4CAF50"
         android:contentDescription="تاريخ الانتهاء" />
 
-    <!-- زر OCR -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnScanDate"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:minHeight="0dp"
-        android:text="OCR"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:contentDescription="مسح تاريخ الانتهاء"
-        app:cornerRadius="8dp"
-        app:iconPadding="0dp" />
-
 </LinearLayout>
+
     
    <!-- الكمية (كرتون / باكت / حبة) -->
             <LinearLayout
