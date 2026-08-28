@@ -97,6 +97,19 @@ class DateScannerActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+  private fun isInternetAvailable(): Boolean {
+    val connectivityManager =
+        getSystemService(CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+
+    val network = connectivityManager.activeNetwork ?: return false
+
+    val capabilities =
+        connectivityManager.getNetworkCapabilities(network) ?: return false
+
+    return capabilities.hasCapability(
+        android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+    )
+  }
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
