@@ -136,19 +136,19 @@ class AddProductActivity : AppCompatActivity() {
         ).show()
     }
 
-    // 5. --- فتح قارئ تاريخ الصلاحية ---
-    binding.btnOpenCalendar.setOnClickListener {
+   // 5. --- مسح تاريخ الانتهاء بواسطة OCR ---
+binding.btnScanDate.setOnClickListener {
 
-        val intent = Intent(
-            this,
-            DateScannerActivity::class.java
-        )
+    val intent = Intent(
+        this,
+        DateScannerActivity::class.java
+    )
 
-        startActivityForResult(
-            intent,
-            REQUEST_DATE_SCAN
-        )
-    }
+    startActivityForResult(
+        intent,
+        REQUEST_DATE_SCAN
+    )
+}
 
     // 6. --- زر الباكت ---
     binding.btnHasPack.setOnClickListener {
