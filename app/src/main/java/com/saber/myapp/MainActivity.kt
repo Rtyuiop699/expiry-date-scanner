@@ -8,7 +8,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -76,9 +79,7 @@ class MainActivity : AppCompatActivity() {
         loadProductsFromDatabase()
     }
 
-        private fun setupToolbar() {
-        // تم حذف زر البحث تماماً
-
+    private fun setupToolbar() {
         // مساعدة (عرض نافذة المساعدة بدلاً من Toast)
         findViewById<ImageView>(R.id.btnHelp)?.setOnClickListener {
             showHelpDialog()
@@ -98,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     // دالة عرض نافذة المساعدة
     private fun showHelpDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialoghelp, null)
-        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(true)
 
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         popup.setOnMenuItemClickListener { item ->
             when (item.title.toString()) {
                 "اللغة" -> {
-                    Toast.makeText(this, "إعداد اللغة", Toast.LENGTH_SHORT).show()
+                    showLanguageDialog()
                 }
                 "المظهر" -> {
                     Toast.makeText(this, "إعداد المظهر", Toast.LENGTH_SHORT).show()
@@ -141,7 +142,37 @@ class MainActivity : AppCompatActivity() {
 
         popup.show()
     }
-    
+
+    // نافذة اختيار اللغة
+    private fun showLanguageDialog() {
+        val languages = arrayOf("عربي", "English")
+
+        AlertDialog.Builder(this)
+            .setTitle("اختر اللغة / Select Language")
+            .setItems(languages) { _, which ->
+                when (which) {
+                    0 -> {
+                        // إعادة التطبيق إلى اللغة العربية
+                        setAppLocale("ar")
+                    }
+                    1 -> {
+                        // إظهار تنبيه بإضافة اللغة الإنجليزية قريباً
+                        Toast.makeText(
+                            this,
+                            "English language support will be added soon.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+            .show()
+    }
+
+    // دالة ضبط لغة التطبيق
+    private fun setAppLocale(languageCode: String) {
+        val appLocale = LocaleListCompat.forLanguageTags(languageCode)
+        AppCompatDelegate.setApplicationLocales(appLocale)
+    }
 
     private fun handleBarcodeResult(barcode: String) {
         val existingProduct = databaseHelper.getProductByBarcode(barcode)
