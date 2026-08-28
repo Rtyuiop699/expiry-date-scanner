@@ -169,16 +169,8 @@
                     android:src="@drawable/icbarcode"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
-<!-- التاريخ + الأيقونة -->
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:layout_marginTop="16dp">
-
-    <!-- حقل التاريخ -->
-    <!-- التاريخ + أيقونة التقويم + زر OCR -->
+            
+<!-- التاريخ + أيقونة التقويم + زر OCR -->
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -198,7 +190,8 @@
             android:id="@+id/editTextDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"/>
+            android:inputType="date" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- أيقونة التقويم - للعرض فقط -->
@@ -206,10 +199,10 @@
         android:id="@+id/iconCalendar"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:src="@drawable/iccalendar"
         android:layout_marginStart="8dp"
+        android:src="@drawable/iccalendar"
         android:tint="#4CAF50"
-        android:contentDescription="تاريخ الانتهاء"/>
+        android:contentDescription="تاريخ الانتهاء" />
 
     <!-- زر OCR -->
     <com.google.android.material.button.MaterialButton
@@ -221,11 +214,12 @@
         android:text="OCR"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:contentDescription="قراءة تاريخ الانتهاء"
+        android:contentDescription="مسح تاريخ الانتهاء"
         app:cornerRadius="8dp"
-        app:iconPadding="0dp"/>
-        
+        app:iconPadding="0dp" />
+
 </LinearLayout>
+    
    <!-- الكمية (كرتون / باكت / حبة) -->
             <LinearLayout
                 android:orientation="vertical"
