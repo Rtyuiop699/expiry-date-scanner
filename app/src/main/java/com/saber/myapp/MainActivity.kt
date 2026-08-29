@@ -762,5 +762,36 @@ class MainActivity : AppCompatActivity() {
         listHandler.setup(
             filteredList.toMutableList()
         )
+    
+   }
+override fun onBackPressed() {
+
+    val searchField = findViewById<EditText>(R.id.searchField)
+
+    if (searchField.hasFocus()) {
+
+        // إخفاء لوحة المفاتيح
+        val imm = getSystemService(
+            INPUT_METHOD_SERVICE
+        ) as android.view.inputmethod.InputMethodManager
+
+        imm.hideSoftInputFromWindow(
+            searchField.windowToken,
+            0
+        )
+
+        // إزالة التركيز من حقل البحث
+        searchField.clearFocus()
+
+        // إزالة المؤشر
+        searchField.isCursorVisible = false
+
+    } else {
+
+        // الرجوع الطبيعي
+        super.onBackPressed()
     }
 }
+}
+
+
