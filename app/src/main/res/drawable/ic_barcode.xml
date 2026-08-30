@@ -3,8 +3,18 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- خلفية شفافة داخلية مع رسم خطوط الباركود باللون الأسود -->
+
+    <!-- باركود كبير يملأ مساحة الأيقونة تقريبًا -->
     <path
         android:fillColor="#000000"
-        android:pathData="M2,4h2v16H2V4z M5,4h1v16H5V4z M7,4h3v16H7V4z M11,4h1v16h-1V4z M13,4h2v16h-2V4z M16,4h3v16h-3V4z M20,4h2v16h-2V4z" />
+        android:pathData="
+            M1,2h2v20H1V2z
+            M4,2h1v20H4V2z
+            M6,2h3v20H6V2z
+            M10,2h1v20H10V2z
+            M12,2h2v20H12V2z
+            M15,2h1v20H15V2z
+            M17,2h3v20H17V2z
+            M21,2h2v20H21V2z" />
+
 </vector>
