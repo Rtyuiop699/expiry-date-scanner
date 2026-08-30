@@ -212,19 +212,19 @@
 
 
        <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="إضافة / مسح"
-        android:src="@drawable/ic_barcode"
-        app:backgroundTint="#FFFFFF"
-        app:tint="@null"
-        app:strokeColor="#000000"
-        app:strokeWidth="1.5dp"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    android:id="@+id/fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:contentDescription="إضافة / مسح"
+    android:src="@drawable/ic_barcode"
+    app:backgroundTint="#FFFFFF"
+    app:tint="@null"
+    app:strokeColor="#555555"
+    app:strokeWidth="1dp"
+    app:elevation="6dp"
+    app:pressedTranslationZ="12dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
