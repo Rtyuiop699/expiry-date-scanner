@@ -40,6 +40,11 @@
 
         </activity>
 
+        <!-- صفحة إعدادات التطبيق -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
         <activity
             android:name=".AddProductActivity"
             android:screenOrientation="portrait"
