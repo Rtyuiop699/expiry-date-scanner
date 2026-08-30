@@ -311,72 +311,16 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // =========================================================
-    // قائمة الإعدادات
-    // =========================================================
+    
 
-    private fun showSettingsMenu(anchor: View) {
+   // =========================================================
+// قائمة الإعدادات - الانتقال للشاشة الجديدة بنفس ستايل الصورة
+// =========================================================
 
-        val popup =
-            PopupMenu(this, anchor)
-
-
-        popup.menu.add("اللغة")
-
-        popup.menu.add("المظهر")
-
-        popup.menu.add(
-            "تصدير المنتجات إلى قاعدة البيانات العالمية"
-        )
-
-        popup.menu.add(
-            "تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا"
-        )
-
-
-        popup.setOnMenuItemClickListener { item ->
-
-            when (item.title.toString()) {
-
-                "اللغة" -> {
-
-                    showLanguageDialog()
-                }
-
-
-                "المظهر" -> {
-
-                    showThemeDialog()
-                }
-
-
-                "تصدير المنتجات إلى قاعدة البيانات العالمية" -> {
-
-                    Toast.makeText(
-                        this,
-                        "تصدير المنتجات",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-
-                "تصدير صور OCR التي يلتقطها المستخدم لتحسين منتجاتنا" -> {
-
-                    Toast.makeText(
-                        this,
-                        "تصدير صور OCR",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            true
-        }
-
-
-        popup.show()
-    }
-
+private fun showSettingsMenu(anchor: View) {
+    val intent = Intent(this, SettingsActivity::class.java)
+    startActivity(intent)
+}
 
     // =========================================================
     // نافذة المظهر
