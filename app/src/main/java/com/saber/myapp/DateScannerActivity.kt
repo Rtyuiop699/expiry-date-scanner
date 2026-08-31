@@ -152,64 +152,79 @@ class DateScannerActivity : AppCompatActivity() {
         )
     }
 
-    // =====================================================
-    // التقاط الصورة
-    // =====================================================
-        private fun takePhoto() {
+       // =====================================================
+// التقاط الصورة
+// =====================================================
 
-        val imageCapture = imageCapture ?: return
+private fun takePhoto() {
 
-        val photoFile = createImageFile()
+    val imageCapture = imageCapture ?: return
 
-        val outputOptions =
-            ImageCapture.OutputFileOptions
-                .Builder(photoFile)
-                .build()
+    val photoFile = createImageFile()
 
-        btnCapture.isEnabled = false
-        btnCapture.text = "⏳ جاري..."
+    val outputOptions =
+        ImageCapture.OutputFileOptions
+            .Builder(photoFile)
+            .build()
 
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
+    btnCapture.isEnabled = false
+    btnCapture.text = "⏳ جاري..."
 
-            object : ImageCapture.OnImageSavedCallback {
+    imageCapture.takePicture(
+        outputOptions,
+        ContextCompat.getMainExecutor(this),
 
-                override fun onImageSaved(
-                    output: ImageCapture.OutputFileResults
-                ) {
+        object : ImageCapture.OnImageSavedCallback {
 
-                    btnCapture.isEnabled = true
-                    btnCapture.text = "📸 تصوير"
+            override fun onImageSaved(
+                output: ImageCapture.OutputFileResults
+            ) {
 
-                    val bitmap =
-                        BitmapFactory.decodeFile(
-                            photoFile.absolutePath
-                        )
+                btnCapture.isEnabled = true
+                btnCapture.text = "📸 تصوير"
 
-                    if (bitmap != null) {
-                        recognizeDate(bitmap)
-                    }
-                }
+                val bitmap =
+                    BitmapFactory.decodeFile(
+                        photoFile.absolutePath
+                    )
 
-                override fun onError(
-                    exception: ImageCaptureException
-                ) {
-
-                    btnCapture.isEnabled = true
-                    btnCapture.text = "📸 تصوير"
-
-                    Toast.makeText(
-                        this@DateScannerActivity,
-                        "فشل التقاط الصورة",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (bitmap != null) {
+                    recognizeDate(bitmap)
                 }
             }
-        )
-    }
 
-    
+            override fun onError(
+                exception: ImageCaptureException
+            ) {
+
+                btnCapture.isEnabled = true
+                btnCapture.text = "📸 تصوير"
+
+                Toast.makeText(
+                    this@DateScannerActivity,
+                    "فشل التقاط الصورة",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    )
+}
+
+private fun createImageFile(): File {
+
+    val timeStamp =
+        SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.getDefault()
+        ).format(Date())
+
+    return File.createTempFile(
+        "DATE_$timeStamp",
+        ".jpg",
+        getExternalFilesDir(null)
+    )
+} 
+
     // =====================================================
     // التعرف على التاريخ بواسطة OCR
     // =====================================================
