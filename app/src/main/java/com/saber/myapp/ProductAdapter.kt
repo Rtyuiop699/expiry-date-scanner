@@ -222,58 +222,30 @@ class ProductAdapter(
         when {
 
             // صورة محلية
-            !path.isNullOrEmpty() &&
-                    !path.startsWith("http") -> {
-
-                val file =
-                    java.io.File(path)
-
+                     // صورة محلية
+            !path.isNullOrEmpty() && !path.startsWith("http") -> {
+                val file = java.io.File(path)
                 if (file.exists()) {
-
-                    val bitmap =
-                        BitmapFactory.decodeFile(
-                            file.absolutePath
-                        )
-
-                    holder.imageView
-                        .setImageBitmap(bitmap)
-
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    holder.imageView.setImageBitmap(bitmap)
                 } else {
-
-                    holder.imageView
-                        .setImageResource(
-                            android.R.drawable
-                                .ic_menu_report_image
-                        )
+                    holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
                 }
             }
 
             // صورة من الإنترنت
-            !path.isNullOrEmpty() &&
-                    path.startsWith("http") -> {
-
+            !path.isNullOrEmpty() && path.startsWith("http") -> {
                 com.bumptech.glide.Glide
                     .with(holder.itemView.context)
                     .load(path)
-                    .placeholder(
-                        android.R.drawable
-                            .progress_horizontal
-                    )
-                    .error(
-                        android.R.drawable
-                            .ic_menu_report_image
-                    )
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
                     .into(holder.imageView)
             }
 
             // لا توجد صورة
             else -> {
-
-                holder.imageView
-                    .setImageResource(
-                        android.R.drawable
-                            .ic_menu_report_image
-                    )
+                holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
             }
         }
 
@@ -282,21 +254,62 @@ class ProductAdapter(
         // =====================================================
 
         holder.itemView.setOnClickListener {
-
             onItemClick(product)
         }
 
         // =====================================================
-        // الضغط المطول
+        // الضغط المطول (النافذة المنبثقة بالسهم)
         // =====================================================
 
-        holder.itemView.setOnLongClickListener {
+        holder.itemView.setOnLongClickListener { view ->
+            val context = view.context
 
-            onItemLongClick(product)
+            val balloon = com.skydoves.balloon.Balloon.Builder(context)
+                .setLayout(R.layout.layout_popup_menu)
+                .setArrowSize(10)
+                .setArrowOrientation(com.skydoves.balloon.ArrowOrientation.BOTTOM)
+                .setArrowPositionRules(com.skydoves.balloon.ArrowPositionRules.ALIGN_ANCHOR)
+                .setCornerRadius(14f)
+                .setBackgroundColor(android.graphics.Color.WHITE)
+                .setElevation(8)
+                .setDismissWhenClicked(true)
+                .setBalloonAnimation(com.skydoves.balloon.BalloonAnimation.FADE)
+                .build()
+
+            val viewMenu = balloon.getContentView()
+
+            // 1. تعديل
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionEdit)
+                ?.setOnClickListener {
+                    // يمكنك استدعاء دالة التعديل هنا أو استخدام الـ listener الخاص بك
+                    onItemLongClick(product)
+                    balloon.dismiss()
+                }
+
+            // 2. PDF
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPdf)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            // 3. طباعة
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPrint)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            // 4. حذف
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionDelete)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            // إظهار النافذة المنبثقة فوق العنصر المضغوط
+            balloon.showAlignTop(view)
 
             true
         }
-    }
+        
 
     // =========================================================
     // عدد العناصر
