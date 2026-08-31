@@ -230,10 +230,10 @@ private fun createImageFile(): File {
         private fun recognizeDate(bitmap: Bitmap) {
 
         val cropped =
-            cropCenter(bitmap)
+    imageProcessor.cropCenter(bitmap)
 
         val processedBitmap =
-            preprocessImage(cropped)
+    imageProcessor.preprocessImage(cropped)
 
         val image =
             InputImage.fromBitmap(
