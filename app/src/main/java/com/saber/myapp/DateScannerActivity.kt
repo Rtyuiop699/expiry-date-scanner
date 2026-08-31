@@ -209,57 +209,6 @@ class DateScannerActivity : AppCompatActivity() {
         )
     }
 
-    private fun createImageFile(): File {
-
-
-    private fun preprocessImage(bitmap: Bitmap): Bitmap {
-
-        val matrix = Matrix()
-
-        matrix.postScale(
-            2f,
-            2f
-        )
-
-        val scaled =
-            Bitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                bitmap.width,
-                bitmap.height,
-                matrix,
-                true
-            )
-
-        val grayBitmap =
-            Bitmap.createBitmap(
-                scaled.width,
-                scaled.height,
-                Bitmap.Config.ARGB_8888
-            )
-
-        val canvas = Canvas(grayBitmap)
-        val paint = Paint()
-
-        val colorMatrix =
-            ColorMatrix().apply {
-                setSaturation(0f)
-            }
-
-        paint.colorFilter =
-            ColorMatrixColorFilter(colorMatrix)
-
-        canvas.drawBitmap(
-            scaled,
-            0f,
-            0f,
-            paint
-        )
-
-        return toBlackWhite(grayBitmap)
-    }
-
     
     // =====================================================
     // التعرف على التاريخ بواسطة OCR
