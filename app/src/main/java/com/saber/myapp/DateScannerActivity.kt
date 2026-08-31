@@ -210,44 +210,6 @@ class DateScannerActivity : AppCompatActivity() {
 
     private fun createImageFile(): File {
 
-        val timeStamp =
-            SimpleDateFormat(
-                "yyyyMMdd_HHmmss",
-                Locale.getDefault()
-            ).format(Date())
-
-        return File.createTempFile(
-            "DATE_$timeStamp",
-            ".jpg",
-            getExternalFilesDir(null)
-        )
-    }
-
-    private fun cropCenter(bitmap: Bitmap): Bitmap {
-
-        val width = bitmap.width
-        val height = bitmap.height
-
-        val cropWidth =
-            (width * 0.7).toInt()
-
-        val cropHeight =
-            (height * 0.3).toInt()
-
-        val left =
-            (width - cropWidth) / 2
-
-        val top =
-            (height - cropHeight) / 2
-
-        return Bitmap.createBitmap(
-            bitmap,
-            left,
-            top,
-            cropWidth,
-            cropHeight
-        )
-    }
 
     private fun preprocessImage(bitmap: Bitmap): Bitmap {
 
