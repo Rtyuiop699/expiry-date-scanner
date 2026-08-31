@@ -12,11 +12,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,8 +42,11 @@ class MainActivity : AppCompatActivity() {
     private val addProductLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
+
         if (result.resultCode == RESULT_OK) {
+
             loadProductsFromDatabase()
+
             Toast.makeText(
                 this,
                 "تم حفظ المنتج بنجاح",
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -78,10 +81,13 @@ class MainActivity : AppCompatActivity() {
         listHandler = ProductListHandler(
             recyclerView = findViewById(R.id.recyclerView),
 
-            // الضغط العادي على المنتج
+            // الضغط العادي
             onProductClicked = { product ->
 
-                if (floatingActionsMenu.visibility == View.VISIBLE) {
+                if (
+                    floatingActionsMenu.visibility ==
+                    View.VISIBLE
+                ) {
 
                     hideFloatingMenu()
 
@@ -95,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 }
             },
 
-            // الضغط المطول على المنتج
+            // الضغط المطول
             onProductLongClicked = { product ->
 
                 showFloatingMenuForProduct(product)
@@ -103,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // =====================================================
-        // إعداد استجابة الأزرار العائمة
+        // إعداد الأزرار العائمة
         // =====================================================
 
         setupFloatingMenuActions()
@@ -116,10 +122,12 @@ class MainActivity : AppCompatActivity() {
             activity = this,
 
             onScanResult = { barcode ->
+
                 handleBarcodeResult(barcode)
             },
 
             onScanCancelled = {
+
                 Toast.makeText(
                     this,
                     "تم إلغاء المسح",
@@ -136,10 +144,12 @@ class MainActivity : AppCompatActivity() {
             activity = this,
 
             onPermissionGranted = {
+
                 scannerHelper.startScanner()
             },
 
             onPermissionDenied = {
+
                 Toast.makeText(
                     this,
                     "عذراً، يجب الموافقة على تصريح الكاميرا",
@@ -153,19 +163,22 @@ class MainActivity : AppCompatActivity() {
         // =====================================================
 
         setupToolbar()
+
         setupChips()
+
         setupSearch()
 
         // =====================================================
         // زر الإضافة / المسح
         // =====================================================
 
-        findViewById<FloatingActionButton>(R.id.fab)
-            ?.setOnClickListener {
+        findViewById<FloatingActionButton>(
+            R.id.fab
+        )?.setOnClickListener {
 
-                permissionManager
-                    .checkAndRequestCameraPermission()
-            }
+            permissionManager
+                .checkAndRequestCameraPermission()
+        }
 
         // =====================================================
         // تحميل المنتجات
@@ -184,91 +197,96 @@ class MainActivity : AppCompatActivity() {
         // زر التعديل
         // -----------------------------------------------------
 
-        findViewById<ImageView>(R.id.btnActionEdit)
-            ?.setOnClickListener {
+        findViewById<ImageView>(
+            R.id.btnActionEdit
+        )?.setOnClickListener {
 
-                selectedProduct?.let { product ->
+            selectedProduct?.let { product ->
 
-                    val intent =
-                        Intent(
-                            this,
-                            AddProductActivity::class.java
-                        ).apply {
+                val intent =
+                    Intent(
+                        this,
+                        AddProductActivity::class.java
+                    ).apply {
 
-                            putExtra(
-                                "BARCODE_EXTRA",
-                                product.barcode
-                            )
-                        }
+                        putExtra(
+                            "BARCODE_EXTRA",
+                            product.barcode
+                        )
+                    }
 
-                    addProductLauncher.launch(intent)
-                }
-
-                hideFloatingMenu()
+                addProductLauncher.launch(intent)
             }
+
+            hideFloatingMenu()
+        }
 
         // -----------------------------------------------------
         // زر PDF
         // -----------------------------------------------------
 
-        findViewById<ImageView>(R.id.btnActionPdf)
-            ?.setOnClickListener {
+        findViewById<ImageView>(
+            R.id.btnActionPdf
+        )?.setOnClickListener {
 
-                selectedProduct?.let { product ->
+            selectedProduct?.let { product ->
 
-                    Toast.makeText(
-                        this,
-                        "تصدير PDF للمنتج: ${product.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                hideFloatingMenu()
+                Toast.makeText(
+                    this,
+                    "تصدير PDF للمنتج: ${product.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+
+            hideFloatingMenu()
+        }
 
         // -----------------------------------------------------
         // زر الطباعة
         // -----------------------------------------------------
 
-        findViewById<ImageView>(R.id.btnActionPrint)
-            ?.setOnClickListener {
+        findViewById<ImageView>(
+            R.id.btnActionPrint
+        )?.setOnClickListener {
 
-                selectedProduct?.let { product ->
+            selectedProduct?.let { product ->
 
-                    Toast.makeText(
-                        this,
-                        "طباعة: ${product.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                hideFloatingMenu()
+                Toast.makeText(
+                    this,
+                    "طباعة: ${product.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
+            hideFloatingMenu()
+        }
+
         // -----------------------------------------------------
-        // زر المسح / الحذف
+        // زر الحذف
         // -----------------------------------------------------
 
-        findViewById<ImageView>(R.id.btnActionDelete)
-            ?.setOnClickListener {
+        findViewById<ImageView>(
+            R.id.btnActionDelete
+        )?.setOnClickListener {
 
-                selectedProduct?.let { product ->
+            selectedProduct?.let { product ->
 
-                    showDeleteConfirmationDialog(product)
-                }
+                showDeleteConfirmationDialog(product)
             }
+        }
     }
-
     // =========================================================
-    // إظهار الأزرار العائمة بجانب المنتج المحدد
+    // إظهار الأزرار العائمة للمنتج المحدد
     // =========================================================
 
-    private fun showFloatingMenuForProduct(product: Product) {
+    private fun showFloatingMenuForProduct(
+        product: Product
+    ) {
 
         selectedProduct = product
 
         val recyclerView =
-            findViewById<androidx.recyclerview.widget.RecyclerView>(
+            findViewById<RecyclerView>(
                 R.id.recyclerView
             )
 
@@ -279,13 +297,15 @@ class MainActivity : AppCompatActivity() {
         // إذا لم نستطع العثور على المنتج
         if (itemView == null) {
 
-            floatingActionsMenu.visibility = View.GONE
+            floatingActionsMenu.visibility =
+                View.GONE
 
             return
         }
 
-        // إظهار القائمة حتى نستطيع معرفة أبعادها
-        floatingActionsMenu.visibility = View.VISIBLE
+        // إظهار القائمة للحصول على أبعادها
+        floatingActionsMenu.visibility =
+            View.VISIBLE
 
         floatingActionsMenu.post {
 
@@ -299,7 +319,7 @@ class MainActivity : AppCompatActivity() {
             val spacing =
                 dpToPx(8)
 
-            // موقع الكرت داخل RecyclerView
+            // موقع المنتج داخل RecyclerView
             val itemTop =
                 itemView.top
 
@@ -309,11 +329,11 @@ class MainActivity : AppCompatActivity() {
             val recyclerHeight =
                 recyclerView.height
 
-            // المساحة المتاحة أسفل الكرت
+            // المساحة الموجودة أسفل المنتج
             val spaceBelow =
                 recyclerHeight - itemBottom
 
-            // هل توجد مساحة كافية أسفل الكرت؟
+            // هل توجد مساحة كافية أسفل المنتج؟
             val showBelow =
                 spaceBelow >=
                         menuHeight + spacing
@@ -322,23 +342,23 @@ class MainActivity : AppCompatActivity() {
             val targetY =
                 if (showBelow) {
 
-                    // أسفل الكرت
+                    // أسفل المنتج
                     itemBottom + spacing
 
                 } else {
 
-                    // أعلى الكرت
+                    // أعلى المنتج
                     itemTop -
                             menuHeight -
                             spacing
                 }
 
-            // مركز الكرت أفقيًا
+            // مركز المنتج أفقيًا
             val itemCenterX =
                 itemView.left +
                         itemView.width / 2
 
-            // توسيط الأزرار مع الكرت
+            // توسيط الأزرار مع المنتج
             var targetX =
                 itemCenterX -
                         menuWidth / 2
@@ -365,7 +385,7 @@ class MainActivity : AppCompatActivity() {
                 )
 
             // =================================================
-            // تحديد الموقع الأفقي
+            // الموقع الأفقي
             // =================================================
 
             floatingActionsMenu.translationX =
@@ -406,7 +426,9 @@ class MainActivity : AppCompatActivity() {
     // تحويل dp إلى px
     // =========================================================
 
-    private fun dpToPx(dp: Int): Int {
+    private fun dpToPx(
+        dp: Int
+    ): Int {
 
         return (
             dp *
@@ -425,7 +447,7 @@ class MainActivity : AppCompatActivity() {
 
         selectedProduct = null
 
-        // إعادة الترجمة إلى الوضع الطبيعي
+        // إعادة الموقع إلى الوضع الطبيعي
         floatingActionsMenu.translationX =
             0f
 
@@ -434,7 +456,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // =========================================================
-    // تأكيد حذف المنتج
+    // نافذة تأكيد حذف المنتج
     // =========================================================
 
     private fun showDeleteConfirmationDialog(
@@ -451,9 +473,7 @@ class MainActivity : AppCompatActivity() {
 
             .setPositiveButton("حذف") { _, _ ->
 
-                // يمكنك استدعاء دالة الحذف
-                // الخاصة بقاعدة البيانات هنا
-
+                // إبقاء السلوك الحالي كما هو
                 loadProductsFromDatabase()
 
                 hideFloatingMenu()
@@ -597,7 +617,9 @@ class MainActivity : AppCompatActivity() {
     // الإعدادات
     // =========================================================
 
-    private fun showSettingsMenu(anchor: View) {
+    private fun showSettingsMenu(
+        anchor: View
+    ) {
 
         val intent =
             Intent(
@@ -645,7 +667,6 @@ class MainActivity : AppCompatActivity() {
             addProductLauncher.launch(intent)
         }
     }
-
     // =========================================================
     // تحميل المنتجات من قاعدة البيانات
     // =========================================================
@@ -805,28 +826,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-  
-                if (isChecked) {
-
-                    currentCategory =
-                        category
-
-                    chip.chipBackgroundColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-                    chip.chipStrokeColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-                    chip.setTextColor(
-             // =========================================================
+    // =========================================================
     // تطبيق البحث والتصنيف
     // =========================================================
 
@@ -872,7 +872,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
 
-        // 1. إخفاء الأزرار العائمة أولاً
+        // -----------------------------------------------------
+        // 1. إذا كانت الأزرار العائمة ظاهرة
+        //    نخفيها أولاً
+        // -----------------------------------------------------
+
         if (
             floatingActionsMenu.visibility ==
             View.VISIBLE
@@ -883,12 +887,15 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // -----------------------------------------------------
+        // 2. التعامل مع حقل البحث
+        // -----------------------------------------------------
+
         val searchField =
             findViewById<EditText>(
                 R.id.searchField
             )
 
-        // 2. التعامل مع حقل البحث
         if (searchField.hasFocus()) {
 
             val imm =
@@ -911,5 +918,4 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-                        }           
-                
+}
