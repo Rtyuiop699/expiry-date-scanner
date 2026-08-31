@@ -204,9 +204,9 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- ========================= -->
-    <!-- الأزرار العائمة للضغط المطول -->
-    <!-- ========================= -->
+<!-- ========================================================= -->
+<!-- الأزرار العائمة عند الضغط المطول -->
+<!-- ========================================================= -->
 
 <LinearLayout
     android:id="@+id/floatingActionsMenu"
@@ -217,66 +217,82 @@
     android:visibility="gone"
     android:elevation="12dp"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:padding="0dp">
 
+    <!-- ===================================================== -->
     <!-- تعديل -->
+    <!-- ===================================================== -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnActionEdit"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_margin="4dp"
         android:contentDescription="تعديل"
         android:src="@drawable/ic_edit"
+        android:scaleType="center"
         app:backgroundTint="#FFFFFF"
-        app:tint="#333333"
+        app:tint="@null"
         app:borderWidth="0dp"
         app:elevation="8dp"
         app:pressedTranslationZ="12dp" />
 
+    <!-- ===================================================== -->
     <!-- PDF -->
+    <!-- ===================================================== -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnActionPdf"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_margin="4dp"
         android:contentDescription="PDF"
         android:src="@drawable/icpdf"
+        android:scaleType="center"
         app:backgroundTint="#FFFFFF"
-        app:tint="#333333"
+        app:tint="@null"
         app:borderWidth="0dp"
         app:elevation="8dp"
         app:pressedTranslationZ="12dp" />
 
+    <!-- ===================================================== -->
     <!-- طباعة -->
+    <!-- ===================================================== -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnActionPrint"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_margin="4dp"
         android:contentDescription="طباعة"
         android:src="@drawable/icprint"
+        android:scaleType="center"
         app:backgroundTint="#FFFFFF"
-        app:tint="#333333"
+        app:tint="@null"
         app:borderWidth="0dp"
         app:elevation="8dp"
         app:pressedTranslationZ="12dp" />
 
+    <!-- ===================================================== -->
     <!-- حذف -->
+    <!-- ===================================================== -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnActionDelete"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_margin="4dp"
         android:contentDescription="حذف"
         android:src="@drawable/icdeletered"
+        android:scaleType="center"
         app:backgroundTint="#FFFFFF"
-        app:tint="#D32F2F"
+        app:tint="@null"
         app:borderWidth="0dp"
         app:elevation="8dp"
         app:pressedTranslationZ="12dp" />
 
 </LinearLayout>
-
 
 
     <!-- ========================= -->
