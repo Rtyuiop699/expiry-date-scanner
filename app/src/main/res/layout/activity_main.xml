@@ -263,7 +263,7 @@
                 android:layout_height="44dp"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_print"
+                android:src="@drawable/icprint"
                 android:contentDescription="طباعة"
                 android:clickable="true"
                 android:focusable="true" />
@@ -275,7 +275,7 @@
                 android:layout_height="44dp"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_delete"
+                android:src="@drawable/icdeletered"
                 android:contentDescription="مسح"
                 android:clickable="true"
                 android:focusable="true" />
