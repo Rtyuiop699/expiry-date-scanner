@@ -4,11 +4,11 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.Filter
-import android.widget.Filterable
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -16,12 +16,18 @@ class ProductAdapter(
     private val products: MutableList<Product>,
     private val onItemClick: (Product) -> Unit,
     private val onItemLongClick: (Product) -> Unit
-) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(),
+    Filterable {
 
     private var filteredProducts: MutableList<Product> =
         products.toMutableList()
 
+    // =========================================================
+    // تحديث القائمة
+    // =========================================================
+
     fun setProducts(newProducts: List<Product>) {
+
         products.clear()
         products.addAll(newProducts)
 
@@ -31,95 +37,162 @@ class ProductAdapter(
         notifyDataSetChanged()
     }
 
+    // =========================================================
+    // الحصول على المنتج حسب الموقع
+    // =========================================================
+
     fun getProductAt(position: Int): Product {
         return filteredProducts[position]
     }
 
+    // =========================================================
+    // حذف عنصر
+    // =========================================================
+
     fun removeAt(position: Int) {
-        val item = filteredProducts[position]
+
+        val item =
+            filteredProducts[position]
 
         filteredProducts.removeAt(position)
+
         products.remove(item)
 
         notifyItemRemoved(position)
     }
 
-    class ProductViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
+    // =========================================================
+    // ViewHolder
+    // =========================================================
+
+    class ProductViewHolder(
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
 
         val imageView: ImageView =
-            itemView.findViewById(R.id.imageViewProduct)
+            itemView.findViewById(
+                R.id.imageViewProduct
+            )
 
         val nameView: TextView =
-            itemView.findViewById(R.id.textViewName)
+            itemView.findViewById(
+                R.id.textViewName
+            )
 
         val expiryView: TextView =
-            itemView.findViewById(R.id.textViewExpiry)
+            itemView.findViewById(
+                R.id.textViewExpiry
+            )
 
         val remainingView: TextView =
-            itemView.findViewById(R.id.textViewRemaining)
+            itemView.findViewById(
+                R.id.textViewRemaining
+            )
 
         val barcodeView: TextView =
-            itemView.findViewById(R.id.textViewBarcode)
+            itemView.findViewById(
+                R.id.textViewBarcode
+            )
     }
+
+    // =========================================================
+    // إنشاء ViewHolder
+    // =========================================================
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ProductViewHolder {
 
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_product, parent, false)
+        val view =
+            LayoutInflater.from(parent.context)
+                .inflate(
+                    R.layout.item_product,
+                    parent,
+                    false
+                )
 
         return ProductViewHolder(view)
     }
+
+    // =========================================================
+    // ربط البيانات
+    // =========================================================
 
     override fun onBindViewHolder(
         holder: ProductViewHolder,
         position: Int
     ) {
 
-        val product = filteredProducts[position]
+        val product =
+            filteredProducts[position]
 
+        // -----------------------------------------------------
         // اسم المنتج
-        holder.nameView.text = product.name
+        // -----------------------------------------------------
 
+        holder.nameView.text =
+            product.name
+
+        // -----------------------------------------------------
         // تاريخ الانتهاء
-        holder.expiryView.text = product.expiryDate
+        // -----------------------------------------------------
 
+        holder.expiryView.text =
+            product.expiryDate
+
+        // -----------------------------------------------------
         // حساب الأيام المتبقية
+        // -----------------------------------------------------
+
         try {
 
-            val expiryDate = LocalDate.parse(product.expiryDate)
-            val today = LocalDate.now()
+            val expiryDate =
+                LocalDate.parse(
+                    product.expiryDate
+                )
+
+            val today =
+                LocalDate.now()
 
             val daysRemaining =
-                ChronoUnit.DAYS.between(today, expiryDate)
+                ChronoUnit.DAYS.between(
+                    today,
+                    expiryDate
+                )
 
             when {
 
                 daysRemaining > 1 -> {
+
                     holder.remainingView.text =
                         "متبقي $daysRemaining يوم"
                 }
 
                 daysRemaining == 1L -> {
+
                     holder.remainingView.text =
                         "متبقي يوم واحد"
                 }
 
                 daysRemaining == 0L -> {
+
                     holder.remainingView.text =
                         "ينتهي اليوم"
                 }
 
                 else -> {
-                    val expiredDays = -daysRemaining
+
+                    val expiredDays =
+                        -daysRemaining
 
                     if (expiredDays == 1L) {
+
                         holder.remainingView.text =
                             "منتهي منذ يوم واحد"
+
                     } else {
+
                         holder.remainingView.text =
                             "منتهي منذ $expiredDays يوم"
                     }
@@ -132,12 +205,19 @@ class ProductAdapter(
                 "تاريخ غير صالح"
         }
 
+        // -----------------------------------------------------
         // الباركود
+        // -----------------------------------------------------
+
         holder.barcodeView.text =
             "Barcode: ${product.barcode}"
 
+        // -----------------------------------------------------
         // صورة المنتج
-        val path = product.imagePath
+        // -----------------------------------------------------
+
+        val path =
+            product.imagePath
 
         when {
 
@@ -145,7 +225,8 @@ class ProductAdapter(
             !path.isNullOrEmpty() &&
                     !path.startsWith("http") -> {
 
-                val file = java.io.File(path)
+                val file =
+                    java.io.File(path)
 
                 if (file.exists()) {
 
@@ -154,13 +235,16 @@ class ProductAdapter(
                             file.absolutePath
                         )
 
-                    holder.imageView.setImageBitmap(bitmap)
+                    holder.imageView
+                        .setImageBitmap(bitmap)
 
                 } else {
 
-                    holder.imageView.setImageResource(
-                        android.R.drawable.ic_menu_report_image
-                    )
+                    holder.imageView
+                        .setImageResource(
+                            android.R.drawable
+                                .ic_menu_report_image
+                        )
                 }
             }
 
@@ -172,10 +256,12 @@ class ProductAdapter(
                     .with(holder.itemView.context)
                     .load(path)
                     .placeholder(
-                        android.R.drawable.progress_horizontal
+                        android.R.drawable
+                            .progress_horizontal
                     )
                     .error(
-                        android.R.drawable.ic_menu_report_image
+                        android.R.drawable
+                            .ic_menu_report_image
                     )
                     .into(holder.imageView)
             }
@@ -183,36 +269,47 @@ class ProductAdapter(
             // لا توجد صورة
             else -> {
 
-                holder.imageView.setImageResource(
-                    android.R.drawable.ic_menu_report_image
-                )
+                holder.imageView
+                    .setImageResource(
+                        android.R.drawable
+                            .ic_menu_report_image
+                    )
             }
         }
 
-        // ==========================================
-        // الضغط العادي على المنتج
-        // ==========================================
+        // =====================================================
+        // الضغط العادي
+        // =====================================================
 
         holder.itemView.setOnClickListener {
+
             onItemClick(product)
         }
 
-        // ==========================================
-        // الضغط المطول على المنتج
-        // ==========================================
+        // =====================================================
+        // الضغط المطول
+        // =====================================================
 
         holder.itemView.setOnLongClickListener {
+
             onItemLongClick(product)
 
-            // مهم جدًا
-            // يمنع تنفيذ الضغط العادي بعد الضغط المطول
             true
         }
     }
 
+    // =========================================================
+    // عدد العناصر
+    // =========================================================
+
     override fun getItemCount(): Int {
+
         return filteredProducts.size
     }
+
+    // =========================================================
+    // البحث
+    // =========================================================
 
     override fun getFilter(): Filter {
 
@@ -223,11 +320,13 @@ class ProductAdapter(
             ): FilterResults {
 
                 val query =
-                    constraint?.toString()
+                    constraint
+                        ?.toString()
                         ?.lowercase()
                         ?.trim()
 
                 val results =
+
                     if (query.isNullOrEmpty()) {
 
                         products
@@ -235,15 +334,18 @@ class ProductAdapter(
                     } else {
 
                         products.filter {
+
                             it.name
                                 .lowercase()
                                 .startsWith(query)
                         }
                     }
 
-                val filterResults = FilterResults()
+                val filterResults =
+                    FilterResults()
 
-                filterResults.values = results
+                filterResults.values =
+                    results
 
                 return filterResults
             }
@@ -254,13 +356,17 @@ class ProductAdapter(
             ) {
 
                 filteredProducts =
+
                     if (constraint.isNullOrEmpty()) {
 
                         products.toMutableList()
 
                     } else {
 
-                        (results?.values as? List<Product>)
+                        (
+                            results?.values
+                                as? List<Product>
+                            )
                             ?.toMutableList()
                             ?: mutableListOf()
                     }
@@ -269,4 +375,4 @@ class ProductAdapter(
             }
         }
     }
-}
+    }
