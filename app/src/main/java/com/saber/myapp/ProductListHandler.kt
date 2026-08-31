@@ -5,15 +5,27 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ProductListHandler(
     private val recyclerView: RecyclerView,
-    private val onProductClicked: (Product) -> Unit
+    private val onProductClicked: (Product) -> Unit,
+    private val onProductLongClicked: (Product) -> Unit
 ) {
+
     private var adapter: ProductAdapter? = null
 
     fun setup(products: MutableList<Product>) {
-        adapter = ProductAdapter(products) { product ->
-            onProductClicked(product)
-        }
-        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
+
+        adapter = ProductAdapter(
+            products,
+            onItemClick = { product ->
+                onProductClicked(product)
+            },
+            onItemLongClick = { product ->
+                onProductLongClicked(product)
+            }
+        )
+
+        recyclerView.layoutManager =
+            LinearLayoutManager(recyclerView.context)
+
         recyclerView.adapter = adapter
     }
 
