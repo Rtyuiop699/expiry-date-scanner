@@ -32,6 +32,7 @@ class DateScannerActivity : AppCompatActivity() {
 
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
+    private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
    private lateinit var imageProcessor: ImageProcessor
     companion object {
