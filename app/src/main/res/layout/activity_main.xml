@@ -208,81 +208,75 @@
     <!-- الأزرار العائمة للضغط المطول -->
     <!-- ========================= -->
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/floatingActionsMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginBottom="24dp"
-        app:cardCornerRadius="28dp"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardElevation="8dp"
-        app:strokeColor="#E0E0E0"
-        app:strokeWidth="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+<LinearLayout
+    android:id="@+id/floatingActionsMenu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:visibility="gone"
+    android:elevation="12dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+    <!-- تعديل -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnActionEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:contentDescription="تعديل"
+        android:src="@drawable/ic_edit"
+        app:backgroundTint="#FFFFFF"
+        app:tint="#333333"
+        app:borderWidth="0dp"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
 
-            <!-- زر التعديل -->
-            <ImageView
-                android:id="@+id/btnActionEdit"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_edit"
-                android:contentDescription="تعديل"
-                android:clickable="true"
-                android:focusable="true" />
+    <!-- PDF -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnActionPdf"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:contentDescription="PDF"
+        android:src="@drawable/icpdf"
+        app:backgroundTint="#FFFFFF"
+        app:tint="#333333"
+        app:borderWidth="0dp"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
 
-            <!-- زر PDF -->
-            <ImageView
-                android:id="@+id/btnActionPdf"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/icpdf"
-                android:contentDescription="PDF"
-                android:clickable="true"
-                android:focusable="true" />
+    <!-- طباعة -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnActionPrint"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:contentDescription="طباعة"
+        android:src="@drawable/icprint"
+        app:backgroundTint="#FFFFFF"
+        app:tint="#333333"
+        app:borderWidth="0dp"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
 
-            <!-- زر الطباعة -->
-            <ImageView
-                android:id="@+id/btnActionPrint"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/icprint"
-                android:contentDescription="طباعة"
-                android:clickable="true"
-                android:focusable="true" />
+    <!-- حذف -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnActionDelete"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        android:contentDescription="حذف"
+        android:src="@drawable/icdeletered"
+        app:backgroundTint="#FFFFFF"
+        app:tint="#D32F2F"
+        app:borderWidth="0dp"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
 
-            <!-- زر المسح (الحذف) -->
-            <ImageView
-                android:id="@+id/btnActionDelete"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/icdeletered"
-                android:contentDescription="مسح"
-                android:clickable="true"
-                android:focusable="true" />
+</LinearLayout>
 
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
 
 
     <!-- ========================= -->
