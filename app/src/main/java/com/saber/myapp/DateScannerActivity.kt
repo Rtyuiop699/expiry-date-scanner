@@ -34,7 +34,6 @@ class DateScannerActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
-   private lateinit var imageProcessor: ImageProcessor
     companion object {
         private const val REQUEST_CAMERA = 100
         const val EXTRA_DATE = "recognized_date"
