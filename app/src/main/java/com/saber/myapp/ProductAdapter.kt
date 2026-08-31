@@ -27,7 +27,6 @@ class ProductAdapter(
     // =========================================================
 
     fun setProducts(newProducts: List<Product>) {
-
         products.clear()
         products.addAll(newProducts)
 
@@ -50,14 +49,9 @@ class ProductAdapter(
     // =========================================================
 
     fun removeAt(position: Int) {
-
-        val item =
-            filteredProducts[position]
-
+        val item = filteredProducts[position]
         filteredProducts.removeAt(position)
-
         products.remove(item)
-
         notifyItemRemoved(position)
     }
 
@@ -65,164 +59,92 @@ class ProductAdapter(
     // ViewHolder
     // =========================================================
 
-    class ProductViewHolder(
-        itemView: View
-    ) : RecyclerView.ViewHolder(itemView) {
-
-        val imageView: ImageView =
-            itemView.findViewById(
-                R.id.imageViewProduct
-            )
-
-        val nameView: TextView =
-            itemView.findViewById(
-                R.id.textViewName
-            )
-
-        val expiryView: TextView =
-            itemView.findViewById(
-                R.id.textViewExpiry
-            )
-
-        val remainingView: TextView =
-            itemView.findViewById(
-                R.id.textViewRemaining
-            )
-
-        val barcodeView: TextView =
-            itemView.findViewById(
-                R.id.textViewBarcode
-            )
+    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.imageViewProduct)
+        val nameView: TextView = itemView.findViewById(R.id.textViewName)
+        val expiryView: TextView = itemView.findViewById(R.id.textViewExpiry)
+        val remainingView: TextView = itemView.findViewById(R.id.textViewRemaining)
+        val barcodeView: TextView = itemView.findViewById(R.id.textViewBarcode)
     }
 
     // =========================================================
     // إنشاء ViewHolder
     // =========================================================
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ProductViewHolder {
-
-        val view =
-            LayoutInflater.from(parent.context)
-                .inflate(
-                    R.layout.item_product,
-                    parent,
-                    false
-                )
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
     }
 
     // =========================================================
-    // ربط البيانات
+    // عدد العناصر
     // =========================================================
 
-    override fun onBindViewHolder(
-        holder: ProductViewHolder,
-        position: Int
-    ) {
+    override fun getItemCount(): Int {
+        return filteredProducts.size
+    }
 
-        val product =
-            filteredProducts[position]
+    // =========================================================
+    // ربط البيانات (onBindViewHolder)
+    // =========================================================
+
+    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+        val product = filteredProducts[position]
 
         // -----------------------------------------------------
         // اسم المنتج
         // -----------------------------------------------------
-
-        holder.nameView.text =
-            product.name
+        holder.nameView.text = product.name
 
         // -----------------------------------------------------
         // تاريخ الانتهاء
         // -----------------------------------------------------
-
-        holder.expiryView.text =
-            product.expiryDate
+        holder.expiryView.text = product.expiryDate
 
         // -----------------------------------------------------
         // حساب الأيام المتبقية
         // -----------------------------------------------------
-
         try {
-
-            val expiryDate =
-                LocalDate.parse(
-                    product.expiryDate
-                )
-
-            val today =
-                LocalDate.now()
-
-            val daysRemaining =
-                ChronoUnit.DAYS.between(
-                    today,
-                    expiryDate
-                )
+            val expiryDate = LocalDate.parse(product.expiryDate)
+            val today = LocalDate.now()
+            val daysRemaining = ChronoUnit.DAYS.between(today, expiryDate)
 
             when {
-
                 daysRemaining > 1 -> {
-
-                    holder.remainingView.text =
-                        "متبقي $daysRemaining يوم"
+                    holder.remainingView.text = "متبقي $daysRemaining يوم"
                 }
-
                 daysRemaining == 1L -> {
-
-                    holder.remainingView.text =
-                        "متبقي يوم واحد"
+                    holder.remainingView.text = "متبقي يوم واحد"
                 }
-
                 daysRemaining == 0L -> {
-
-                    holder.remainingView.text =
-                        "ينتهي اليوم"
+                    holder.remainingView.text = "ينتهي اليوم"
                 }
-
                 else -> {
-
-                    val expiredDays =
-                        -daysRemaining
-
+                    val expiredDays = -daysRemaining
                     if (expiredDays == 1L) {
-
-                        holder.remainingView.text =
-                            "منتهي منذ يوم واحد"
-
+                        holder.remainingView.text = "منتهي منذ يوم واحد"
                     } else {
-
-                        holder.remainingView.text =
-                            "منتهي منذ $expiredDays يوم"
+                        holder.remainingView.text = "منتهي منذ $expiredDays يوم"
                     }
                 }
             }
-
         } catch (e: Exception) {
-
-            holder.remainingView.text =
-                "تاريخ غير صالح"
+            holder.remainingView.text = "تاريخ غير صالح"
         }
 
         // -----------------------------------------------------
         // الباركود
         // -----------------------------------------------------
-
-        holder.barcodeView.text =
-            "Barcode: ${product.barcode}"
+        holder.barcodeView.text = "Barcode: ${product.barcode}"
 
         // -----------------------------------------------------
         // صورة المنتج
         // -----------------------------------------------------
-
-        val path =
-            product.imagePath
+        val path = product.imagePath
 
         when {
-
             // صورة محلية
-                     // صورة محلية
             !path.isNullOrEmpty() && !path.startsWith("http") -> {
                 val file = java.io.File(path)
                 if (file.exists()) {
@@ -232,35 +154,30 @@ class ProductAdapter(
                     holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
                 }
             }
-
             // صورة من الإنترنت
             !path.isNullOrEmpty() && path.startsWith("http") -> {
-                com.bumptech.glide.Glide
-                    .with(holder.itemView.context)
+                com.bumptech.glide.Glide.with(holder.itemView.context)
                     .load(path)
                     .placeholder(android.R.drawable.progress_horizontal)
                     .error(android.R.drawable.ic_menu_report_image)
                     .into(holder.imageView)
             }
-
             // لا توجد صورة
             else -> {
                 holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
             }
         }
 
-        // =====================================================
+        // -----------------------------------------------------
         // الضغط العادي
-        // =====================================================
-
+        // -----------------------------------------------------
         holder.itemView.setOnClickListener {
             onItemClick(product)
         }
 
-        // =====================================================
+        // -----------------------------------------------------
         // الضغط المطول (النافذة المنبثقة بالسهم)
-        // =====================================================
-
+        // -----------------------------------------------------
         holder.itemView.setOnLongClickListener { view ->
             val context = view.context
 
@@ -281,7 +198,6 @@ class ProductAdapter(
             // 1. تعديل
             viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionEdit)
                 ?.setOnClickListener {
-                    // يمكنك استدعاء دالة التعديل هنا أو استخدام الـ listener الخاص بك
                     onItemLongClick(product)
                     balloon.dismiss()
                 }
@@ -309,22 +225,12 @@ class ProductAdapter(
 
             true
         }
-        
-
-    // =========================================================
-    // عدد العناصر
-    // =========================================================
-
-    override fun getItemCount(): Int {
-
-        return filteredProducts.size
     }
 
-
-
-        // =====================================================
+    // =========================================================
     // دالة الفلترة (getFilter)
-    // =====================================================
+    // =========================================================
+
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -345,90 +251,11 @@ class ProductAdapter(
                 filteredProducts = if (constraint.isNullOrEmpty()) {
                     products.toMutableList()
                 } else {
+                    @Suppress("UNCHECKED_CAST")
                     (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
                 }
                 notifyDataSetChanged()
             }
         }
     }
-
-    // =====================================================
-    // دالة الربط والعرض (onBindViewHolder)
-    // =====================================================
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val product = filteredProducts[position]
-        val path = product.imagePath
-
-        // تحميل الصور
-        when {
-            !path.isNullOrEmpty() && !path.startsWith("http") -> {
-                val file = java.io.File(path)
-                if (file.exists()) {
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                    holder.imageView.setImageBitmap(bitmap)
-                } else {
-                    holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
-                }
-            }
-            !path.isNullOrEmpty() && path.startsWith("http") -> {
-                com.bumptech.glide.Glide.with(holder.itemView.context)
-                    .load(path)
-                    .placeholder(android.R.drawable.progress_horizontal)
-                    .error(android.R.drawable.ic_menu_report_image)
-                    .into(holder.imageView)
-            }
-            else -> {
-                holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
-            }
-        }
-
-        // الضغط العادي
-        holder.itemView.setOnClickListener {
-            onItemClick(product)
-        }
-
-        // الضغط المطول (Balloon Popup)
-        holder.itemView.setOnLongClickListener { view ->
-            val context = view.context
-
-            val balloon = com.skydoves.balloon.Balloon.Builder(context)
-                .setLayout(R.layout.layout_popup_menu)
-                .setArrowSize(10)
-                .setArrowOrientation(com.skydoves.balloon.ArrowOrientation.BOTTOM)
-                .setArrowPositionRules(com.skydoves.balloon.ArrowPositionRules.ALIGN_ANCHOR)
-                .setCornerRadius(14f)
-                .setBackgroundColor(android.graphics.Color.WHITE)
-                .setElevation(8)
-                .setDismissWhenClicked(true)
-                .setBalloonAnimation(com.skydoves.balloon.BalloonAnimation.FADE)
-                .build()
-
-            val viewMenu = balloon.getContentView()
-
-            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionEdit)
-                ?.setOnClickListener {
-                    onItemLongClick(product)
-                    balloon.dismiss()
-                }
-
-            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPdf)
-                ?.setOnClickListener {
-                    balloon.dismiss()
-                }
-
-            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPrint)
-                ?.setOnClickListener {
-                    balloon.dismiss()
-                }
-
-            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionDelete)
-                ?.setOnClickListener {
-                    balloon.dismiss()
-                }
-
-            balloon.showAlignTop(view)
-            true
-        }
     }
-} // هذا القوس الأخير والوحيد لإغلاق كلاس ProductAdapter
-    
