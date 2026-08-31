@@ -14,13 +14,13 @@ import java.time.temporal.ChronoUnit
 
 class ProductAdapter(
     private val products: MutableList<Product>,
-    private val onItemClick: (Product) -> Unit
+    private val onItemClick: (Product) -> Unit,
+    private val onItemLongClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
 
     private var filteredProducts: MutableList<Product> =
         products.toMutableList()
 
-    // تحديث القائمة
     fun setProducts(newProducts: List<Product>) {
         products.clear()
         products.addAll(newProducts)
@@ -128,7 +128,6 @@ class ProductAdapter(
 
         } catch (e: Exception) {
 
-            // في حال كان التاريخ غير صالح
             holder.remainingView.text =
                 "تاريخ غير صالح"
         }
@@ -190,9 +189,24 @@ class ProductAdapter(
             }
         }
 
-        // الضغط على المنتج
+        // ==========================================
+        // الضغط العادي على المنتج
+        // ==========================================
+
         holder.itemView.setOnClickListener {
             onItemClick(product)
+        }
+
+        // ==========================================
+        // الضغط المطول على المنتج
+        // ==========================================
+
+        holder.itemView.setOnLongClickListener {
+            onItemLongClick(product)
+
+            // مهم جدًا
+            // يمنع تنفيذ الضغط العادي بعد الضغط المطول
+            true
         }
     }
 
