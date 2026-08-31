@@ -27,13 +27,17 @@ class MainActivity : AppCompatActivity() {
 
     private val productList = mutableListOf<Product>()
 
+    // التصنيف الحالي
     private var currentCategory = "الكل"
+
+    // نص البحث الحالي
     private var currentSearchText = ""
 
     // المنتج المحدد حالياً عبر الضغط المطول
     private var selectedProduct: Product? = null
     private lateinit var floatingActionsMenu: View
 
+    // فتح شاشة إضافة المنتج
     private val addProductLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -47,41 +51,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // قاعدة البيانات
         databaseHelper = DatabaseHelper(this)
 
-        // الشريط العائم
+        // الشريط العائم للأزرار (مسح، تعديل، طباعة، PDF)
         floatingActionsMenu = findViewById(R.id.floatingActionsMenu)
 
-        // -----------------------------------------------------
-        // إعداد قائمة المنتجات (مع دعم الضغط العادي والمطول)
-        // -----------------------------------------------------
+        // إعداد قائمة المنتجات
         listHandler = ProductListHandler(
-            recyclerView = findViewById(R.id.recyclerView),
-            onItemClick = { product ->
-                if (floatingActionsMenu.visibility == View.VISIBLE) {
-                    hideFloatingMenu()
-                } else {
-                    Toast.makeText(this, "منتج: ${product.name}", Toast.LENGTH_SHORT).show()
-                }
-            },
-            onItemLongClick = { product ->
-                selectedProduct = product
-                showFloatingMenu()
+            findViewById(R.id.recyclerView)
+        ) { product ->
+            // عند الضغط العادي على المنتج
+            if (floatingActionsMenu.visibility == View.VISIBLE) {
+                hideFloatingMenu()
+            } else {
+                Toast.makeText(this, "منتج: ${product.name}", Toast.LENGTH_SHORT).show()
             }
-        )
+        }
 
-        // إعداد أزرار القائمة العائمة
-        setupFloatingMenuListeners()
+        // إعداد استجابة الأزرار العائمة
+        setupFloatingMenuActions()
 
-        // -----------------------------------------------------
-        // إعداد الماسح والتصاريح والتولبار والبحث
-        // -----------------------------------------------------
+        // إعداد الماسح
         scannerHelper = BarcodeScannerHelper(
             activity = this,
             onScanResult = { barcode -> handleBarcodeResult(barcode) },
             onScanCancelled = { Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show() }
         )
 
+        // إدارة التصاريح
         permissionManager = PermissionManager(
             activity = this,
             onPermissionGranted = { scannerHelper.startScanner() },
@@ -92,29 +90,31 @@ class MainActivity : AppCompatActivity() {
         setupChips()
         setupSearch()
 
+        // زر الإضافة / المسح
         findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
             permissionManager.checkAndRequestCameraPermission()
         }
 
+        // تحميل المنتجات
         loadProductsFromDatabase()
     }
 
     // =========================================================
-    // إعداد أزرار الشريط العائم
+    // إعداد وظائف الأزرار العائمة
     // =========================================================
-    private fun setupFloatingMenuListeners() {
-        // 1. زر التعديل
+    private fun setupFloatingMenuActions() {
+        // زر التعديل
         findViewById<ImageView>(R.id.btnActionEdit)?.setOnClickListener {
             selectedProduct?.let { product ->
                 val intent = Intent(this, AddProductActivity::class.java).apply {
-                    putExtra("PRODUCT_ID", product.id) // أو مرر بيانات المنتج المُراد تعديله
+                    putExtra("BARCODE_EXTRA", product.barcode)
                 }
                 addProductLauncher.launch(intent)
             }
             hideFloatingMenu()
         }
 
-        // 2. زر PDF
+        // زر PDF
         findViewById<ImageView>(R.id.btnActionPdf)?.setOnClickListener {
             selectedProduct?.let { product ->
                 Toast.makeText(this, "تصدير PDF للمنتج: ${product.name}", Toast.LENGTH_SHORT).show()
@@ -122,37 +122,40 @@ class MainActivity : AppCompatActivity() {
             hideFloatingMenu()
         }
 
-        // 3. زر الطباعة
+        // زر الطباعة
         findViewById<ImageView>(R.id.btnActionPrint)?.setOnClickListener {
             selectedProduct?.let { product ->
-                Toast.makeText(this, "جاري طباعة: ${product.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "طباعة: ${product.name}", Toast.LENGTH_SHORT).show()
             }
             hideFloatingMenu()
         }
 
-        // 4. زر المسح (الحذف)
+        // زر المسح (الحذف)
         findViewById<ImageView>(R.id.btnActionDelete)?.setOnClickListener {
             selectedProduct?.let { product ->
-                showDeleteDialog(product)
+                showDeleteConfirmationDialog(product)
             }
         }
     }
 
-    private fun showFloatingMenu() {
+    // لإظهار الشريط العائم وتحديد المنتج
+    fun showFloatingMenuForProduct(product: Product) {
+        selectedProduct = product
         floatingActionsMenu.visibility = View.VISIBLE
     }
 
+    // لإخفاء الشريط العائم
     private fun hideFloatingMenu() {
         floatingActionsMenu.visibility = View.GONE
         selectedProduct = null
     }
 
-    private fun showDeleteDialog(product: Product) {
+    private fun showDeleteConfirmationDialog(product: Product) {
         AlertDialog.Builder(this)
-            .setTitle("تأكيد الحذف")
-            .setMessage("هل أنت تأكد من حذف المنتج: ${product.name}؟")
+            .setTitle("حذف المنتج")
+            .setMessage("هل أنت تأكد من رغبتك في حذف ${product.name}؟")
             .setPositiveButton("حذف") { _, _ ->
-                databaseHelper.deleteProduct(product.id) // افترض وجود هذه الدالة في DatabaseHelper
+                // يمكنك استدعاء دالة الحذف الخاصة بقاعدة البيانات لديك هنا
                 loadProductsFromDatabase()
                 hideFloatingMenu()
                 Toast.makeText(this, "تم الحذف بنجاح", Toast.LENGTH_SHORT).show()
@@ -282,10 +285,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     // =========================================================
-    // إدارة زر الرجوع (إلغاء الأزرار العائمة أولاً)
+    // التعامل مع زر الرجوع
     // =========================================================
     override fun onBackPressed() {
-        // 1. إذا كانت الأزرار العائمة ظاهرة، يتم إخفاؤها وإلغاء التحديد
+        // 1. إخفاء شريط الأزرار العائمة أولاً إذا كان معروضاً
         if (floatingActionsMenu.visibility == View.VISIBLE) {
             hideFloatingMenu()
             return
@@ -293,7 +296,7 @@ class MainActivity : AppCompatActivity() {
 
         val searchField = findViewById<EditText>(R.id.searchField)
 
-        // 2. إذا كان حقل البحث يمتلك التركيز
+        // 2. التعامل مع حقل البحث والرجوع العادي
         if (searchField.hasFocus()) {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
             imm.hideSoftInputFromWindow(searchField.windowToken, 0)
