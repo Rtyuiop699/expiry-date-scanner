@@ -1,5 +1,5 @@
 package com.saber.myapp
-
+import com.saber.myapp.image.ImageProcessor
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -33,7 +33,7 @@ class DateScannerActivity : AppCompatActivity() {
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
-
+   private lateinit var imageProcessor: ImageProcessor
     companion object {
         private const val REQUEST_CAMERA = 100
         const val EXTRA_DATE = "recognized_date"
@@ -259,49 +259,7 @@ class DateScannerActivity : AppCompatActivity() {
         return toBlackWhite(grayBitmap)
     }
 
-    private fun toBlackWhite(bitmap: Bitmap): Bitmap {
-
-        val width = bitmap.width
-        val height = bitmap.height
-
-        val result =
-            Bitmap.createBitmap(
-                width,
-                height,
-                Bitmap.Config.ARGB_8888
-            )
-
-        for (x in 0 until width) {
-
-            for (y in 0 until height) {
-
-                val pixel =
-                    bitmap.getPixel(x, y)
-
-                val r = Color.red(pixel)
-                val g = Color.green(pixel)
-                val b = Color.blue(pixel)
-
-                val gray =
-                    (r + g + b) / 3
-
-                val newColor =
-                    if (gray > 140)
-                        Color.WHITE
-                    else
-                        Color.BLACK
-
-                result.setPixel(
-                    x,
-                    y,
-                    newColor
-                )
-            }
-        }
-
-        return result
-    }
-
+    
     // =====================================================
     // التعرف على التاريخ بواسطة OCR
     // =====================================================
