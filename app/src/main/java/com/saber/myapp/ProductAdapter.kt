@@ -320,72 +320,115 @@ class ProductAdapter(
         return filteredProducts.size
     }
 
-    // =========================================================
-    // البحث
-    // =========================================================
 
+
+        // =====================================================
+    // دالة الفلترة (getFilter)
+    // =====================================================
     override fun getFilter(): Filter {
-
         return object : Filter() {
-
-            override fun performFiltering(
-                constraint: CharSequence?
-            ): FilterResults {
-
-                val query =
-                    constraint
-                        ?.toString()
-                        ?.lowercase()
-                        ?.trim()
-
-                val results =
-
-                    if (query.isNullOrEmpty()) {
-
-                        products
-
-                    } else {
-
-                        products.filter {
-
-                            it.name
-                                .lowercase()
-                                .startsWith(query)
-                        }
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val query = constraint?.toString()?.lowercase()?.trim()
+                val results = if (query.isNullOrEmpty()) {
+                    products
+                } else {
+                    products.filter {
+                        it.name.lowercase().startsWith(query)
                     }
-
-                val filterResults =
-                    FilterResults()
-
-                filterResults.values =
-                    results
-
+                }
+                val filterResults = FilterResults()
+                filterResults.values = results
                 return filterResults
             }
 
-            override fun publishResults(
-                constraint: CharSequence?,
-                results: FilterResults?
-            ) {
-
-                filteredProducts =
-
-                    if (constraint.isNullOrEmpty()) {
-
-                        products.toMutableList()
-
-                    } else {
-
-                        (
-                            results?.values
-                                as? List<Product>
-                            )
-                            ?.toMutableList()
-                            ?: mutableListOf()
-                    }
-
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredProducts = if (constraint.isNullOrEmpty()) {
+                    products.toMutableList()
+                } else {
+                    (results?.values as? List<Product>)?.toMutableList() ?: mutableListOf()
+                }
                 notifyDataSetChanged()
             }
         }
     }
 
+    // =====================================================
+    // دالة الربط والعرض (onBindViewHolder)
+    // =====================================================
+    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+        val product = filteredProducts[position]
+        val path = product.imagePath
+
+        // تحميل الصور
+        when {
+            !path.isNullOrEmpty() && !path.startsWith("http") -> {
+                val file = java.io.File(path)
+                if (file.exists()) {
+                    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                    holder.imageView.setImageBitmap(bitmap)
+                } else {
+                    holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+                }
+            }
+            !path.isNullOrEmpty() && path.startsWith("http") -> {
+                com.bumptech.glide.Glide.with(holder.itemView.context)
+                    .load(path)
+                    .placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.ic_menu_report_image)
+                    .into(holder.imageView)
+            }
+            else -> {
+                holder.imageView.setImageResource(android.R.drawable.ic_menu_report_image)
+            }
+        }
+
+        // الضغط العادي
+        holder.itemView.setOnClickListener {
+            onItemClick(product)
+        }
+
+        // الضغط المطول (Balloon Popup)
+        holder.itemView.setOnLongClickListener { view ->
+            val context = view.context
+
+            val balloon = com.skydoves.balloon.Balloon.Builder(context)
+                .setLayout(R.layout.layout_popup_menu)
+                .setArrowSize(10)
+                .setArrowOrientation(com.skydoves.balloon.ArrowOrientation.BOTTOM)
+                .setArrowPositionRules(com.skydoves.balloon.ArrowPositionRules.ALIGN_ANCHOR)
+                .setCornerRadius(14f)
+                .setBackgroundColor(android.graphics.Color.WHITE)
+                .setElevation(8)
+                .setDismissWhenClicked(true)
+                .setBalloonAnimation(com.skydoves.balloon.BalloonAnimation.FADE)
+                .build()
+
+            val viewMenu = balloon.getContentView()
+
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionEdit)
+                ?.setOnClickListener {
+                    onItemLongClick(product)
+                    balloon.dismiss()
+                }
+
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPdf)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionPrint)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            viewMenu.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btnActionDelete)
+                ?.setOnClickListener {
+                    balloon.dismiss()
+                }
+
+            balloon.showAlignTop(view)
+            true
+        }
+    }
+} // هذا القوس الأخير والوحيد لإغلاق كلاس ProductAdapter
+    
