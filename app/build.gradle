@@ -65,4 +65,7 @@ dependencies {
     // Glide (لتحميل صور المنتجات من الإنترنت)
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     kapt 'com.github.bumptech.glide:compiler:4.16.0'
+
+    // Balloon Popup (مكتبة النوافذ المنبثقة بالسهم)
+    implementation "com.github.skydoves:balloon:1.6.4"
 }
