@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:padding="4dp">
+
+    <ImageButton
+        android:id="@+id/btnActionEdit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="تعديل" />
+
+    <ImageButton
+        android:id="@+id/btnActionPdf"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/icpdf"
+        android:contentDescription="PDF" />
+
+    <ImageButton
+        android:id="@+id/btnActionPrint"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/icprint"
+        android:contentDescription="طباعة" />
+
+    <ImageButton
+        android:id="@+id/btnActionDelete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/icdeletered"
+        android:contentDescription="حذف" />
+
+</LinearLayout>
+
