@@ -59,15 +59,26 @@ class MainActivity : AppCompatActivity() {
 
         // إعداد قائمة المنتجات
         listHandler = ProductListHandler(
-            findViewById(R.id.recyclerView)
-        ) { product ->
-            // عند الضغط العادي على المنتج
-            if (floatingActionsMenu.visibility == View.VISIBLE) {
-                hideFloatingMenu()
-            } else {
-                Toast.makeText(this, "منتج: ${product.name}", Toast.LENGTH_SHORT).show()
-            }
+    recyclerView = findViewById(R.id.recyclerView),
+
+    // الضغط العادي
+    onProductClicked = { product ->
+        if (floatingActionsMenu.visibility == View.VISIBLE) {
+            hideFloatingMenu()
+        } else {
+            Toast.makeText(
+                this,
+                "منتج: ${product.name}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+    },
+
+    // الضغط المطول
+    onProductLongClicked = { product ->
+        showFloatingMenuForProduct(product)
+    }
+)
 
         // إعداد استجابة الأزرار العائمة
         setupFloatingMenuActions()
