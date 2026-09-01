@@ -101,17 +101,13 @@ class MainActivity : AppCompatActivity() {
             },
 
             // الضغط المطول
-            onProductLongClicked = { product ->
-
-                showFloatingMenuForProduct(product)
-            }
-        )
+        
 
         // =====================================================
         // إعداد الأزرار العائمة
         // =====================================================
 
-        setupFloatingMenuActions()
+    
 
         // =====================================================
         // إعداد الماسح
@@ -190,7 +186,6 @@ class MainActivity : AppCompatActivity() {
     // إعداد وظائف الأزرار العائمة
     // =========================================================
 
-    private fun setupFloatingMenuActions() {
 
         // -----------------------------------------------------
         // زر التعديل
