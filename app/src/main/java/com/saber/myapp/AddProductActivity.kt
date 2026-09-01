@@ -576,24 +576,49 @@ private fun extractDateFromText(text: String): String? {
 
     // الدالة المضافة حديثاً
     private fun fetchProductFromApi(barcode: String) {
-    Toast.makeText(this, "جاري البحث عن المنتج...", Toast.LENGTH_SHORT).show()
-    
+
+    Toast.makeText(
+        this,
+        "جاري البحث عن المنتج...",
+        Toast.LENGTH_SHORT
+    ).show()
+
     OpenFoodFactsApi.getProduct(barcode) { productResponse ->
+
         runOnUiThread {
-            if (productResponse != null && productResponse.status == 1) {
+
+            if (productResponse != null &&
+                productResponse.status == 1) {
+
                 val product = productResponse.product
+
                 if (product != null) {
-                    // استخدم productName و imageUrl الجداد
-                    binding.editTextProductName.setText(product.productName ?: "")
-                    product.imageUrl?.let { 
-                        processProductImage(it) 
+
+                    binding.editTextProductName.setText(
+                        product.productName ?: ""
+                    )
+
+                    val imageUrl = product.imageUrl
+
+                    if (!imageUrl.isNullOrBlank()) {
+                        processProductImage(imageUrl)
                     }
-                    Toast.makeText(this, "تم جلب بيانات: ${product.productName}", Toast.LENGTH_LONG).show()
+
+                    Toast.makeText(
+                        this,
+                        "تم جلب بيانات: ${product.productName}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+
             } else {
-                Toast.makeText(this, "المنتج غير موجود في قاعدة البيانات", Toast.LENGTH_SHORT).show()
-             }
-         }
+
+                Toast.makeText(
+                    this,
+                    "المنتج غير موجود في قاعدة البيانات",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
       }
-   } 
-}
+    }
