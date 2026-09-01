@@ -621,4 +621,5 @@ private fun extractDateFromText(text: String): String? {
             }
         }
     }
-    }
+ } 
+}    
