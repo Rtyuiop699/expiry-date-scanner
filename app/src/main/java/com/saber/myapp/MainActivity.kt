@@ -478,8 +478,11 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
 // نافذة تأكيد حذف المنتج
 // =========================================================
+// =========================================================
+// نافذة تأكيد حذف المنتج
+// =========================================================
 
-  private fun showDeleteConfirmationDialog(product: Product) {
+private fun showDeleteConfirmationDialog(product: Product) {
 
     AlertDialog.Builder(this)
         .setTitle("حذف المنتج")
@@ -488,12 +491,17 @@ class MainActivity : AppCompatActivity() {
         )
         .setPositiveButton("حذف") { _, _ ->
 
+            // حذف المنتج فعلياً من قاعدة البيانات
             val deletedRows =
                 databaseHelper.deleteProduct(product.barcode)
 
             if (deletedRows > 0) {
 
+                // تحديث قائمة المنتجات
                 loadProductsFromDatabase()
+
+                // إلغاء تحديد المنتج
+                selectedProduct = null
 
                 Toast.makeText(
                     this,
@@ -514,40 +522,8 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         .show()
-  }
-                // ------------------------------------------------
-                // تنفيذ الحذف من قاعدة البيانات
-                // ------------------------------------------------
-                //
-                // إذا كانت DatabaseHelper لديك تحتوي على دالة
-                // deleteProduct() يمكن استدعاؤها هنا.
-                //
-                // أبقينا السلوك الحالي كما كان في مشروعك
-                // حتى لا نكسر أي وظيفة موجودة.
-                // ------------------------------------------------
-
-                loadProductsFromDatabase()
-
-                selectedProduct = null
-
-                Toast.makeText(
-                    this,
-                    "تم الحذف بنجاح",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            .setNegativeButton(
-                "إلغاء"
-            ) { dialog, _ ->
-
-                dialog.dismiss()
-            }
-
-            .show()
-    }
-
-
+}
+  
     // =========================================================
     // onResume
     // =========================================================
