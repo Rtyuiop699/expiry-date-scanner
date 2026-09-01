@@ -42,7 +42,9 @@ class DateScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_date_scanner)
+        setContentView(R.layout.activity_date_scanner)
 
+imageProcessor = ImageProcessor()
         previewView = findViewById(R.id.previewView)
         btnCapture = findViewById(R.id.btnTakePicture)
         btnConfirm = findViewById(R.id.btnUseDate)
