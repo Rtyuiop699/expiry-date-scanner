@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,21 +31,12 @@ class MainActivity : AppCompatActivity() {
     // نص البحث الحالي
     private var currentSearchText = ""
 
-    // المنتج المحدد حالياً عبر الضغط المطول
-    private var selectedProduct: Product? = null
-
-    // قائمة الأزرار العائمة
-    
-
     // فتح شاشة إضافة المنتج
     private val addProductLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
-
         if (result.resultCode == RESULT_OK) {
-
             loadProductsFromDatabase()
-
             Toast.makeText(
                 this,
                 "تم حفظ المنتج بنجاح",
@@ -56,95 +46,61 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
         // =====================================================
         // قاعدة البيانات
         // =====================================================
-
         databaseHelper = DatabaseHelper(this)
-
-        // =====================================================
-        // قائمة الأزرار العائمة
-        // =====================================================
-
-
 
         // =====================================================
         // إعداد قائمة المنتجات
         // =====================================================
-
         listHandler = ProductListHandler(
             recyclerView = findViewById(R.id.recyclerView),
 
             // الضغط العادي
             onProductClicked = { product ->
-
-                if (
-                    floatingActionsMenu.visibility ==
-                    View.VISIBLE
-                ) {
-
-                    hideFloatingMenu()
-
-                } else {
-
-                    Toast.makeText(
-                        this,
-                        "منتج: ${product.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                Toast.makeText(
+                    this,
+                    "منتج: ${product.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
 
-            // الضغط المطول
-        
-
-        // =====================================================
-        // إعداد الأزرار العائمة
-        // =====================================================
-
-    
+            // الضغط المطول (يتم التعامل معه بواسطة Balloon داخل Adapter)
+            onProductLongClicked = { product ->
+                // يمكنك استدعاء كود التعديل هنا إذا لزم الأمر
+            }
+        )
 
         // =====================================================
         // إعداد الماسح
         // =====================================================
-
         scannerHelper = BarcodeScannerHelper(
             activity = this,
-
             onScanResult = { barcode ->
-
                 handleBarcodeResult(barcode)
             },
-
             onScanCancelled = {
-
                 Toast.makeText(
                     this,
                     "تم إلغاء المسح",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-    
+        )
 
         // =====================================================
         // إدارة التصاريح
         // =====================================================
-
         permissionManager = PermissionManager(
             activity = this,
-
             onPermissionGranted = {
-
                 scannerHelper.startScanner()
             },
-
             onPermissionDenied = {
-
                 Toast.makeText(
                     this,
                     "عذراً، يجب الموافقة على تصريح الكاميرا",
@@ -156,79 +112,51 @@ class MainActivity : AppCompatActivity() {
         // =====================================================
         // إعداد الواجهة
         // =====================================================
-
         setupToolbar()
-
         setupChips()
-
         setupSearch()
 
         // =====================================================
         // زر الإضافة / المسح
         // =====================================================
-
-        findViewById<FloatingActionButton>(
-            R.id.fab
-        )?.setOnClickListener {
-
-            permissionManager
-                .checkAndRequestCameraPermission()
+        findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
+            permissionManager.checkAndRequestCameraPermission()
         }
 
         // =====================================================
         // تحميل المنتجات
         // =====================================================
-
         loadProductsFromDatabase()
     }
 
     // =========================================================
-    // إعداد وظائف الأزرار العائمة
+    // إعداد البحث
     // =========================================================
+    private fun setupSearch() {
+        val searchField = findViewById<EditText>(R.id.searchField) ?: return
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchText = s?.toString() ?: ""
+                applyFilters()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
 
-
-        // -----------------------------------------------------
-        // زر التعديل
-        // -----------------------------------------------------
-
-        
-        // -----------------------------------------------------
-        // زر PDF
-        // -----------------------------------------------------
-
-        
-
-        // -----------------------------------------------------
-        // زر الحذف
-        // -----------------------------------------------------
-
-        
-        // إعادة الموقع إلى الوضع الطبيعي
-        
     // =========================================================
     // إعداد الشريط العلوي
     // =========================================================
-
     private fun setupToolbar() {
-
-        findViewById<ImageView>(
-            R.id.btnHelp
-        )?.setOnClickListener {
-
+        findViewById<ImageView>(R.id.btnHelp)?.setOnClickListener {
             showHelpDialog()
         }
 
-        findViewById<ImageView>(
-            R.id.btnSettings
-        )?.setOnClickListener { anchorView ->
-
+        findViewById<ImageView>(R.id.btnSettings)?.setOnClickListener { anchorView ->
             showSettingsMenu(anchorView)
         }
 
-        findViewById<ImageView>(
-            R.id.btnPdf
-        )?.setOnClickListener {
-
+        findViewById<ImageView>(R.id.btnPdf)?.setOnClickListener {
             Toast.makeText(
                 this,
                 "PDF",
@@ -240,335 +168,133 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
     // نافذة المساعدة
     // =========================================================
-
     private fun showHelpDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialoghelp, null)
+        val builder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
 
-        val dialogView =
-            layoutInflater.inflate(
-                R.layout.dialoghelp,
-                null
-            )
-
-        val builder =
-            AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setCancelable(true)
-
-        val dialog =
-            builder.create()
-
-        dialogView.findViewById<android.widget.Button>(
-            R.id.btnCloseHelp
-        )?.setOnClickListener {
-
+        val dialog = builder.create()
+        dialogView.findViewById<android.widget.Button>(R.id.btnCloseHelp)?.setOnClickListener {
             dialog.dismiss()
         }
-
         dialog.show()
     }
 
     // =========================================================
     // الإعدادات
     // =========================================================
-
-    private fun showSettingsMenu(
-        anchor: View
-    ) {
-
-        val intent =
-            Intent(
-                this,
-                SettingsActivity::class.java
-            )
-
+    private fun showSettingsMenu(anchor: View) {
+        val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
 
     // =========================================================
     // نتيجة مسح الباركود
     // =========================================================
-
-    private fun handleBarcodeResult(
-        barcode: String
-    ) {
-
-        val existingProduct =
-            databaseHelper.getProductByBarcode(
-                barcode
-            )
+    private fun handleBarcodeResult(barcode: String) {
+        val existingProduct = databaseHelper.getProductByBarcode(barcode)
 
         if (existingProduct != null) {
-
             Toast.makeText(
                 this,
                 "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
                 Toast.LENGTH_SHORT
             ).show()
-
         } else {
-
-            val intent =
-                Intent(
-                    this,
-                    AddProductActivity::class.java
-                )
-
-            intent.putExtra(
-                "BARCODE_EXTRA",
-                barcode
-            )
-
+            val intent = Intent(this, AddProductActivity::class.java)
+            intent.putExtra("BARCODE_EXTRA", barcode)
             addProductLauncher.launch(intent)
         }
     }
+
     // =========================================================
     // تحميل المنتجات من قاعدة البيانات
     // =========================================================
-
     private fun loadProductsFromDatabase() {
-
         productList.clear()
-
-        productList.addAll(
-            databaseHelper.getAllProducts()
-        )
-
+        productList.addAll(databaseHelper.getAllProducts())
         applyFilters()
     }
 
     // =========================================================
     // إعداد التصنيفات
     // =========================================================
-
     private fun setupChips() {
-
-        val chipGroup =
-            findViewById<ChipGroup>(
-                R.id.chipGroupCategories
-            ) ?: return
-
+        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories) ?: return
         chipGroup.removeAllViews()
 
-        val categories =
-            mutableListOf<String>()
-
+        val categories = mutableListOf<String>()
         categories.add("الكل")
-
-        categories.addAll(
-            databaseHelper.getAllCategories()
-        )
+        categories.addAll(databaseHelper.getAllCategories())
 
         categories.forEach { category ->
+            val chip = Chip(this)
+            chip.text = category
+            chip.isCheckable = true
+            chip.textSize = 14f
+            chip.setTextColor(Color.BLACK)
+            chip.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
+            chip.chipStrokeWidth = 1.5f
+            chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+            chip.setChipCornerRadius(50f)
+            chip.setPadding(16, 8, 16, 8)
 
-            val chip =
-                Chip(this)
-
-            chip.text =
-                category
-
-            chip.isCheckable =
-                true
-
-            chip.textSize =
-                14f
-
-            chip.setTextColor(
-                Color.BLACK
-            )
-
-            chip.chipBackgroundColor =
-                ColorStateList.valueOf(
-                    Color.TRANSPARENT
-                )
-
-            chip.chipStrokeWidth =
-                1.5f
-
-            chip.chipStrokeColor =
-                ColorStateList.valueOf(
-                    Color.parseColor(
-                        "#CCCCCC"
-                    )
-                )
-
-            chip.setChipCornerRadius(
-                50f
-            )
-
-            chip.setPadding(
-                16,
-                8,
-                16,
-                8
-            )
-
-            chip.setOnCheckedChangeListener {
-                    _,
-                    isChecked ->
-
+            chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-
-                    currentCategory =
-                        category
-
-                    chip.chipBackgroundColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-                    chip.chipStrokeColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-                    chip.setTextColor(
-                        Color.WHITE
-                    )
-
+                    currentCategory = category
+                    chip.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#025144"))
+                    chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#025144"))
+                    chip.setTextColor(Color.WHITE)
                     applyFilters()
-
                 } else {
-
-                    chip.chipBackgroundColor =
-                        ColorStateList.valueOf(
-                            Color.TRANSPARENT
-                        )
-
-                    chip.chipStrokeColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#CCCCCC"
-                            )
-                        )
-
-                    chip.setTextColor(
-                        Color.BLACK
-                    )
+                    chip.chipBackgroundColor = ColorStateList.valueOf(Color.TRANSPARENT)
+                    chip.chipStrokeColor = ColorStateList.valueOf(Color.parseColor("#CCCCCC"))
+                    chip.setTextColor(Color.BLACK)
                 }
             }
-
-            chipGroup.addView(
-                chip
-            )
+            chipGroup.addView(chip)
         }
 
         if (chipGroup.childCount > 0) {
-
-            val selectedIndex =
-                categories.indexOf(
-                    currentCategory
-                )
-
-            val index =
-                if (selectedIndex >= 0) {
-                    selectedIndex
-                } else {
-                    0
-                }
-
-            val selectedChip =
-                chipGroup.getChildAt(
-                    index
-                ) as Chip
-
-            selectedChip.isChecked =
-                true
+            val selectedIndex = categories.indexOf(currentCategory)
+            val index = if (selectedIndex >= 0) selectedIndex else 0
+            val selectedChip = chipGroup.getChildAt(index) as Chip
+            selectedChip.isChecked = true
         }
     }
 
     // =========================================================
     // تطبيق البحث والتصنيف
     // =========================================================
-
     private fun applyFilters() {
+        val allProducts = databaseHelper.getAllProducts()
+        val search = currentSearchText.trim().lowercase()
 
-        val allProducts =
-            databaseHelper.getAllProducts()
+        val filteredList = allProducts.filter { product ->
+            val matchesCategory = currentCategory == "الكل" || product.category == currentCategory
+            val matchesSearch = search.isEmpty() ||
+                    product.name.lowercase().contains(search) ||
+                    product.barcode.lowercase().contains(search)
 
-        val search =
-            currentSearchText
-                .trim()
-                .lowercase()
+            matchesCategory && matchesSearch
+        }
 
-        val filteredList =
-            allProducts.filter { product ->
-
-                val matchesCategory =
-                    currentCategory == "الكل" ||
-                            product.category ==
-                            currentCategory
-
-                val matchesSearch =
-                    search.isEmpty() ||
-                            product.name
-                                .lowercase()
-                                .contains(search) ||
-                            product.barcode
-                                .lowercase()
-                                .contains(search)
-
-                matchesCategory &&
-                        matchesSearch
-            }
-
-        listHandler.setup(
-            filteredList.toMutableList()
-        )
+        listHandler.setup(filteredList.toMutableList())
     }
 
     // =========================================================
     // التعامل مع زر الرجوع
     // =========================================================
-
     override fun onBackPressed() {
+        val searchField = findViewById<EditText>(R.id.searchField)
 
-        // -----------------------------------------------------
-        // 1. إذا كانت الأزرار العائمة ظاهرة
-        //    نخفيها أولاً
-        // -----------------------------------------------------
-
-        if (
-            floatingActionsMenu.visibility ==
-            View.VISIBLE
-        ) {
-
-            hideFloatingMenu()
-
-            return
-        }
-
-        // -----------------------------------------------------
-        // 2. التعامل مع حقل البحث
-        // -----------------------------------------------------
-
-        val searchField =
-            findViewById<EditText>(
-                R.id.searchField
-            )
-
-        if (searchField.hasFocus()) {
-
-            val imm =
-                getSystemService(
-                    INPUT_METHOD_SERVICE
-                ) as android.view.inputmethod.InputMethodManager
-
-            imm.hideSoftInputFromWindow(
-                searchField.windowToken,
-                0
-            )
-
+        if (searchField != null && searchField.hasFocus()) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(searchField.windowToken, 0)
             searchField.clearFocus()
-
-            searchField.isCursorVisible =
-                false
-
+            searchField.isCursorVisible = false
         } else {
-
             super.onBackPressed()
         }
     }
