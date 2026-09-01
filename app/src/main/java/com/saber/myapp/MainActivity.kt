@@ -478,27 +478,21 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
 // نافذة تأكيد حذف المنتج
 // =========================================================
-private fun showDeleteConfirmationDialog(
-    product: Product
-) {
+
+  private fun showDeleteConfirmationDialog(product: Product) {
 
     AlertDialog.Builder(this)
-
         .setTitle("حذف المنتج")
-
         .setMessage(
             "هل أنت متأكد من رغبتك في حذف ${product.name}؟"
         )
-
         .setPositiveButton("حذف") { _, _ ->
 
-            // حذف المنتج من قاعدة البيانات باستخدام الباركود
             val deletedRows =
                 databaseHelper.deleteProduct(product.barcode)
 
             if (deletedRows > 0) {
 
-                // إعادة تحميل القائمة بعد الحذف
                 loadProductsFromDatabase()
 
                 Toast.makeText(
@@ -516,14 +510,11 @@ private fun showDeleteConfirmationDialog(
                 ).show()
             }
         }
-
         .setNegativeButton("إلغاء") { dialog, _ ->
             dialog.dismiss()
         }
-
         .show()
-}
-
+  }
                 // ------------------------------------------------
                 // تنفيذ الحذف من قاعدة البيانات
                 // ------------------------------------------------
