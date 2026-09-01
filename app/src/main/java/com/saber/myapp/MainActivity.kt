@@ -222,248 +222,242 @@ class MainActivity : AppCompatActivity() {
     // إظهار Balloon عند الضغط المطول
     // =========================================================
 
-    private fun showProductBalloon(
-        anchorView: View,
-        product: Product
-    ) {
-
-        // -----------------------------------------------------
-        // إغلاق Balloon السابق
+    // تحديد هل تظهر القائمة فوق أم تحت المنتج
         // -----------------------------------------------------
 
-        currentBalloon?.dismiss()
+        private fun showProductBalloon(
+    anchorView: View,
+    product: Product
+) {
 
-        currentBalloon = null
+    // -----------------------------------------------------
+    // إغلاق Balloon السابق
+    // -----------------------------------------------------
 
-        selectedProduct = product
+    currentBalloon?.dismiss()
+    currentBalloon = null
 
+    selectedProduct = product
 
-        // -----------------------------------------------------
-        // تحديد مكان البطاقة على الشاشة
-        // -----------------------------------------------------
 
-        val location =
-            IntArray(2)
+    // -----------------------------------------------------
+    // تحديد مكان المنتج على الشاشة
+    // -----------------------------------------------------
 
-        anchorView.getLocationOnScreen(
-            location
-        )
+    val location = IntArray(2)
 
-        val anchorTop =
-            location[1]
+    anchorView.getLocationOnScreen(location)
 
-        val anchorBottom =
-            anchorTop + anchorView.height
+    val anchorTop = location[1]
 
-        val screenHeight =
-            resources.displayMetrics.heightPixels
+    val anchorBottom =
+        anchorTop + anchorView.height
 
+    val screenHeight =
+        resources.displayMetrics.heightPixels
 
-        // -----------------------------------------------------
-        // تحديد هل تظهر القائمة فوق أم تحت المنتج
-        // -----------------------------------------------------
 
-        val spaceAbove =
-            anchorTop
+    // -----------------------------------------------------
+    // المساحة فوق وتحت المنتج
+    // -----------------------------------------------------
 
-        val spaceBelow =
-            screenHeight - anchorBottom
+    val spaceAbove = anchorTop
 
-        val showBelow =
-            spaceBelow >= spaceAbove
+    val spaceBelow =
+        screenHeight - anchorBottom
 
 
-        // -----------------------------------------------------
-        // اتجاه السهم
-        // -----------------------------------------------------
+    // إذا كانت المساحة أسفل المنتج أكبر
+    // تظهر القائمة أسفله
+    val showBelow =
+        spaceBelow >= spaceAbove
 
-        val arrowOrientation =
-            if (showBelow) {
 
-                ArrowOrientation.TOP
+    // -----------------------------------------------------
+    // اتجاه السهم
+    // -----------------------------------------------------
 
-            } else {
-
-                ArrowOrientation.BOTTOM
-            }
-
-
-        // -----------------------------------------------------
-        // إنشاء Balloon
-        // -----------------------------------------------------
-
-        val balloon =
-            Balloon.Builder(this)
-
-                .setLayout(
-                    R.layout.layout_popup_menu
-                )
-
-                .setArrowSize(10)
-
-                .setArrowOrientation(
-                    arrowOrientation
-                )
-
-                .setArrowPositionRules(
-                    ArrowPositionRules.ALIGN_ANCHOR
-                )
-
-                .setCornerRadius(16f)
-
-                .setBackgroundColor(
-                    Color.WHITE
-                )
-
-                .setElevation(8)
-
-                .setDismissWhenClicked(
-                    false
-                )
-
-                .setDismissWhenTouchOutside(
-                    true
-                )
-
-                .setBalloonAnimation(
-                    BalloonAnimation.FADE
-                )
-
-                .build()
-
-
-        currentBalloon = balloon
-
-
-        // -----------------------------------------------------
-        // محتوى Balloon
-        // -----------------------------------------------------
-
-        val menuView =
-            balloon.getContentView()
-
-
-        // =====================================================
-        // زر التعديل
-        // =====================================================
-
-        menuView
-            .findViewById<FloatingActionButton>(
-                R.id.btnActionEdit
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    val intent =
-                        Intent(
-                            this,
-                            AddProductActivity::class.java
-                        ).apply {
-
-                            putExtra(
-                                "BARCODE_EXTRA",
-                                selected.barcode
-                            )
-                        }
-
-                    addProductLauncher.launch(
-                        intent
-                    )
-                }
-
-                closeProductBalloon()
-            }
-
-
-        // =====================================================
-        // زر PDF
-        // =====================================================
-
-        menuView
-            .findViewById<FloatingActionButton>(
-                R.id.btnActionPdf
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    Toast.makeText(
-                        this,
-                        "تصدير PDF للمنتج: ${selected.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                closeProductBalloon()
-            }
-
-
-        // =====================================================
-        // زر الطباعة
-        // =====================================================
-
-        menuView
-            .findViewById<FloatingActionButton>(
-                R.id.btnActionPrint
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    Toast.makeText(
-                        this,
-                        "طباعة: ${selected.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                closeProductBalloon()
-            }
-
-
-        // =====================================================
-        // زر الحذف
-        // =====================================================
-
-        menuView
-            .findViewById<FloatingActionButton>(
-                R.id.btnActionDelete
-            )
-            ?.setOnClickListener {
-
-                val selected =
-                    selectedProduct
-
-                closeProductBalloon()
-
-                if (selected != null) {
-
-                    showDeleteConfirmationDialog(
-                        selected
-                    )
-                }
-            }
-
-
-        // -----------------------------------------------------
-        // إظهار Balloon
-        // -----------------------------------------------------
-
+    val arrowOrientation =
         if (showBelow) {
 
-            balloon.showAlignBottom(
-                anchorView
-            )
+            ArrowOrientation.TOP
 
         } else {
 
-            balloon.showAlignTop(
-                anchorView
-            )
+            ArrowOrientation.BOTTOM
         }
-    }
 
+
+    // -----------------------------------------------------
+    // إنشاء Balloon
+    // -----------------------------------------------------
+
+    val balloon =
+        Balloon.Builder(this)
+
+            .setLayout(
+                R.layout.layout_popup_menu
+            )
+
+            .setArrowSize(10)
+
+            .setArrowOrientation(
+                arrowOrientation
+            )
+
+            .setArrowPositionRules(
+                ArrowPositionRules.ALIGN_ANCHOR
+            )
+
+            .setCornerRadius(16f)
+
+            .setBackgroundColor(
+                Color.WHITE
+            )
+
+            .setElevation(8)
+
+            .setDismissWhenClicked(false)
+
+            .setDismissWhenTouchOutside(true)
+
+            .setBalloonAnimation(
+                BalloonAnimation.FADE
+            )
+
+            .build()
+
+
+    currentBalloon = balloon
+
+
+    // -----------------------------------------------------
+    // محتوى Balloon
+    // -----------------------------------------------------
+
+    val menuView =
+        balloon.getContentView()
+
+
+    // =====================================================
+    // زر التعديل
+    // =====================================================
+
+    menuView
+        .findViewById<android.widget.ImageButton>(
+            R.id.btnActionEdit
+        )
+        ?.setOnClickListener {
+
+            selectedProduct?.let { selected ->
+
+                val intent =
+                    Intent(
+                        this,
+                        AddProductActivity::class.java
+                    ).apply {
+
+                        putExtra(
+                            "BARCODE_EXTRA",
+                            selected.barcode
+                        )
+                    }
+
+                addProductLauncher.launch(intent)
+            }
+
+            closeProductBalloon()
+        }
+
+
+    // =====================================================
+    // زر PDF
+    // =====================================================
+
+    menuView
+        .findViewById<android.widget.ImageButton>(
+            R.id.btnActionPdf
+        )
+        ?.setOnClickListener {
+
+            selectedProduct?.let { selected ->
+
+                Toast.makeText(
+                    this,
+                    "تصدير PDF للمنتج: ${selected.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            closeProductBalloon()
+        }
+
+
+    // =====================================================
+    // زر الطباعة
+    // =====================================================
+
+    menuView
+        .findViewById<android.widget.ImageButton>(
+            R.id.btnActionPrint
+        )
+        ?.setOnClickListener {
+
+            selectedProduct?.let { selected ->
+
+                Toast.makeText(
+                    this,
+                    "طباعة: ${selected.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            closeProductBalloon()
+        }
+
+
+    // =====================================================
+    // زر الحذف
+    // =====================================================
+
+    menuView
+        .findViewById<android.widget.ImageButton>(
+            R.id.btnActionDelete
+        )
+        ?.setOnClickListener {
+
+            val selected =
+                selectedProduct
+
+            closeProductBalloon()
+
+            if (selected != null) {
+
+                showDeleteConfirmationDialog(
+                    selected
+                )
+            }
+        }
+
+
+    // -----------------------------------------------------
+    // إظهار Balloon
+    // -----------------------------------------------------
+
+    if (showBelow) {
+
+        balloon.showAlignBottom(
+            anchorView
+        )
+
+    } else {
+
+        balloon.showAlignTop(
+            anchorView
+        )
+    }
+        
+        }
 
     // =========================================================
     // إغلاق Balloon
