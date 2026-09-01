@@ -195,21 +195,45 @@ private fun loadCategories() {
 
     categoriesAdapter.notifyDataSetChanged()
 }
-    private fun processProductImage(imagePathValue: String?) { 
-        if (!imagePathValue.isNullOrEmpty()) { 
-            currentImagePath = imagePathValue 
-            if (imagePathValue.startsWith("http")) { 
-                Glide.with(this).load(imagePathValue).into(binding.imageViewProduct) 
-            } else { 
-                val file = File(imagePathValue) 
-                if (file.exists()) { 
-                    val bitmap = BitmapFactory.decodeFile(file.absolutePath) 
-                    binding.imageViewProduct.setImageBitmap(bitmap) 
-                } 
-            } 
-        } 
+    private fun processProductImage(imagePathValue: String?) {
+
+    if (imagePathValue.isNullOrBlank()) {
+        return
     }
 
+    currentImagePath = imagePathValue
+
+    // صورة من الإنترنت
+    if (
+        imagePathValue.startsWith("http://") ||
+        imagePathValue.startsWith("https://")
+    ) {
+
+        Glide.with(this)
+            .load(imagePathValue)
+            .placeholder(android.R.color.darker_gray)
+            .error(android.R.drawable.ic_menu_report_image)
+            .into(binding.imageViewProduct)
+
+        return
+    }
+
+    // صورة محلية
+    val file = File(imagePathValue)
+
+    if (file.exists()) {
+
+        Glide.with(this)
+            .load(file)
+            .into(binding.imageViewProduct)
+
+    } else {
+
+        binding.imageViewProduct.setImageResource(
+            android.R.drawable.ic_menu_report_image
+        )
+    }
+    }
     private fun saveProduct() {
         val name = binding.editTextProductName.text.toString().trim()
         val rawDate = binding.editTextDate.text.toString().trim()
