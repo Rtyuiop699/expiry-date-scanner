@@ -273,69 +273,7 @@ class MainActivity : AppCompatActivity() {
     // إظهار الأزرار العائمة للمنتج المحدد
     // =========================================================
 
-    private fun showFloatingMenuForProduct(
-        product: Product
-    ) {
-
-        selectedProduct = product
-
-        val recyclerView =
-            findViewById<RecyclerView>(
-                R.id.recyclerView
-            )
-
-        // الحصول على View الخاص بالمنتج
-        val itemView =
-            listHandler.getItemView(product)
-
-        // إذا لم نستطع العثور على المنتج
-        if (itemView == null) {
-
-            floatingActionsMenu.visibility =
-                View.GONE
-
-            return
-        }
-
-        // إظهار القائمة للحصول على أبعادها
-        floatingActionsMenu.visibility =
-            View.VISIBLE
-
-        floatingActionsMenu.post {
-
-            val menuWidth =
-                floatingActionsMenu.width
-
-            val menuHeight =
-                floatingActionsMenu.height
-
-            // المسافة بين الكرت والأزرار
-            val spacing =
-                dpToPx(8)
-
-            // موقع المنتج داخل RecyclerView
-            val itemTop =
-                itemView.top
-
-            val itemBottom =
-                itemView.bottom
-
-            val recyclerHeight =
-                recyclerView.height
-
-            // المساحة الموجودة أسفل المنتج
-            val spaceBelow =
-                recyclerHeight - itemBottom
-
-            // هل توجد مساحة كافية أسفل المنتج؟
-            val showBelow =
-                spaceBelow >=
-                        menuHeight + spacing
-
-            // تحديد الموقع العمودي
-            val targetY =
-                if (showBelow) {
-
+    
                     // أسفل المنتج
                     itemBottom + spacing
 
@@ -360,38 +298,6 @@ class MainActivity : AppCompatActivity() {
             // =================================================
             // منع خروج الأزرار من حدود الشاشة
             // =================================================
-
-            val parent =
-                floatingActionsMenu.parent as View
-
-            val parentWidth =
-                parent.width
-
-            val margin =
-                dpToPx(8)
-
-            targetX =
-                targetX.coerceIn(
-                    margin,
-                    parentWidth -
-                            menuWidth -
-                            margin
-                )
-
-            // =================================================
-            // الموقع الأفقي
-            // =================================================
-
-            floatingActionsMenu.translationX =
-                targetX.toFloat()
-
-            // =================================================
-            // تحويل موقع RecyclerView
-            // إلى موقع الأب
-            // =================================================
-
-            val recyclerLocation =
-                IntArray(2)
 
             recyclerView.getLocationInWindow(
                 recyclerLocation
@@ -443,62 +349,7 @@ class MainActivity : AppCompatActivity() {
 
         // إعادة الموقع إلى الوضع الطبيعي
         floatingActionsMenu.translationX =
-            0f
 
-        floatingActionsMenu.translationY =
-            0f
-    }
-
-    // =========================================================
-    // نافذة تأكيد حذف المنتج
-    // =========================================================
-
-    private fun showDeleteConfirmationDialog(
-        product: Product
-    ) {
-
-        AlertDialog.Builder(this)
-
-            .setTitle("حذف المنتج")
-
-            .setMessage(
-                "هل أنت تأكد من رغبتك في حذف ${product.name}؟"
-            )
-
-            .setPositiveButton("حذف") { _, _ ->
-
-                // إبقاء السلوك الحالي كما هو
-                loadProductsFromDatabase()
-
-                hideFloatingMenu()
-
-                Toast.makeText(
-                    this,
-                    "تم الحذف بنجاح",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            .setNegativeButton("إلغاء") { dialog, _ ->
-
-                dialog.dismiss()
-            }
-
-            .show()
-    }
-
-    // =========================================================
-    // عند العودة للشاشة
-    // =========================================================
-
-    override fun onResume() {
-
-        super.onResume()
-
-        setupChips()
-
-        loadProductsFromDatabase()
-    }
 
     // =========================================================
     // إعداد البحث
