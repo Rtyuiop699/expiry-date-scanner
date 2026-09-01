@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
                     Toast.makeText(
                         this,
-                        "منتج: ${product.name}",
+                        "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
                         Toast.LENGTH_SHORT
                     ).show()
                 },
@@ -473,27 +473,56 @@ class MainActivity : AppCompatActivity() {
 
         selectedProduct = null
     }
-       // =========================================================
-    // نافذة تأكيد حذف المنتج
+       
+
     // =========================================================
+// نافذة تأكيد حذف المنتج
+// =========================================================
+private fun showDeleteConfirmationDialog(
+    product: Product
+) {
 
-    private fun showDeleteConfirmationDialog(
-        product: Product
-    ) {
+    AlertDialog.Builder(this)
 
-        AlertDialog.Builder(this)
+        .setTitle("حذف المنتج")
 
-            .setTitle(
-                "حذف المنتج"
-            )
+        .setMessage(
+            "هل أنت متأكد من رغبتك في حذف ${product.name}؟"
+        )
 
-            .setMessage(
-                "هل أنت متأكد من رغبتك في حذف ${product.name}؟"
-            )
+        .setPositiveButton("حذف") { _, _ ->
 
-            .setPositiveButton(
-                "حذف"
-            ) { _, _ ->
+            // حذف المنتج من قاعدة البيانات باستخدام الباركود
+            val deletedRows =
+                databaseHelper.deleteProduct(product.barcode)
+
+            if (deletedRows > 0) {
+
+                // إعادة تحميل القائمة بعد الحذف
+                loadProductsFromDatabase()
+
+                Toast.makeText(
+                    this,
+                    "تم حذف المنتج بنجاح",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "تعذر حذف المنتج",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        .setNegativeButton("إلغاء") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        .show()
+}
 
                 // ------------------------------------------------
                 // تنفيذ الحذف من قاعدة البيانات
