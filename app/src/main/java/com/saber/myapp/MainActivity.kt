@@ -312,8 +312,10 @@ class MainActivity : AppCompatActivity() {
             .setCornerRadius(16f)
 
             .setBackgroundColor(
-                Color.WHITE
-            )
+    Color.parseColor("#F1F3F4")
+)
+            
+            
 
             .setElevation(8)
 
