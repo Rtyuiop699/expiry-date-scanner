@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedProduct: Product? = null
 
     // قائمة الأزرار العائمة
-    private lateinit var floatingActionsMenu: View
+    
 
     // فتح شاشة إضافة المنتج
     private val addProductLauncher = registerForActivityResult(
@@ -71,8 +71,7 @@ class MainActivity : AppCompatActivity() {
         // قائمة الأزرار العائمة
         // =====================================================
 
-        floatingActionsMenu =
-            findViewById(R.id.floatingActionsMenu)
+
 
         // =====================================================
         // إعداد قائمة المنتجات
