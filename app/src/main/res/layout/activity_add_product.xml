@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,7 +8,10 @@
     android:layoutDirection="rtl"
     android:orientation="vertical">
 
-    <!-- 1. الشريط العلوي -->
+    <!-- ============================= -->
+    <!-- الشريط العلوي -->
+    <!-- ============================= -->
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
@@ -19,20 +23,27 @@
         app:titleTextColor="#000000"
         app:menu="@menu/addproductmenu" />
 
-    <!-- 2. منطقة التمرير -->
+
+    <!-- ============================= -->
+    <!-- منطقة التمرير -->
+    <!-- ============================= -->
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <!-- الحاوية الرئيسية لكل العناصر (يجب أن يكون هناك عنصر واحد فقط داخل ScrollView) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- القسم الأول: الأزرار والصورة -->
+
+            <!-- ============================= -->
+            <!-- الصورة وأزرار الصور -->
+            <!-- ============================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,17 +78,23 @@
                     android:layout_height="150dp"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp">
+
                     <ImageView
                         android:id="@+id/imageViewProduct"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop" 
+                        android:scaleType="centerCrop"
                         android:background="#DDDDDD"
                         android:src="@android:drawable/ic_menu_camera"/>
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
 
-            <!-- القسم الثاني: حقل التصنيف المنسدل وزر الإضافة -->
+
+            <!-- ============================= -->
+            <!-- التصنيف + زر الإضافة -->
+            <!-- ============================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,25 +109,43 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="التصنيف">
+
                     <AutoCompleteTextView
                         android:id="@+id/autoCompleteCategories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="none" 
+                        android:inputType="none"
                         android:padding="16dp"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+
+                <!-- زر إضافة التصنيف -->
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddCategory"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:layout_marginStart="8dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:text="+"
-                    android:textSize="20sp" />
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:contentDescription="إضافة تصنيف"
+                    app:backgroundTint="#025144"
+                    app:cornerRadius="16dp"
+                    app:elevation="5dp"
+                    app:strokeWidth="0dp"/>
+
             </LinearLayout>
-    
-            <!-- اسم المنتج + أيقونة خارج الحقل -->
+
+
+            <!-- ============================= -->
+            <!-- اسم المنتج -->
+            <!-- ============================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,18 +164,23 @@
                         android:id="@+id/editTextProductName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- أيقونة الاسم (خارج الحقل) -->
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ictagred"
                     android:layout_marginStart="8dp"
                     android:tint="#F44336"/>
+
             </LinearLayout>
 
-            <!-- الباركود + أيقونة خارج الحقل -->
+
+            <!-- ============================= -->
+            <!-- الباركود -->
+            <!-- ============================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -160,76 +200,92 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- أيقونة الباركود (خارج الحقل - خطوط أسود/أبيض) -->
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/icbarcode"
                     android:layout_marginStart="8dp"/>
+
             </LinearLayout>
-            
-<!-- التاريخ + أيقونة التقويم + زر OCR -->
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:layoutDirection="ltr"
-    android:layout_marginTop="16dp">
 
-    <!-- زر OCR - في اليسار -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnScanDate"
-        android:layout_width="64dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:minHeight="0dp"
-        android:text="OCR"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:contentDescription="مسح تاريخ الانتهاء"
-        app:cornerRadius="8dp"
-        app:iconPadding="0dp" />
 
-    <!-- حقل التاريخ -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="تاريخ الانتهاء"
-        app:boxBackgroundMode="outline">
+            <!-- ============================= -->
+            <!-- التاريخ + OCR + التقويم -->
+            <!-- ============================= -->
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="date" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layoutDirection="ltr"
+                android:layout_marginTop="16dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- أيقونة التقويم - في اليمين للعرض فقط -->
-    <ImageView
-        android:id="@+id/iconCalendar"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="8dp"
-        android:src="@drawable/iccalendar"
-        android:tint="#4CAF50"
-        android:contentDescription="تاريخ الانتهاء" />
+                <!-- زر OCR -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnScanDate"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:text="OCR"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:contentDescription="مسح تاريخ الانتهاء"
+                    app:backgroundTint="#025144"
+                    app:cornerRadius="16dp"
+                    app:elevation="5dp"
+                    app:strokeWidth="0dp"/>
 
-</LinearLayout>
 
-    
-   <!-- الكمية (كرتون / باكت / حبة) -->
+                <!-- حقل التاريخ -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="تاريخ الانتهاء"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <!-- أيقونة التقويم -->
+                <ImageView
+                    android:id="@+id/iconCalendar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/iccalendar"
+                    android:tint="#4CAF50"
+                    android:contentDescription="تاريخ الانتهاء"/>
+
+            </LinearLayout>
+
+
+            <!-- ============================= -->
+            <!-- الكمية -->
+            <!-- ============================= -->
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp">
 
-                <!-- الصف الأول: العناوين -->
+                <!-- العناوين -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -256,9 +312,11 @@
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
+
                 </LinearLayout>
 
-                <!-- الصف الثاني: حقول الإدخال -->
+
+                <!-- حقول الكمية -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -292,9 +350,11 @@
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
+
                 </LinearLayout>
 
-                <!-- زر يوجد باكت -->
+
+                <!-- يوجد باكت -->
                 <Button
                     android:id="@+id/btnHasPack"
                     android:text="يوجد باكت ✔️"
@@ -302,7 +362,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"/>
 
-                <!-- زر احسب + حقل النتيجة -->
+
+                <!-- احسب + النتيجة -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -322,10 +383,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"/>
+
                 </LinearLayout>
-            </LinearLayout>         
+
+            </LinearLayout>
+
         </LinearLayout>
-    
+
     </ScrollView>
 
 </LinearLayout>
