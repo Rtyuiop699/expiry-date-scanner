@@ -121,26 +121,16 @@
 
 
                 <!-- زر إضافة التصنيف -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAddCategory"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginStart="8dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:text="+"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:gravity="center"
-                    android:contentDescription="إضافة تصنيف"
-                    app:backgroundTint="#025144"
-                    app:cornerRadius="16dp"
-                    app:elevation="5dp"
-                    app:strokeWidth="0dp"/>
-
-            </LinearLayout>
-
+              <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/btnAddCategory"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:layout_marginStart="8dp"
+    android:contentDescription="إضافة تصنيف"
+    android:src="@drawable/ic_add_white"
+    app:backgroundTint="#025144"
+    app:elevation="6dp"
+    app:fabSize="normal" />  
 
             <!-- ============================= -->
             <!-- اسم المنتج -->
@@ -226,23 +216,16 @@
 
 
                 <!-- زر OCR -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnScanDate"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="8dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:text="OCR"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:gravity="center"
-                    android:contentDescription="مسح تاريخ الانتهاء"
-                    app:backgroundTint="#025144"
-                    app:cornerRadius="16dp"
-                    app:elevation="5dp"
-                    app:strokeWidth="0dp"/>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/btnScanDate"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:layout_marginEnd="8dp"
+    android:contentDescription="مسح تاريخ الانتهاء"
+    android:src="@drawable/ic_ocr"
+    app:backgroundTint="#025144"
+    app:elevation="6dp"
+    app:fabSize="normal" />
 
 
                 <!-- حقل التاريخ -->
