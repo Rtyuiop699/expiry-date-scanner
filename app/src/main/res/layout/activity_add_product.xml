@@ -518,7 +518,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal" />
 
-                </com.google.android.material.textfield.TextI
+                </com.google.android.material.textfield.TextInputLayout>
                   <!-- سعر بيع الباكت -->
 
                 <com.google.android.material.textfield.TextInputLayout
