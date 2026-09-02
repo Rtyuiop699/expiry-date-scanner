@@ -352,30 +352,159 @@ private fun loadCategories() {
         }
     }
 
-    private fun calculateQuantity() {
-        val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
-        val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
-        val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
-        binding.editResult.setText((carton * pack * piece).toString())
-    }
+   private fun calculateQuantity() {
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_PRODUCT_CAMERA) {
-                val imagePath = data?.getStringExtra(ProductCameraActivity.EXTRA_IMAGE_PATH)
-                processProductImage(imagePath)
-                Toast.makeText(this, "تم تحديث الصورة", Toast.LENGTH_SHORT).show()
-            }
-            if (requestCode == REQUEST_DATE_SCAN) {
-                val date = data?.getStringExtra(DateScannerActivity.EXTRA_DATE)
-                if (!date.isNullOrEmpty()) {
-                    binding.editTextDate.setText(date)
-                    Toast.makeText(this, "تم تحديث التاريخ", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+    // =========================
+    // الكميات
+    // =========================
+
+    // عدد الكراتين
+    val cartons =
+        binding.editCarton.text.toString().toIntOrNull() ?: 0
+
+    // عدد الباكت داخل الكرتون
+    val packsPerCarton =
+        binding.editPack.text.toString().toIntOrNull() ?: 0
+
+    // عدد الحبات داخل الباكت
+    val piecesPerPack =
+        binding.editPiece.text.toString().toIntOrNull() ?: 0
+
+
+    // =========================
+    // الأسعار التي يدخلها المستخدم
+    // =========================
+
+    // سعر شراء الكرتون
+    val cartonPurchasePrice =
+        binding.editCartonPurchasePrice.text
+            .toString()
+            .toDoubleOrNull() ?: 0.0
+
+    // سعر بيع الحبة
+    val pieceSalePrice =
+        binding.editPieceSalePrice.text
+            .toString()
+            .toDoubleOrNull() ?: 0.0
+
+
+    // =========================
+    // أسعار الشراء
+    // =========================
+
+    // سعر شراء الباكت
+    val packPurchasePrice =
+        if (packsPerCarton > 0)
+            cartonPurchasePrice / packsPerCarton
+        else
+            0.0
+
+    // سعر شراء الحبة
+    val piecePurchasePrice =
+        if (piecesPerPack > 0)
+            packPurchasePrice / piecesPerPack
+        else
+            0.0
+
+    // سعر شراء جميع الكراتين
+    val totalPurchasePrice =
+        cartonPurchasePrice * cartons
+
+
+    // =========================
+    // أسعار البيع
+    // =========================
+
+    // سعر بيع الباكت
+    val packSalePrice =
+        pieceSalePrice * piecesPerPack
+
+    // سعر بيع الكرتون
+    val cartonSalePrice =
+        packSalePrice * packsPerCarton
+
+    // سعر بيع جميع الكراتين
+    val totalSalePrice =
+        cartonSalePrice * cartons
+
+
+    // =========================
+    // الأرباح
+    // =========================
+
+    // ربح الحبة
+    val pieceProfit =
+        pieceSalePrice - piecePurchasePrice
+
+    // ربح الباكت
+    val packProfit =
+        packSalePrice - packPurchasePrice
+
+    // ربح الكرتون
+    val cartonProfit =
+        cartonSalePrice - cartonPurchasePrice
+
+    // ربح جميع الكراتين
+    val totalProfit =
+        totalSalePrice - totalPurchasePrice
+
+
+    // =========================
+    // عرض أسعار الشراء
+    // =========================
+
+    binding.tvPackPurchasePrice.setText(
+        formatPrice(packPurchasePrice)
+    )
+
+    binding.tvPiecePurchasePrice.setText(
+        formatPrice(piecePurchasePrice)
+    )
+
+    binding.tvTotalPurchasePrice.setText(
+        formatPrice(totalPurchasePrice)
+    )
+
+
+    // =========================
+    // عرض أسعار البيع
+    // =========================
+
+    binding.tvPackSalePrice.setText(
+        formatPrice(packSalePrice)
+    )
+
+    binding.tvCartonSalePrice.setText(
+        formatPrice(cartonSalePrice)
+    )
+
+    binding.tvTotalSalePrice.setText(
+        formatPrice(totalSalePrice)
+    )
+
+
+    // =========================
+    // عرض الأرباح
+    // =========================
+
+    binding.tvPieceProfit.setText(
+        formatPrice(pieceProfit)
+    )
+
+    binding.tvPackProfit.setText(
+        formatPrice(packProfit)
+    )
+
+    binding.tvCartonProfit.setText(
+        formatPrice(cartonProfit)
+    )
+
+    binding.tvTotalProfit.setText(
+        formatPrice(totalProfit)
+    )
+   } 
+
+    
 
     // === دوال التاريخ OCR ===
     
