@@ -287,7 +287,7 @@
 
                     <EditText
                         android:id="@+id/editPack"
-                        android:hint="عدد الباكت"
+                        android:hint=" عدد الباكت في الكرتون "
                         android:inputType="number"
                         android:gravity="center"
                         android:layout_weight="1"
@@ -296,7 +296,7 @@
 
                     <EditText
                         android:id="@+id/editPiece"
-                        android:hint="عدد الحبات"
+                        android:hint=" عدد الحبات في الباكت"
                         android:inputType="number"
                         android:gravity="center"
                         android:layout_weight="1"
@@ -335,7 +335,57 @@
                         android:layout_marginStart="8dp" />
 
                 </LinearLayout>
+             <!-- ========================= -->
+<!-- الأسعار -->
+<!-- ========================= -->
 
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="الأسعار"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <!-- سعر شراء الكرتون -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="سعر شراء الكرتون"
+        app:boxBackgroundMode="outline">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editCartonPurchasePrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- سعر بيع الحبة -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="سعر بيع الحبة"
+        app:boxBackgroundMode="outline">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editPieceSalePrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
