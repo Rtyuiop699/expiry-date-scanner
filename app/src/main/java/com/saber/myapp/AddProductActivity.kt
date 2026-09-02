@@ -235,35 +235,108 @@ private fun loadCategories() {
     }
     }
     private fun saveProduct() {
-        val name = binding.editTextProductName.text.toString().trim()
-        val rawDate = binding.editTextDate.text.toString().trim()
-        val normalizedDate = normalizeDate(rawDate)
-        val barcode = binding.editTextBarcode.text.toString().trim()
-        val category = binding.autoCompleteCategories.text.toString()
 
-        if (name.isBlank() || rawDate.isBlank() || normalizedDate == null || currentImagePath == null) {
-            Toast.makeText(this, "يرجى ملء جميع الحقول وإضافة صورة", Toast.LENGTH_SHORT).show()
-            return
-        }
+    // =========================
+    // البيانات الأساسية
+    // =========================
 
-        val carton = binding.editCarton.text.toString().toIntOrNull() ?: 0
-        val pack = binding.editPack.text.toString().toIntOrNull() ?: 0
-        val piece = binding.editPiece.text.toString().toIntOrNull() ?: 0
-        val quantity = if (carton > 0 && pack > 0 && piece > 0) carton * pack * piece else 1
+    val name = binding.editTextProductName.text.toString().trim()
 
-        val product = Product(
-    0,
-    barcode,
-    name,
-    normalizedDate,
-    quantity,
-    currentImagePath!!,
-    category
-)
-        databaseHelper.addProduct(product)
-        Toast.makeText(this, "تم الحفظ: $name - $category", Toast.LENGTH_SHORT).show()
-        setResult(RESULT_OK)
-        finish()
+    val rawDate = binding.editTextDate.text.toString().trim()
+    val normalizedDate = normalizeDate(rawDate)
+
+    val barcode = binding.editTextBarcode.text.toString().trim()
+
+    val category =
+        binding.autoCompleteCategories.text.toString().trim()
+
+    // =========================
+    // التحقق من البيانات الأساسية
+    // =========================
+
+    if (
+        name.isBlank() ||
+        rawDate.isBlank() ||
+        normalizedDate == null ||
+        currentImagePath == null
+    ) {
+        Toast.makeText(
+            this,
+            "يرجى ملء جميع الحقول وإضافة صورة",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        return
+    }
+
+    // =========================
+    // الكميات
+    // =========================
+
+    // عدد الكراتين
+    val cartons =
+        binding.editCarton.text.toString().toIntOrNull() ?: 0
+
+    // عدد الباكت داخل الكرتون
+    val packsPerCarton =
+        binding.editPack.text.toString().toIntOrNull() ?: 0
+
+    // عدد الحبات داخل الباكت
+    val piecesPerPack =
+        binding.editPiece.text.toString().toIntOrNull() ?: 0
+
+    // =========================
+    // الأسعار
+    // =========================
+
+    // سعر شراء الكرتون
+    val cartonPurchasePrice =
+        binding.editCartonPurchasePrice.text
+            .toString()
+            .toDoubleOrNull() ?: 0.0
+
+    // سعر بيع الحبة
+    val pieceSalePrice =
+        binding.editPieceSalePrice.text
+            .toString()
+            .toDoubleOrNull() ?: 0.0
+
+    // =========================
+    // إنشاء المنتج
+    // =========================
+
+    val product = Product(
+        id = 0,
+        barcode = barcode,
+        name = name,
+        expiryDate = normalizedDate,
+
+        cartons = cartons,
+        packsPerCarton = packsPerCarton,
+        piecesPerPack = piecesPerPack,
+
+        cartonPurchasePrice = cartonPurchasePrice,
+        pieceSalePrice = pieceSalePrice,
+
+        imagePath = currentImagePath!!,
+        category = category
+    )
+
+    // =========================
+    // حفظ المنتج في قاعدة البيانات
+    // =========================
+
+    databaseHelper.addProduct(product)
+
+    Toast.makeText(
+        this,
+        "تم الحفظ: $name - $category",
+        Toast.LENGTH_SHORT
+    ).show()
+
+    setResult(RESULT_OK)
+
+    finish()
     }
 
     private fun setupToolbar() {
