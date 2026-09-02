@@ -130,8 +130,7 @@
     android:src="@drawable/ic_add_white"
     app:backgroundTint="#025144"
     app:elevation="6dp"
-    app:fabSize="normal" />  
-
+    app:fabSize="normal" />
             <!-- ============================= -->
             <!-- اسم المنتج -->
             <!-- ============================= -->
@@ -226,7 +225,6 @@
     app:backgroundTint="#025144"
     app:elevation="6dp"
     app:fabSize="normal" />
-
 
                 <!-- حقل التاريخ -->
                 <com.google.android.material.textfield.TextInputLayout
