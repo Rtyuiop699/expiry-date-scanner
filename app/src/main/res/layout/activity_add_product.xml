@@ -115,6 +115,7 @@
                     android:contentDescription="إضافة تصنيف"
                     android:src="@drawable/ic_add_white"
                     app:backgroundTint="#025144"
+                    app:tint="#FFFFFF"
                     app:elevation="6dp"
                     app:fabSize="normal" />
 
@@ -199,7 +200,8 @@
                     android:layout_marginEnd="8dp"
                     android:contentDescription="مسح تاريخ الانتهاء"
                     android:src="@drawable/ic_ocr"
-                    app:backgroundTint="#025144"
+                   app:backgroundTint="#025144"
+                  app:tint="#FFFFFF"
                     app:elevation="6dp"
                     app:fabSize="normal" />
 
