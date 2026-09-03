@@ -1,3 +1,6 @@
+=
+
+
 package com.saber.myapp
 
 import com.saber.myapp.image.ImageProcessor
@@ -31,11 +34,19 @@ class DateScannerActivity : AppCompatActivity() {
     private lateinit var btnConfirm: Button
     private lateinit var tvResult: TextView
 
+    // أزرار S.OCR والفلاش
+    private lateinit var btnSOCR: Button
+    private lateinit var btnFlash: Button
+
+    // الكاميرا للتحكم بالفلاش
+    private var camera: Camera? = null
+
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
-   private lateinit var geminiDateService: GeminiDateService
+
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
+
     companion object {
         private const val REQUEST_CAMERA = 100
         const val EXTRA_DATE = "recognized_date"
@@ -43,28 +54,65 @@ class DateScannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_date_scanner)
+
         setContentView(R.layout.activity_date_scanner)
 
-imageProcessor = ImageProcessor()
-        previewView = findViewById(R.id.previewView)
-        btnCapture = findViewById(R.id.btnTakePicture)
-        btnConfirm = findViewById(R.id.btnUseDate)
-        tvResult = findViewById(R.id.tvRecognizedText)
+        imageProcessor = ImageProcessor()
+
+        previewView =
+            findViewById(R.id.previewView)
+
+        btnCapture =
+            findViewById(R.id.btnTakePicture)
+
+        btnConfirm =
+            findViewById(R.id.btnUseDate)
+
+        tvResult =
+            findViewById(R.id.tvRecognizedText)
+
+        // ربط أزرار S.OCR والفلاش
+        btnSOCR =
+            findViewById(R.id.btnSOCR)
+
+        btnFlash =
+            findViewById(R.id.btnFlash)
 
         btnConfirm.isEnabled = false
+
+        // =====================================================
+        // زر تصوير الصورة
+        // =====================================================
 
         btnCapture.setOnClickListener {
             takePhoto()
         }
 
+        // =====================================================
+        // زر استخدام التاريخ
+        // =====================================================
+
         btnConfirm.setOnClickListener {
+
             if (recognizedDate != null) {
-                val resultIntent = Intent()
-                resultIntent.putExtra(EXTRA_DATE, recognizedDate)
-                setResult(RESULT_OK, resultIntent)
+
+                val resultIntent =
+                    Intent()
+
+                resultIntent.putExtra(
+                    EXTRA_DATE,
+                    recognizedDate
+                )
+
+                setResult(
+                    RESULT_OK,
+                    resultIntent
+                )
+
                 finish()
+
             } else {
+
                 Toast.makeText(
                     this,
                     "لم يتم التعرف على تاريخ بعد",
@@ -73,55 +121,130 @@ imageProcessor = ImageProcessor()
             }
         }
 
+        // =====================================================
+        // زر S.OCR
+        // =====================================================
+
+        btnSOCR.setOnClickListener {
+
+            val intent =
+                Intent(
+                    this,
+                    GeminiDateScannerActivity::class.java
+                )
+
+            startActivity(intent)
+        }
+
+        // =====================================================
+        // زر الفلاش
+        // =====================================================
+
+        btnFlash.setOnClickListener {
+
+            val currentCamera =
+                camera
+
+            if (currentCamera == null) {
+
+                Toast.makeText(
+                    this,
+                    "الكاميرا غير جاهزة",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            val isTorchOn =
+                currentCamera.cameraInfo.torchState.value ==
+                        TorchState.ON
+
+            val newState =
+                !isTorchOn
+
+            currentCamera.cameraControl.enableTorch(
+                newState
+            )
+
+            btnFlash.text =
+                if (newState) {
+                    "🔦 إيقاف الفلاش"
+                } else {
+                    "🔦 فلاش"
+                }
+        }
+
         checkCameraPermission()
     }
 
+    // =====================================================
+    // التحقق من صلاحية الكاميرا
+    // =====================================================
+
     private fun checkCameraPermission() {
+
         if (
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_CAMERA
             )
+
         } else {
+
             startCamera()
         }
     }
 
+    // =====================================================
+    // تشغيل الكاميرا
+    // =====================================================
+
     private fun startCamera() {
-        cameraExecutor = Executors.newSingleThreadExecutor()
+
+        cameraExecutor =
+            Executors.newSingleThreadExecutor()
 
         val cameraProviderFuture =
             ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
 
-            val cameraProvider = cameraProviderFuture.get()
+            val cameraProvider =
+                cameraProviderFuture.get()
 
-            val preview = Preview.Builder().build()
-            preview.setSurfaceProvider(previewView.surfaceProvider)
+            val preview =
+                Preview.Builder().build()
 
-            imageCapture = ImageCapture.Builder()
-                .setCaptureMode(
-                    ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
-                )
-                .build()
+            preview.setSurfaceProvider(
+                previewView.surfaceProvider
+            )
+
+            imageCapture =
+                ImageCapture.Builder()
+                    .setCaptureMode(
+                        ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
+                    )
+                    .build()
 
             try {
 
                 cameraProvider.unbindAll()
 
-                cameraProvider.bindToLifecycle(
-                    this,
-                    CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageCapture
-                )
+                camera =
+                    cameraProvider.bindToLifecycle(
+                        this,
+                        CameraSelector.DEFAULT_BACK_CAMERA,
+                        preview,
+                        imageCapture
+                    )
 
             } catch (e: Exception) {
 
@@ -136,108 +259,139 @@ imageProcessor = ImageProcessor()
 
         }, ContextCompat.getMainExecutor(this))
     }
+        // =====================================================
+    // التحقق من الإنترنت
+    // =====================================================
 
     private fun isInternetAvailable(): Boolean {
 
         val connectivityManager =
-            getSystemService(CONNECTIVITY_SERVICE)
-                    as android.net.ConnectivityManager
+            getSystemService(
+                CONNECTIVITY_SERVICE
+            ) as android.net.ConnectivityManager
 
         val network =
-            connectivityManager.activeNetwork ?: return false
-
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(network)
+            connectivityManager.activeNetwork
                 ?: return false
 
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(
+                network
+            ) ?: return false
+
         return capabilities.hasCapability(
-            android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+            android.net.NetworkCapabilities
+                .NET_CAPABILITY_INTERNET
         )
     }
 
-       // =====================================================
-// التقاط الصورة
-// =====================================================
+    // =====================================================
+    // التقاط الصورة
+    // =====================================================
 
-private fun takePhoto() {
+    private fun takePhoto() {
 
-    val imageCapture = imageCapture ?: return
+        val imageCapture =
+            imageCapture ?: return
 
-    val photoFile = createImageFile()
+        val photoFile =
+            createImageFile()
 
-    val outputOptions =
-        ImageCapture.OutputFileOptions
-            .Builder(photoFile)
-            .build()
+        val outputOptions =
+            ImageCapture.OutputFileOptions
+                .Builder(photoFile)
+                .build()
 
-    btnCapture.isEnabled = false
-    btnCapture.text = "⏳ جاري..."
+        btnCapture.isEnabled = false
 
-    imageCapture.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(this),
+        btnCapture.text =
+            "⏳ جاري..."
 
-        object : ImageCapture.OnImageSavedCallback {
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
 
-            override fun onImageSaved(
-                output: ImageCapture.OutputFileResults
-            ) {
+            object :
+                ImageCapture.OnImageSavedCallback {
 
-                btnCapture.isEnabled = true
-                btnCapture.text = "📸 تصوير"
+                override fun onImageSaved(
+                    output:
+                    ImageCapture.OutputFileResults
+                ) {
 
-                val bitmap =
-                    BitmapFactory.decodeFile(
-                        photoFile.absolutePath
-                    )
+                    btnCapture.isEnabled =
+                        true
 
-                if (bitmap != null) {
-                    recognizeDate(bitmap)
+                    btnCapture.text =
+                        "📸 تصوير"
+
+                    val bitmap =
+                        BitmapFactory.decodeFile(
+                            photoFile.absolutePath
+                        )
+
+                    if (bitmap != null) {
+                        recognizeDate(bitmap)
+                    }
+                }
+
+                override fun onError(
+                    exception:
+                    ImageCaptureException
+                ) {
+
+                    btnCapture.isEnabled =
+                        true
+
+                    btnCapture.text =
+                        "📸 تصوير"
+
+                    Toast.makeText(
+                        this@DateScannerActivity,
+                        "فشل التقاط الصورة",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+        )
+    }
 
-            override fun onError(
-                exception: ImageCaptureException
-            ) {
+    // =====================================================
+    // إنشاء ملف الصورة
+    // =====================================================
 
-                btnCapture.isEnabled = true
-                btnCapture.text = "📸 تصوير"
+    private fun createImageFile(): File {
 
-                Toast.makeText(
-                    this@DateScannerActivity,
-                    "فشل التقاط الصورة",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    )
-}
+        val timeStamp =
+            SimpleDateFormat(
+                "yyyyMMdd_HHmmss",
+                Locale.getDefault()
+            ).format(Date())
 
-private fun createImageFile(): File {
-
-    val timeStamp =
-        SimpleDateFormat(
-            "yyyyMMdd_HHmmss",
-            Locale.getDefault()
-        ).format(Date())
-
-    return File.createTempFile(
-        "DATE_$timeStamp",
-        ".jpg",
-        getExternalFilesDir(null)
-    )
-} 
+        return File.createTempFile(
+            "DATE_$timeStamp",
+            ".jpg",
+            getExternalFilesDir(null)
+        )
+    }
 
     // =====================================================
     // التعرف على التاريخ بواسطة OCR
     // =====================================================
-        private fun recognizeDate(bitmap: Bitmap) {
+
+    private fun recognizeDate(
+        bitmap: Bitmap
+    ) {
 
         val cropped =
-    imageProcessor.cropCenter(bitmap)
+            imageProcessor.cropCenter(
+                bitmap
+            )
 
         val processedBitmap =
-    imageProcessor.preprocessImage(cropped)
+            imageProcessor.preprocessImage(
+                cropped
+            )
 
         val image =
             InputImage.fromBitmap(
@@ -256,7 +410,8 @@ private fun createImageFile(): File {
         recognizer.process(image)
             .addOnSuccessListener { result ->
 
-                val text = result.text
+                val text =
+                    result.text
 
                 val extractedDate =
                     extractDateFromText(text)
@@ -269,26 +424,31 @@ private fun createImageFile(): File {
                     tvResult.text =
                         "✅ $extractedDate\n$text"
 
-                    btnConfirm.isEnabled = true
+                    btnConfirm.isEnabled =
+                        true
 
                 } else {
 
-                    recognizedDate = null
+                    recognizedDate =
+                        null
 
                     tvResult.text =
                         "❌ لم يتم التعرف\n$text"
 
-                    btnConfirm.isEnabled = false
+                    btnConfirm.isEnabled =
+                        false
                 }
             }
             .addOnFailureListener {
 
-                recognizedDate = null
+                recognizedDate =
+                    null
 
                 tvResult.text =
                     "❌ حدث خطأ أثناء التعرف"
 
-                btnConfirm.isEnabled = false
+                btnConfirm.isEnabled =
+                    false
             }
     }
 
@@ -296,7 +456,9 @@ private fun createImageFile(): File {
     // استخراج التاريخ
     // =====================================================
 
-    private fun extractDateFromText(text: String): String? {
+    private fun extractDateFromText(
+        text: String
+    ): String? {
 
         val cleanedText =
             fixCommonOCRMistakes(
@@ -506,7 +668,8 @@ private fun createImageFile(): File {
                             numbers.substring(2, 4)
 
                         val year =
-                            "20" + numbers.substring(4, 6)
+                            "20" +
+                                    numbers.substring(4, 6)
 
                         result =
                             if (
@@ -546,7 +709,10 @@ private fun createImageFile(): File {
                             groups[2].length == 4 -> {
 
                         val month =
-                            groups[1].padStart(2, '0')
+                            groups[1].padStart(
+                                2,
+                                '0'
+                            )
 
                         val year =
                             groups[2]
@@ -605,7 +771,10 @@ private fun createImageFile(): File {
                         match.value
 
                     val beforeStart =
-                        maxOf(0, match.range.first - 15)
+                        maxOf(
+                            0,
+                            match.range.first - 15
+                        )
 
                     val afterEnd =
                         minOf(
@@ -644,20 +813,23 @@ private fun createImageFile(): File {
                             date = result,
                             hasRealDay = hasDay,
                             isExpiry = isExpiry,
-                            position = match.range.first
+                            position =
+                                match.range.first
                         )
                     )
                 }
             }
         }
 
-        return chooseBestDate(foundDates)
+        return chooseBestDate(
+            foundDates
+        )
     }
-
-    // =====================================================
+        // =====================================================
     // نموذج نتيجة OCR
     // =====================================================
-        private data class DetectedDate(
+
+    private data class DetectedDate(
         val date: String,
         val hasRealDay: Boolean,
         val isExpiry: Boolean,
@@ -723,6 +895,160 @@ private fun createImageFile(): File {
             today
         )
     }
+
+    // =====================================================
+    // اختيار التاريخ الأقرب للمستقبل
+    // =====================================================
+
+    private fun chooseClosestFutureOrLatest(
+        dates: List<DetectedDate>,
+        today: Calendar
+    ): String? {
+
+        if (dates.isEmpty()) return null
+
+        val dateFormat =
+            SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.US
+            )
+
+        val todayDate =
+            dateFormat.parse(
+                dateFormat.format(
+                    today.time
+                )
+            )
+
+        val futureDates =
+            dates.filter {
+
+                val parsed =
+                    try {
+                        dateFormat.parse(it.date)
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                parsed != null &&
+                        todayDate != null &&
+                        !parsed.before(todayDate)
+            }
+
+        if (futureDates.isNotEmpty()) {
+
+            return futureDates.minByOrNull {
+
+                try {
+                    dateFormat.parse(it.date)?.time
+                        ?: Long.MAX_VALUE
+                } catch (e: Exception) {
+                    Long.MAX_VALUE
+                }
+
+            }?.date
+        }
+
+        return dates.maxByOrNull {
+
+            try {
+                dateFormat.parse(it.date)?.time
+                    ?: Long.MIN_VALUE
+            } catch (e: Exception) {
+                Long.MIN_VALUE
+            }
+
+        }?.date
+    }
+
+    // =====================================================
+    // تصحيح أخطاء OCR الشائعة
+    // =====================================================
+
+    private fun fixCommonOCRMistakes(
+        text: String
+    ): String {
+
+        return text
+            .replace("O", "0")
+            .replace("o", "0")
+            .replace("I", "1")
+            .replace("l", "1")
+            .replace("S", "5")
+            .replace("s", "5")
+    }
+
+    // =====================================================
+    // التحقق من صحة التاريخ
+    // =====================================================
+
+    private fun isValidDateFromString(
+        dateString: String
+    ): Boolean {
+
+        return try {
+
+            val format =
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                )
+
+            format.isLenient = false
+
+            format.parse(dateString)
+
+            true
+
+        } catch (e: Exception) {
+
+            false
+        }
+    }
+
+    // =====================================================
+    // تحويل اسم الشهر إلى رقم
+    // =====================================================
+
+    private fun monthNameToNumber(
+        monthName: String
+    ): String? {
+
+        return when (
+            monthName.lowercase(Locale.US)
+        ) {
+
+            "january", "jan" -> "01"
+            "february", "feb" -> "02"
+            "march", "mar" -> "03"
+            "april", "apr" -> "04"
+            "may" -> "05"
+            "june", "jun" -> "06"
+            "july", "jul" -> "07"
+            "august", "aug" -> "08"
+            "september", "sep", "sept" -> "09"
+            "october", "oct" -> "10"
+            "november", "nov" -> "11"
+            "december", "dec" -> "12"
+
+            else -> null
+        }
+    }
+
+    // =====================================================
+    // إنهاء النشاط
+    // =====================================================
+
+    override fun onDestroy() {
+
+        super.onDestroy()
+
+        if (::cameraExecutor.isInitialized) {
+            cameraExecutor.shutdown()
+        }
+    }
+}
+    
 
     // =====================================================
     // اختيار التاريخ الأقرب للمستقبل
