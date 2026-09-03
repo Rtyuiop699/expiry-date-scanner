@@ -1,4 +1,3 @@
-
 package com.saber.myapp
 
 import com.saber.myapp.image.ImageProcessor
