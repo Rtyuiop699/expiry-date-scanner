@@ -504,7 +504,17 @@ private fun loadCategories() {
     )
    } 
 
-    
+    private fun formatPrice(price: Double): String {
+    return if (price % 1.0 == 0.0) {
+        price.toInt().toString()
+    } else {
+        String.format(
+            Locale.US,
+            "%.2f",
+            price
+        )
+    }
+    }
 
     // === دوال التاريخ OCR ===
     
