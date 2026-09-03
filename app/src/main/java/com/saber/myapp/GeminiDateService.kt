@@ -77,7 +77,10 @@ class GeminiDateService {
                 "apikey",
                 SUPABASE_ANON_KEY
             )
-
+            connection.setRequestProperty(
+    "Authorization",
+    "Bearer $SUPABASE_ANON_KEY"
+)
             connection.connectTimeout = 30000
             connection.readTimeout = 60000
 
