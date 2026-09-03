@@ -14,7 +14,7 @@ class GeminiDateService {
     companion object {
 
         private const val SUPABASE_URL =
-    "https://gmelnyxzsbwbsmhgrhhu.supabase.co/functions/v1/extract-date"
+            "https://gmelnyxzsbwbsmhgrhhu.supabase.co/functions/v1/extract-date"
 
         private const val SUPABASE_ANON_KEY =
             "sb_publishable_BW2yXX7rchLZncfc3Qbog_3rDz3GE"
@@ -50,23 +50,30 @@ class GeminiDateService {
 
     suspend fun fetchExpiryDate(
         bitmap: Bitmap
-    ): String? = withContext(Dispatchers.IO) {
+    ): Result<String> = withContext(Dispatchers.IO) {
 
         var connection: HttpURLConnection? = null
 
         try {
 
+            // تحويل الصورة إلى Base64
             val base64Image =
                 bitmapToBase64(bitmap)
 
+            // إنشاء الاتصال
             val url =
                 URL(SUPABASE_URL)
 
             connection =
                 url.openConnection()
-                        as HttpURLConnection
+                    as HttpURLConnection
 
-            connection.requestMethod = "POST"
+            connection.requestMethod =
+                "POST"
+
+            // =================================================
+            // Headers
+            // =================================================
 
             connection.setRequestProperty(
                 "Content-Type",
@@ -77,14 +84,28 @@ class GeminiDateService {
                 "apikey",
                 SUPABASE_ANON_KEY
             )
-            connection.setRequestProperty(
-    "Authorization",
-    "Bearer $SUPABASE_ANON_KEY"
-)
-            connection.connectTimeout = 30000
-            connection.readTimeout = 60000
 
-            connection.doOutput = true
+            connection.setRequestProperty(
+                "Authorization",
+                "Bearer $SUPABASE_ANON_KEY"
+            )
+
+            // =================================================
+            // Timeout
+            // =================================================
+
+            connection.connectTimeout =
+                30000
+
+            connection.readTimeout =
+                60000
+
+            connection.doOutput =
+                true
+
+            // =================================================
+            // JSON
+            // =================================================
 
             val jsonInput =
                 JSONObject().apply {
@@ -95,25 +116,44 @@ class GeminiDateService {
                     )
                 }
 
+            // =================================================
+            // إرسال الطلب
+            // =================================================
+
             connection.outputStream.use { outputStream ->
 
                 val input =
                     jsonInput
                         .toString()
-                        .toByteArray(Charsets.UTF_8)
+                        .toByteArray(
+                            Charsets.UTF_8
+                        )
 
                 outputStream.write(input)
             }
 
+            // =================================================
+            // قراءة كود الاستجابة
+            // =================================================
+
             val responseCode =
                 connection.responseCode
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            // =================================================
+            // نجاح الطلب
+            // =================================================
+
+            if (
+                responseCode ==
+                HttpURLConnection.HTTP_OK
+            ) {
 
                 val responseText =
                     connection.inputStream
                         .bufferedReader()
-                        .use { it.readText() }
+                        .use {
+                            it.readText()
+                        }
 
                 val jsonResponse =
                     JSONObject(responseText)
@@ -123,27 +163,67 @@ class GeminiDateService {
                         "expiryDate"
                     )
 
+                // =================================================
+                // تم العثور على التاريخ
+                // =================================================
+
                 if (
                     expiryDate.isNotBlank() &&
                     expiryDate != "NOT_FOUND"
                 ) {
-                    expiryDate
+
+                    Result.success(
+                        expiryDate
+                    )
+
                 } else {
-                    null
+
+                    Result.failure(
+                        Exception(
+                            "Gemini لم يعثر على تاريخ انتهاء واضح."
+                        )
+                    )
                 }
 
             } else {
 
-                null
+                // =================================================
+                // حدث خطأ من Supabase
+                // =================================================
+
+                val errorText =
+                    try {
+
+                        connection.errorStream
+                            ?.bufferedReader()
+                            ?.use {
+                                it.readText()
+                            }
+                            ?: "لا توجد تفاصيل إضافية"
+
+                    } catch (e: Exception) {
+
+                        "تعذر قراءة تفاصيل الخطأ"
+                    }
+
+                Result.failure(
+                    Exception(
+                        "HTTP $responseCode\n$errorText"
+                    )
+                )
             }
 
         } catch (e: Exception) {
 
-    e.printStackTrace()
+            // =================================================
+            // خطأ في الاتصال أو الشبكة
+            // =================================================
 
-    throw e
+            e.printStackTrace()
 
-} finally {
+            Result.failure(e)
+
+        } finally {
 
             connection?.disconnect()
         }
