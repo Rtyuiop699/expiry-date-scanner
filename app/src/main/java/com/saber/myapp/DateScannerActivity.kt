@@ -1,4 +1,5 @@
 package com.saber.myapp
+
 import com.saber.myapp.image.ImageProcessor
 import android.Manifest
 import android.content.Intent
@@ -32,6 +33,7 @@ class DateScannerActivity : AppCompatActivity() {
 
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
+   private lateinit var geminiDateService: GeminiDateService
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
     companion object {
