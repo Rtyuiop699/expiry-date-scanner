@@ -138,9 +138,12 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
                 Toast.makeText(
                     this,
-                    "فشل تشغيل الكاميرا",
-                    Toast.LENGTH_SHORT
+                    "فشل تشغيل الكاميرا: ${e.message}",
+                    Toast.LENGTH_LONG
                 ).show()
+
+                tvResult.text =
+                    "❌ خطأ في تشغيل الكاميرا:\n${e.message}"
 
                 finish()
             }
@@ -214,7 +217,7 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                         "📸 التقاط الصورة"
 
                     tvResult.text =
-                        "❌ فشل التقاط الصورة"
+                        "❌ فشل التقاط الصورة:\n${exception.message}"
 
                     Toast.makeText(
                         this@GeminiDateScannerActivity,
@@ -239,25 +242,45 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
 
-            val expiryDate =
+            val result =
                 geminiDateService.fetchExpiryDate(
                     bitmap
                 )
 
+            // إعادة تفعيل الزر
             btnCapture.isEnabled = true
 
             btnCapture.text =
                 "📸 التقاط الصورة"
 
-            if (expiryDate != null) {
+            // =================================================
+            // نجاح
+            // =================================================
+
+            result.onSuccess { expiryDate ->
 
                 tvResult.text =
                     "✅ تاريخ الانتهاء:\n$expiryDate"
+            }
 
-            } else {
+            // =================================================
+            // خطأ
+            // =================================================
+
+            result.onFailure { error ->
+
+                val errorMessage =
+                    error.message
+                        ?: "خطأ غير معروف"
 
                 tvResult.text =
-                    "❌ لم يتم العثور على تاريخ انتهاء"
+                    "❌ حدث خطأ:\n\n$errorMessage"
+
+                Toast.makeText(
+                    this@GeminiDateScannerActivity,
+                    errorMessage,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
