@@ -14,7 +14,8 @@ class GeminiDateService {
     companion object {
 
         private const val SUPABASE_URL =
-            "https://gmelnyxzsbwbsmhgrhhu.supabase.co/functions/v1/extract-date"
+    "https://gmelnyxzsbwbsmhgrhhu.supabase.co/functions/v1/extract-date"
+            
 
         private const val SUPABASE_ANON_KEY =
             "sb_publishable_BW2yXX7rchLZncfc3Qbog_3rDz3GE"
