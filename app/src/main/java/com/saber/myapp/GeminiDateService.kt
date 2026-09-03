@@ -139,11 +139,11 @@ class GeminiDateService {
 
         } catch (e: Exception) {
 
-            e.printStackTrace()
+    e.printStackTrace()
 
-            null
+    throw e
 
-        } finally {
+} finally {
 
             connection?.disconnect()
         }
