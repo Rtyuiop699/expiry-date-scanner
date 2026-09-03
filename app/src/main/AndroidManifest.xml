@@ -51,8 +51,12 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".DateScannerActivity"
-            android:screenOrientation="portrait" />
+    android:name=".DateScannerActivity"
+    android:screenOrientation="portrait" />
+
+<activity
+    android:name=".GeminiDateScannerActivity"
+    android:screenOrientation="portrait" />
 
         <activity
             android:name=".ProductCameraActivity"
