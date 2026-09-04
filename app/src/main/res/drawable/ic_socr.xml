@@ -4,46 +4,44 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- 1. طبقة التوهج الأخضر خلف النص (Neon Glow) -->
+    <!-- 1. أركان إطار المسح الضوئي الذكي (Scan Corners - Glow) -->
     <path
         android:fillColor="@android:color/transparent"
         android:strokeColor="#FF00FF66"
-        android:strokeWidth="1.2"
+        android:strokeWidth="1.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="
-            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
-            M9.5,13.5
-            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
-            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
-            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
+        android:pathData="M3,7 V5 C3,3.9 3.9,3 5,3 H7 M17,3 H19 C20.1,3 21,3.9 21,5 V7 M21,17 V19 C21,20.1 20.1,21 19,21 H17 M7,21 H5 C3.9,21 3,20.1 3,19 V17" />
 
-    <!-- 2. طبقة خط النيون الأخضر الأساسي (Main Green Stroke) -->
+    <!-- 2. أركان المسح (الخط الأساسي المضيء) -->
     <path
         android:fillColor="@android:color/transparent"
         android:strokeColor="#00FF66"
-        android:strokeWidth="0.8"
+        android:strokeWidth="1.0"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="
-            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
-            M9.5,13.2 V13.5
-            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
-            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
-            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
+        android:pathData="M3,7 V5 C3,3.9 3.9,3 5,3 H7 M17,3 H19 C20.1,3 21,3.9 21,5 V7 M21,17 V19 C21,20.1 20.1,21 19,21 H17 M7,21 H5 C3.9,21 3,20.1 3,19 V17" />
 
-    <!-- 3. طبقة قلب أنبوب النيون المضيء (Bright Core) -->
+    <!-- 3. رمز التقويم في المنتصف (توهج خفيف) -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF00FF66"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M7,10 H17 V17 C17,17.5 16.5,18 16,18 H8 C7.5,18 7,17.5 7,17 Z M9,7 V10 M15,7 V10 M7,13 H17" />
+
+    <!-- 4. رمز التقويم (القلب الأبيض الناعم للنيون) -->
     <path
         android:fillColor="@android:color/transparent"
         android:strokeColor="#E0FFEC"
-        android:strokeWidth="0.4"
+        android:strokeWidth="0.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="
-            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
-            M9.5,13.2 V13.5
-            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
-            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
-            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
+        android:pathData="M7,10 H17 V17 C17,17.5 16.5,18 16,18 H8 C7.5,18 7,17.5 7,17 Z M9,7 V10 M15,7 V10 M7,13 H17" />
 
+    <!-- 5. نقطة مسح ذكية (Gemini Node) -->
+    <path
+        android:fillColor="#00FF66"
+        android:pathData="M12,15m-1,0a1,1 0 1,1 2,0a1,1 0 1,1 -2,0" />
 </vector>
