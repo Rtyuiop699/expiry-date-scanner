@@ -177,79 +177,83 @@
             android:textStyle="bold" />
 
 
+
         <!-- ================================================= -->
-        <!-- أزرار التحكم -->
-        <!-- ================================================= -->
+<!-- أزرار التحكم - أيقونات عائمة بدون إطار -->
+<!-- ================================================= -->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal">
 
+    <!-- ============================================= -->
+    <!-- الفلاش -->
+    <!-- ============================================= -->
 
-            <!-- ============================================= -->
-            <!-- الفلاش -->
-            <!-- ============================================= -->
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnFlash"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_margin="6dp"
-                android:contentDescription="تشغيل الفلاش"
-                android:src="@drawable/ic_flash"
-                app:backgroundTint="#555555"
-                app:tint="#FFFFFF" />
-
-
-            <!-- ============================================= -->
-            <!-- التصوير -->
-            <!-- ============================================= -->
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-    android:id="@+id/btnTakePicture"
-    android:layout_width="70dp"
-    android:layout_height="70dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    android:contentDescription="التقاط صورة"
-    android:src="@drawable/ic_camera"
-    app:backgroundTint="#4CAF50" />
+    <ImageButton
+        android:id="@+id/btnFlash"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_margin="6dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="تشغيل الفلاش"
+        android:padding="2dp"
+        android:src="@drawable/ic_flash"
+        android:scaleType="fitCenter" />
 
 
-            <!-- ============================================= -->
-            <!-- استخدام التاريخ -->
-            <!-- ============================================= -->
+    <!-- ============================================= -->
+    <!-- التصوير -->
+    <!-- ============================================= -->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnUseDate"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_margin="6dp"
-                android:contentDescription="استخدام التاريخ"
-                android:enabled="false"
-                android:src="@drawable/ic_check"
-                app:backgroundTint="#2196F3"
-                app:tint="#FFFFFF" />
+    <ImageButton
+        android:id="@+id/btnTakePicture"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="التقاط صورة"
+        android:padding="1dp"
+        android:src="@drawable/ic_camera"
+        android:scaleType="fitCenter" />
 
 
-            <!-- ============================================= -->
-            <!-- S.OCR -->
-            <!-- ============================================= -->
+    <!-- ============================================= -->
+    <!-- استخدام التاريخ -->
+    <!-- ============================================= -->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnSOCR"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_margin="6dp"
-                android:contentDescription="التعرف بالذكاء الاصطناعي"
-                android:src="@drawable/ic_socr"
-                app:backgroundTint="#4CAF50"
-                app:tint="#FFFFFF" />
+    <ImageButton
+        android:id="@+id/btnUseDate"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_margin="6dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="استخدام التاريخ"
+        android:enabled="false"
+        android:padding="2dp"
+        android:src="@drawable/ic_check"
+        android:scaleType="fitCenter" />
 
-        </LinearLayout>
 
+    <!-- ============================================= -->
+    <!-- S.OCR -->
+    <!-- ============================================= -->
+
+    <ImageButton
+        android:id="@+id/btnSOCR"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_margin="6dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="التعرف بالذكاء الاصطناعي"
+        android:padding="2dp"
+        android:src="@drawable/ic_socr"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
