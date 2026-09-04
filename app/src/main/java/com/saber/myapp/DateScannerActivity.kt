@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import android.widget.ImageButton
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -40,10 +41,10 @@ class DateScannerActivity : AppCompatActivity() {
 
     private lateinit var previewView: PreviewView
 
-    private lateinit var btnCapture: FloatingActionButton
-    private lateinit var btnConfirm: FloatingActionButton
-    private lateinit var btnSOCR: FloatingActionButton
-    private lateinit var btnFlash: FloatingActionButton
+    private lateinit var btnCapture: ImageButton
+private lateinit var btnConfirm: ImageButton
+private lateinit var btnSOCR: ImageButton
+private lateinit var btnFlash: ImageButton
 
     private lateinit var tvResult: TextView
 
