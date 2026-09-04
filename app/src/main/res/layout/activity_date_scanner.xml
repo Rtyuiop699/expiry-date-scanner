@@ -208,15 +208,14 @@
             <!-- ============================================= -->
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnTakePicture"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="التقاط صورة"
-                android:src="@drawable/ic_camera"
-                app:backgroundTint="#4CAF50"
-                app:tint="#FFFFFF" />
+    android:id="@+id/btnTakePicture"
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:contentDescription="التقاط صورة"
+    android:src="@drawable/ic_camera"
+    app:backgroundTint="#4CAF50" />
 
 
             <!-- ============================================= -->
