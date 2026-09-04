@@ -25,8 +25,8 @@ class GeminiDateService {
         // =====================================================
 
         private const val SUPABASE_ANON_KEY =
-            "sb_publishable_BW2yXX7rchLZncfc3Qbog_3rDz3GE"
-    }
+    "sb_publishable_6W2yXX7rchLZncnfc3Qbog_3rDsz3GE"
+    
 
     // =====================================================
     // تحويل الصورة إلى Base64
