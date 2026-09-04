@@ -25,8 +25,8 @@ class GeminiDateService {
         // =====================================================
 
         private const val SUPABASE_ANON_KEY =
-    "sb_publishable_6W2yXX7rchLZncnfc3Qbog_3rDsz3GE"
-    
+            "sb_publishable_6W2yXX7rchLZncnfc3Qbog_3rDsz3GE"
+    }
 
     // =====================================================
     // تحويل الصورة إلى Base64
@@ -65,7 +65,7 @@ class GeminiDateService {
         try {
 
             // -------------------------------------------------
-            // تحويل الصورة
+            // تحويل الصورة إلى Base64
             // -------------------------------------------------
 
             val base64Image =
@@ -94,21 +94,16 @@ class GeminiDateService {
                 "application/json"
             )
 
-            // مفتاح Supabase
             connection.setRequestProperty(
                 "apikey",
                 SUPABASE_ANON_KEY
             )
 
-            // مهم:
-            // لا نضع Authorization هنا
-            // لأننا نستخدم sb_publishable_
+            // -------------------------------------------------
+            // لا نستخدم Authorization
+            // لأن المفتاح sb_publishable_
             // و Verify JWT = OFF
-            //
-            // connection.setRequestProperty(
-            //     "Authorization",
-            //     "Bearer $SUPABASE_ANON_KEY"
-            // )
+            // -------------------------------------------------
 
             // -------------------------------------------------
             // Timeout
@@ -137,7 +132,7 @@ class GeminiDateService {
                 }
 
             // -------------------------------------------------
-            // إرسال الصورة
+            // إرسال الطلب
             // -------------------------------------------------
 
             connection.outputStream.use { outputStream ->
@@ -161,7 +156,7 @@ class GeminiDateService {
                 connection.responseCode
 
             // -------------------------------------------------
-            // الطلب نجح
+            // نجاح الطلب
             // -------------------------------------------------
 
             if (
@@ -189,7 +184,7 @@ class GeminiDateService {
                     )
 
                 // -------------------------------------------------
-                // وجدنا التاريخ
+                // تم العثور على التاريخ
                 // -------------------------------------------------
 
                 if (
@@ -213,7 +208,7 @@ class GeminiDateService {
             } else {
 
                 // -------------------------------------------------
-                // خطأ من السيرفر
+                // خطأ من Supabase
                 // -------------------------------------------------
 
                 val errorText =
