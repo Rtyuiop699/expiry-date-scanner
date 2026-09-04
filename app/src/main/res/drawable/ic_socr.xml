@@ -4,25 +4,46 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
+    <!-- 1. طبقة التوهج الأخضر خلف النص (Neon Glow) -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.7"
+        android:strokeColor="#FF00FF66"
+        android:strokeWidth="1.2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M4,8V5C4,4.45 4.45,4 5,4H8M16,4H19C19.55,4 20,4.45 20,5V8M20,16V19C20,19.55 19.55,20 19,20H16M8,20H5C4.45,20 4,19.55 4,19V16" />
+        android:pathData="
+            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
+            M9.5,13.5
+            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
+            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
+            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
 
+    <!-- 2. طبقة خط النيون الأخضر الأساسي (Main Green Stroke) -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.7"
+        android:strokeColor="#00FF66"
+        android:strokeWidth="0.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M9,9H15V15H9Z" />
+        android:pathData="
+            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
+            M9.5,13.2 V13.5
+            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
+            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
+            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
 
+    <!-- 3. طبقة قلب أنبوب النيون المضيء (Bright Core) -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.5"
-        android:pathData="M11,11H13V13H11Z" />
+        android:strokeColor="#E0FFEC"
+        android:strokeWidth="0.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="
+            M2.5,9 C2.5,8 3.5,7.5 4.5,7.5 H6.5 C7.5,7.5 8,8 8,9 C8,10.5 2.5,10.5 2.5,12 C2.5,13 3,13.5 4.5,13.5 H6.5 C7.5,13.5 8.5,13 8.5,12
+            M9.5,13.2 V13.5
+            M12,12.5 C10.5,12.5 10.5,8.5 12,8.5 C13.5,8.5 13.5,12.5 12,12.5 Z
+            M15.5,12.5 C14.5,12.5 14.5,8.5 15.5,8.5 C16.5,8.5 16.5,12.5 15.5,12.5 Z
+            M18.5,8.5 V13.5 M18.5,8.5 H20 C21,8.5 21.5,9.5 21.5,10.5 C21.5,11.5 20.5,12 20,12 H18.5 M19.5,12 L21.5,13.5" />
+
 </vector>
