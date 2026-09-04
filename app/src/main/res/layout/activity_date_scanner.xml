@@ -1,207 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#000000">
 
-    <!-- معاينة الكاميرا (تظهر فقط داخل الإطار) -->
+    <!-- ===================================================== -->
+    <!-- معاينة الكاميرا -->
+    <!-- ===================================================== -->
+
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:scaleType="fitCenter" />
+
+
+    <!-- ===================================================== -->
+    <!-- إطار OCR -->
+    <!-- ===================================================== -->
+
+    <FrameLayout
         android:layout_width="320dp"
-        android:layout_height="120dp"
-        android:layout_gravity="center" />
+        android:layout_height="140dp"
+        android:layout_gravity="center">
 
-    <!-- الخط العلوي -->
-    <View
-        android:layout_width="320dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="-60dp"
-        android:background="#00FF00" />
+        <!-- الحد العلوي -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="top"
+            android:background="#00FF00" />
 
-    <!-- الخط السفلي -->
-    <View
-        android:layout_width="320dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="60dp"
-        android:background="#00FF00" />
+        <!-- الحد السفلي -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="bottom"
+            android:background="#00FF00" />
 
-    <!-- الخط الأيسر -->
-    <View
-        android:layout_width="3dp"
-        android:layout_height="120dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="-160dp"
-        android:background="#00FF00" />
+        <!-- الحد الأيسر -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#00FF00" />
 
-    <!-- الخط الأيمن -->
-    <View
-        android:layout_width="3dp"
-        android:layout_height="120dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="160dp"
-        android:background="#00FF00" />
+        <!-- الحد الأيمن -->
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="#00FF00" />
 
-    <!-- زوايا الإطار -->
 
-    <!-- الزاوية العلوية اليسرى -->
-    <View
-        android:layout_width="20dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="-160dp"
-        android:layout_marginTop="-60dp"
-        android:background="#00FF00" />
+        <!-- ============================== -->
+        <!-- الزاوية العلوية اليسرى -->
+        <!-- ============================== -->
 
-    <View
-        android:layout_width="3dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="-160dp"
-        android:layout_marginTop="-60dp"
-        android:background="#00FF00" />
+        <View
+            android:layout_width="28dp"
+            android:layout_height="4dp"
+            android:layout_gravity="top|start"
+            android:background="#00FF00" />
 
-    <!-- الزاوية العلوية اليمنى -->
-    <View
-        android:layout_width="20dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="-60dp"
-        android:background="#00FF00" />
+        <View
+            android:layout_width="4dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|start"
+            android:background="#00FF00" />
 
-    <View
-        android:layout_width="3dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="-60dp"
-        android:background="#00FF00" />
 
-    <!-- الزاوية السفلية اليسرى -->
-    <View
-        android:layout_width="20dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="-160dp"
-        android:layout_marginTop="57dp"
-        android:background="#00FF00" />
+        <!-- ============================== -->
+        <!-- الزاوية العلوية اليمنى -->
+        <!-- ============================== -->
 
-    <View
-        android:layout_width="3dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="-160dp"
-        android:layout_marginTop="40dp"
-        android:background="#00FF00" />
+        <View
+            android:layout_width="28dp"
+            android:layout_height="4dp"
+            android:layout_gravity="top|end"
+            android:background="#00FF00" />
 
-    <!-- الزاوية السفلية اليمنى -->
-    <View
-        android:layout_width="20dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="57dp"
-        android:background="#00FF00" />
+        <View
+            android:layout_width="4dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|end"
+            android:background="#00FF00" />
 
-    <View
-        android:layout_width="3dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="40dp"
-        android:background="#00FF00" />
 
-    <!-- النص الإرشادي -->
+        <!-- ============================== -->
+        <!-- الزاوية السفلية اليسرى -->
+        <!-- ============================== -->
+
+        <View
+            android:layout_width="28dp"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom|start"
+            android:background="#00FF00" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="28dp"
+            android:layout_gravity="bottom|start"
+            android:background="#00FF00" />
+
+
+        <!-- ============================== -->
+        <!-- الزاوية السفلية اليمنى -->
+        <!-- ============================== -->
+
+        <View
+            android:layout_width="28dp"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom|end"
+            android:background="#00FF00" />
+
+        <View
+            android:layout_width="4dp"
+            android:layout_height="28dp"
+            android:layout_gravity="bottom|end"
+            android:background="#00FF00" />
+
+    </FrameLayout>
+
+
+    <!-- ===================================================== -->
+    <!-- التعليمات أعلى إطار OCR -->
+    <!-- ===================================================== -->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="-100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="90dp"
+        android:background="#99000000"
+        android:paddingStart="18dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="8dp"
         android:text="ضع التاريخ داخل الإطار"
         android:textColor="#00FF00"
         android:textSize="14sp"
-        android:textStyle="bold"
-        android:background="#80000000"
-        android:padding="8dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:letterSpacing="0.1" />
+        android:textStyle="bold" />
 
-    <!-- الأزرار والنتائج في الأسفل -->
+
+    <!-- ===================================================== -->
+    <!-- لوحة النتائج والأزرار -->
+    <!-- ===================================================== -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="20dp"
         android:background="#CC000000">
 
+
+        <!-- ============================== -->
         <!-- نتيجة OCR -->
+        <!-- ============================== -->
+
         <TextView
             android:id="@+id/tvRecognizedText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="سوف يظهر النص المكتشف هنا"
-            android:padding="12dp"
+            android:layout_marginBottom="14dp"
             android:background="#F0F0F0"
+            android:gravity="center"
+            android:maxLines="3"
+            android:padding="12dp"
+            android:text="سوف يظهر النص المكتشف هنا"
             android:textColor="#000000"
-            android:layout_marginBottom="16dp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-        <!-- تصوير + استخدام التاريخ -->
+
+        <!-- ============================== -->
+        <!-- أزرار التحكم -->
+        <!-- ============================== -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnTakePicture"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="📸 تصوير"
-                android:textColor="#FFFFFF"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#4CAF50" />
 
-            <Button
-                android:id="@+id/btnUseDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="✅ استخدام التاريخ"
-                android:textColor="#FFFFFF"
-                android:enabled="false"
-                android:backgroundTint="#2196F3" />
+            <!-- الفلاش -->
 
-        </LinearLayout>
-
-        <!-- S.OCR + الفلاش -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/btnSOCR"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="S.OCR"
-                android:textColor="#FFFFFF"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#4CAF50" />
-
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnFlash"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="🔦 فلاش"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#555555" />
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_margin="6dp"
+                android:contentDescription="تشغيل الفلاش"
+                android:src="@android:drawable/ic_menu_camera"
+                app:backgroundTint="#555555"
+                app:tint="#FFFFFF" />
+
+
+            <!-- التصوير الرئيسي -->
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnTakePicture"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="تصوير"
+                android:src="@android:drawable/ic_menu_camera"
+                app:backgroundTint="#4CAF50"
+                app:tint="#FFFFFF" />
+
+
+            <!-- استخدام التاريخ -->
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnUseDate"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_margin="6dp"
+                android:contentDescription="استخدام التاريخ"
+                android:src="@android:drawable/ic_menu_save"
+                android:enabled="false"
+                app:backgroundTint="#2196F3"
+                app:tint="#FFFFFF" />
+
+
+            <!-- S.OCR -->
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnSOCR"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_margin="6dp"
+                android:contentDescription="التعرف بالذكاء الاصطناعي"
+                android:src="@android:drawable/ic_menu_search"
+                app:backgroundTint="#4CAF50"
+                app:tint="#FFFFFF" />
 
         </LinearLayout>
 
