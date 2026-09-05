@@ -1,0 +1,41 @@
+name: Diagnose Maven Access
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "dev" ]
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Test Maven Central
+        run: |
+          echo "===== Testing Maven Central ====="
+
+          curl -I -L --max-time 30 \
+          https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/1.9.22/kotlin-gradle-plugin-1.9.22.pom
+
+          echo "===== Testing Google Maven ====="
+
+          curl -I -L --max-time 30 \
+          https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/8.2.2/gradle-8.2.2.pom
+
+      - name: Test Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --version
+
+      - name: Test Gradle Dependencies
+        run: |
+          ./gradlew clean --stacktrace
