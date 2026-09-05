@@ -111,7 +111,8 @@ android:background="#FFFFFF">
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:background="#000000">
 
     <!-- المساعدة -->
 
