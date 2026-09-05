@@ -193,9 +193,9 @@ binding.btnScanDate.setOnClickListener {
     ) {
 
         val imagePath =
-            data?.getStringExtra(
-                "IMAGE_PATH_EXTRA"
-            )
+    data?.getStringExtra(
+        ProductCameraActivity.EXTRA_IMAGE_PATH
+    )
 
         if (!imagePath.isNullOrBlank()) {
 
