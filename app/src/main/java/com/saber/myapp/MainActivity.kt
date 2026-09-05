@@ -950,53 +950,58 @@ private fun showDeleteConfirmationDialog(product: Product) {
 
     private fun applyFilters() {
 
-        val allProducts =
-            databaseHelper.getAllProducts()
+    val allProducts =
+        databaseHelper.getAllProducts()
+
+    val search =
+        currentSearchText
+            .trim()
+            .lowercase()
+
+    val selectedCategory =
+        currentCategory
+            .trim()
+
+    val filteredList =
+        allProducts.filter { product ->
+
+            // ---------------------------------------------
+            // مطابقة التصنيف
+            // ---------------------------------------------
+
+            val matchesCategory =
+                selectedCategory == "الكل" ||
+                product.category.trim() == selectedCategory
 
 
-        val search =
-            currentSearchText
-                .trim()
-                .lowercase()
+            // ---------------------------------------------
+            // مطابقة البحث
+            // ---------------------------------------------
+
+            val matchesSearch =
+                search.isEmpty() ||
+
+                product.name
+                    .lowercase()
+                    .contains(search) ||
+
+                product.barcode
+                    .lowercase()
+                    .contains(search)
 
 
-        val filteredList =
-            allProducts.filter { product ->
+            // ---------------------------------------------
+            // النتيجة النهائية
+            // ---------------------------------------------
 
-                // ---------------------------------------------
-                // مطابقة التصنيف
-                // ---------------------------------------------
-
-                val matchesCategory =
-                    currentCategory == "الكل" ||
-                    product.category ==
-                    currentCategory
+            matchesCategory &&
+            matchesSearch
+        }
 
 
-                // ---------------------------------------------
-                // مطابقة البحث
-                // ---------------------------------------------
-
-                val matchesSearch =
-                    search.isEmpty() ||
-
-                    product.name
-                        .lowercase()
-                        .contains(search) ||
-
-                    product.barcode
-                        .lowercase()
-                        .contains(search)
-
-
-                matchesCategory &&
-                matchesSearch
-            }
-
-
-        listHandler.setup(
-            filteredList.toMutableList()
-        )
+    listHandler.setup(
+        filteredList.toMutableList()
+    )
     }
         // =========================================================
     // التعامل مع زر الرجوع
