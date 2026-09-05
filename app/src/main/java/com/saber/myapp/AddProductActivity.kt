@@ -331,6 +331,7 @@ private fun loadCategories() {
         rawDate.isBlank() ||
         normalizedDate == null ||
         currentImagePath == null
+          category.isBlank() ||
     ) {
         Toast.makeText(
             this,
