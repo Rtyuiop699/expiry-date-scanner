@@ -55,14 +55,14 @@
             android:background="@android:color/transparent"
             android:contentDescription="مساعدة"
             android:padding="2dp"
-            android:src="@drawable/ic_help"
+            android:src="@drawable/ichelp"
             android:scaleType="fitCenter" />
 
         <!-- ============================================= -->
         <!-- التصوير -->
         <!-- ============================================= -->
         <ImageButton
-            android:id="@+id/btnTakePicture"
+            android:id="@+id/btnCaptureGemini"
             android:layout_width="76dp"
             android:layout_height="76dp"
             android:layout_marginStart="10dp"
@@ -90,4 +90,3 @@
     </LinearLayout>
 
 </LinearLayout>
-            
