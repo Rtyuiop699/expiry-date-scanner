@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -8,19 +7,17 @@
     android:background="#FFFFFF">
 
     <!-- عنوان الشاشة -->
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:gravity="center"
-        android:text="S.OCR - Gemini"
+        android:text="Super OCR"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#000000" />
 
     <!-- شاشة الكاميرا -->
-
     <androidx.camera.view.PreviewView
         android:id="@+id/previewViewGemini"
         android:layout_width="match_parent"
@@ -28,7 +25,6 @@
         android:layout_weight="1" />
 
     <!-- نتيجة Gemini -->
-
     <TextView
         android:id="@+id/tvGeminiResult"
         android:layout_width="match_parent"
@@ -40,15 +36,58 @@
         android:textSize="18sp"
         android:textColor="#000000" />
 
-    <!-- زر التقاط الصورة -->
-
-    <Button
-        android:id="@+id/btnCaptureGemini"
+    <!-- شريط الأيقونات العائمة الأفقية في الأسفل -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:text="📸 التقاط الصورة"
-        android:textSize="17sp"
-        android:textColor="#FFFFFF" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp">
+
+        <!-- ============================================= -->
+        <!-- المساعدة / الاستفهام -->
+        <!-- ============================================= -->
+        <ImageButton
+            android:id="@+id/btnHelp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_margin="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="مساعدة"
+            android:padding="2dp"
+            android:src="@drawable/ic_help"
+            android:scaleType="fitCenter" />
+
+        <!-- ============================================= -->
+        <!-- التصوير -->
+        <!-- ============================================= -->
+        <ImageButton
+            android:id="@+id/btnTakePicture"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="التقاط صورة"
+            android:padding="1dp"
+            android:src="@drawable/ic_camera"
+            android:scaleType="fitCenter" />
+
+        <!-- ============================================= -->
+        <!-- تشغيل الفلاش -->
+        <!-- ============================================= -->
+        <ImageButton
+            android:id="@+id/btnFlash"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_margin="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="تشغيل الفلاش"
+            android:padding="2dp"
+            android:src="@drawable/ic_flash"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
 
 </LinearLayout>
+            
