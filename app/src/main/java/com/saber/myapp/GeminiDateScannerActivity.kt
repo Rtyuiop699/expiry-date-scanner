@@ -32,10 +32,13 @@ class GeminiDateScannerActivity : AppCompatActivity() {
     private lateinit var tvResult: TextView
 
     private var imageCapture: ImageCapture? = null
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var preview: Preview? = null
 
     private lateinit var cameraExecutor: ExecutorService
-
     private lateinit var geminiDateService: GeminiDateService
+
+    private var isProcessing = false
 
     companion object {
         private const val REQUEST_CAMERA = 200
@@ -64,7 +67,10 @@ class GeminiDateScannerActivity : AppCompatActivity() {
             Executors.newSingleThreadExecutor()
 
         btnCapture.setOnClickListener {
-            takePhoto()
+
+            if (!isProcessing) {
+                takePhoto()
+            }
         }
 
         checkCameraPermission()
@@ -106,28 +112,30 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
         cameraProviderFuture.addListener({
 
-            val cameraProvider =
-                cameraProviderFuture.get()
-
-            val preview =
-                Preview.Builder().build()
-
-            preview.setSurfaceProvider(
-                previewView.surfaceProvider
-            )
-
-            imageCapture =
-                ImageCapture.Builder()
-                    .setCaptureMode(
-                        ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
-                    )
-                    .build()
-
             try {
 
-                cameraProvider.unbindAll()
+                val provider =
+                    cameraProviderFuture.get()
 
-                cameraProvider.bindToLifecycle(
+                cameraProvider = provider
+
+                preview =
+                    Preview.Builder().build()
+
+                preview?.setSurfaceProvider(
+                    previewView.surfaceProvider
+                )
+
+                imageCapture =
+                    ImageCapture.Builder()
+                        .setCaptureMode(
+                            ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
+                        )
+                        .build()
+
+                provider.unbindAll()
+
+                provider.bindToLifecycle(
                     this,
                     CameraSelector.DEFAULT_BACK_CAMERA,
                     preview,
@@ -144,8 +152,6 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
                 tvResult.text =
                     "❌ خطأ في تشغيل الكاميرا:\n${e.message}"
-
-                finish()
             }
 
         }, ContextCompat.getMainExecutor(this))
@@ -157,8 +163,21 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
     private fun takePhoto() {
 
-        val imageCapture =
-            imageCapture ?: return
+        if (isProcessing) {
+            return
+        }
+
+        val capture =
+            imageCapture ?: run {
+
+                Toast.makeText(
+                    this,
+                    "الكاميرا غير جاهزة",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return
+            }
 
         val photoFile =
             createImageFile()
@@ -168,15 +187,15 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                 .Builder(photoFile)
                 .build()
 
-        btnCapture.isEnabled = false
+        isProcessing = true
 
-        btnCapture.text =
-            "⏳ جاري إرسال الصورة..."
+        btnCapture.isEnabled = false
+        btnCapture.text = "⏳ جاري التحليل..."
 
         tvResult.text =
-            "📤 جاري إرسال الصورة إلى Gemini..."
+            "📸 تم التقاط الصورة\n\n🤖 جاري تحليل التاريخ..."
 
-        imageCapture.takePicture(
+        capture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
 
@@ -186,6 +205,12 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                     output: ImageCapture.OutputFileResults
                 ) {
 
+                    // =================================================
+                    // إيقاف الكاميرا فور نجاح الالتقاط
+                    // =================================================
+
+                    stopCameraPreview()
+
                     val bitmap =
                         BitmapFactory.decodeFile(
                             photoFile.absolutePath
@@ -193,13 +218,10 @@ class GeminiDateScannerActivity : AppCompatActivity() {
 
                     if (bitmap == null) {
 
-                        btnCapture.isEnabled = true
-
-                        btnCapture.text =
-                            "📸 التقاط الصورة"
+                        finishProcessing()
 
                         tvResult.text =
-                            "❌ فشل قراءة الصورة"
+                            "❌ تعذر قراءة الصورة"
 
                         return
                     }
@@ -211,10 +233,7 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                     exception: ImageCaptureException
                 ) {
 
-                    btnCapture.isEnabled = true
-
-                    btnCapture.text =
-                        "📸 التقاط الصورة"
+                    finishProcessing()
 
                     tvResult.text =
                         "❌ فشل التقاط الصورة:\n${exception.message}"
@@ -230,6 +249,22 @@ class GeminiDateScannerActivity : AppCompatActivity() {
     }
 
     // =====================================================
+    // إيقاف الكاميرا أثناء تحليل Gemini
+    // =====================================================
+
+    private fun stopCameraPreview() {
+
+        try {
+
+            cameraProvider?.unbindAll()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+        }
+    }
+
+    // =====================================================
     // إرسال الصورة إلى Gemini
     // =====================================================
 
@@ -237,44 +272,39 @@ class GeminiDateScannerActivity : AppCompatActivity() {
         bitmap: android.graphics.Bitmap
     ) {
 
-        tvResult.text =
-            "🤖 Gemini يقوم بتحليل الصورة..."
-
         lifecycleScope.launch {
+
+            tvResult.text =
+                "🤖 Gemini يقوم بتحليل الصورة...\n\nيرجى الانتظار"
+
+            val startTime =
+                System.currentTimeMillis()
 
             val result =
                 geminiDateService.fetchExpiryDate(
                     bitmap
                 )
 
-            // إعادة تفعيل الزر
-            btnCapture.isEnabled = true
-
-            btnCapture.text =
-                "📸 التقاط الصورة"
+            val elapsed =
+                System.currentTimeMillis() - startTime
 
             // =================================================
-            // نجاح
+            // النتيجة
             // =================================================
 
             result.onSuccess { expiryDate ->
 
                 tvResult.text =
-                    "✅ تاريخ الانتهاء:\n$expiryDate"
-            }
+                    "✅ تاريخ الانتهاء:\n\n$expiryDate\n\n⚡ ${elapsed}ms"
 
-            // =================================================
-            // خطأ
-            // =================================================
-
-            result.onFailure { error ->
+            }.onFailure { error ->
 
                 val errorMessage =
                     error.message
                         ?: "خطأ غير معروف"
 
                 tvResult.text =
-                    "❌ حدث خطأ:\n\n$errorMessage"
+                    "❌ لم يتم العثور على تاريخ\n\n$errorMessage"
 
                 Toast.makeText(
                     this@GeminiDateScannerActivity,
@@ -282,7 +312,23 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+
+            finishProcessing()
         }
+    }
+
+    // =====================================================
+    // إنهاء حالة المعالجة
+    // =====================================================
+
+    private fun finishProcessing() {
+
+        isProcessing = false
+
+        btnCapture.isEnabled = true
+
+        btnCapture.text =
+            "📸 التقاط الصورة"
     }
 
     // =====================================================
@@ -305,10 +351,16 @@ class GeminiDateScannerActivity : AppCompatActivity() {
     }
 
     // =====================================================
-    // إغلاق الكاميرا
+    // تنظيف الموارد
     // =====================================================
 
     override fun onDestroy() {
+
+        try {
+            cameraProvider?.unbindAll()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         super.onDestroy()
 
