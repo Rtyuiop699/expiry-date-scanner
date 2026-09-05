@@ -172,6 +172,78 @@ binding.btnScanDate.setOnClickListener {
     setupToolbar()
     }
 
+  override fun onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+) {
+    super.onActivityResult(
+        requestCode,
+        resultCode,
+        data
+    )
+
+    // =====================================================
+    // نتيجة كاميرا صورة المنتج
+    // =====================================================
+
+    if (
+        requestCode == REQUEST_PRODUCT_CAMERA &&
+        resultCode == RESULT_OK
+    ) {
+
+        val imagePath =
+            data?.getStringExtra(
+                "IMAGE_PATH_EXTRA"
+            )
+
+        if (!imagePath.isNullOrBlank()) {
+
+            currentImagePath = imagePath
+
+            processProductImage(
+                imagePath
+            )
+        }
+
+        return
+    }
+
+    // =====================================================
+    // نتيجة OCR المحلي
+    // =====================================================
+    // وتشمل أيضًا:
+    // DateScannerActivity
+    //       ↓
+    // Gemini S.OCR
+    //       ↓
+    // DateScannerActivity
+    //       ↓
+    // هنا
+    // =====================================================
+
+    if (
+        requestCode == REQUEST_DATE_SCAN &&
+        resultCode == RESULT_OK
+    ) {
+
+        val recognizedDate =
+            data?.getStringExtra(
+                DateScannerActivity.EXTRA_DATE
+            )
+
+        if (!recognizedDate.isNullOrBlank()) {
+
+            binding.editTextDate.setText(
+                recognizedDate
+            )
+
+            binding.editTextDate.setSelection(
+                binding.editTextDate.text?.length ?: 0
+            )
+        }
+    }
+  }
                 
     private fun loadIntentData() { 
         val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: "" 
