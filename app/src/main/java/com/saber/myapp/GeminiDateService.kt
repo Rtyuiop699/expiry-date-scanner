@@ -14,34 +14,84 @@ class GeminiDateService {
     companion object {
 
         // =====================================================
-        // رابط Edge Function في Supabase
+        // Supabase Edge Function
         // =====================================================
 
         private const val SUPABASE_URL =
             "https://gmelnyxzsbwbsmhgrhhu.supabase.co/functions/v1/extract-date"
 
         // =====================================================
-        // مفتاح Supabase Publishable
+        // ضع هنا مفتاح Supabase الموجود لديك
         // =====================================================
 
         private const val SUPABASE_ANON_KEY =
-            "sb_publishable_6W2yXX7rchLZncnfc3Qbog_3rDsz3GE"
+            "ضع_مفتاح_Supabase_الحالي_هنا"
     }
 
     // =====================================================
-    // تحويل الصورة إلى Base64
+    // تصغير وضغط الصورة
     // =====================================================
 
-    private fun bitmapToBase64(bitmap: Bitmap): String {
+    private fun bitmapToBase64(
+        originalBitmap: Bitmap
+    ): String {
+
+        val maxSize = 1024
+
+        val width =
+            originalBitmap.width
+
+        val height =
+            originalBitmap.height
+
+        val scale =
+            if (width >= height) {
+
+                maxSize.toFloat() / width
+
+            } else {
+
+                maxSize.toFloat() / height
+            }
+
+        val resizedBitmap: Bitmap
+
+        if (scale < 1f) {
+
+            val newWidth =
+                (width * scale)
+                    .toInt()
+
+            val newHeight =
+                (height * scale)
+                    .toInt()
+
+            resizedBitmap =
+                Bitmap.createScaledBitmap(
+                    originalBitmap,
+                    newWidth,
+                    newHeight,
+                    true
+                )
+
+        } else {
+
+            resizedBitmap =
+                originalBitmap
+        }
 
         val outputStream =
             ByteArrayOutputStream()
 
-        bitmap.compress(
+        resizedBitmap.compress(
             Bitmap.CompressFormat.JPEG,
-            80,
+            75,
             outputStream
         )
+
+        if (resizedBitmap !== originalBitmap) {
+            resizedBitmap.recycle()
+        }
 
         val byteArray =
             outputStream.toByteArray()
@@ -53,7 +103,7 @@ class GeminiDateService {
     }
 
     // =====================================================
-    // إرسال الصورة إلى Supabase
+    // إرسال الصورة
     // =====================================================
 
     suspend fun fetchExpiryDate(
@@ -64,16 +114,32 @@ class GeminiDateService {
 
         try {
 
-            // -------------------------------------------------
-            // تحويل الصورة إلى Base64
-            // -------------------------------------------------
+            val startTime =
+                System.currentTimeMillis()
+
+            // =================================================
+            // ضغط الصورة
+            // =================================================
 
             val base64Image =
                 bitmapToBase64(bitmap)
 
-            // -------------------------------------------------
+            val compressionTime =
+                System.currentTimeMillis() - startTime
+
+            android.util.Log.d(
+                "GeminiDateService",
+                "Image preparation time: ${compressionTime}ms"
+            )
+
+            android.util.Log.d(
+                "GeminiDateService",
+                "Base64 size: ${base64Image.length}"
+            )
+
+            // =================================================
             // إنشاء الاتصال
-            // -------------------------------------------------
+            // =================================================
 
             val url =
                 URL(SUPABASE_URL)
@@ -85,10 +151,6 @@ class GeminiDateService {
             connection.requestMethod =
                 "POST"
 
-            // -------------------------------------------------
-            // Headers
-            // -------------------------------------------------
-
             connection.setRequestProperty(
                 "Content-Type",
                 "application/json"
@@ -99,28 +161,18 @@ class GeminiDateService {
                 SUPABASE_ANON_KEY
             )
 
-            // -------------------------------------------------
-            // لا نستخدم Authorization
-            // لأن المفتاح sb_publishable_
-            // و Verify JWT = OFF
-            // -------------------------------------------------
-
-            // -------------------------------------------------
-            // Timeout
-            // -------------------------------------------------
-
             connection.connectTimeout =
-                30000
+                15000
 
             connection.readTimeout =
-                60000
+                30000
 
             connection.doOutput =
                 true
 
-            // -------------------------------------------------
-            // إنشاء JSON
-            // -------------------------------------------------
+            // =================================================
+            // JSON
+            // =================================================
 
             val jsonInput =
                 JSONObject().apply {
@@ -131,33 +183,49 @@ class GeminiDateService {
                     )
                 }
 
-            // -------------------------------------------------
-            // إرسال الطلب
-            // -------------------------------------------------
+            val requestBytes =
+                jsonInput
+                    .toString()
+                    .toByteArray(
+                        Charsets.UTF_8
+                    )
+
+            android.util.Log.d(
+                "GeminiDateService",
+                "Request size: ${requestBytes.size} bytes"
+            )
+
+            // =================================================
+            // إرسال
+            // =================================================
+
+            val networkStart =
+                System.currentTimeMillis()
 
             connection.outputStream.use { outputStream ->
 
-                val input =
-                    jsonInput
-                        .toString()
-                        .toByteArray(
-                            Charsets.UTF_8
-                        )
+                outputStream.write(
+                    requestBytes
+                )
 
-                outputStream.write(input)
                 outputStream.flush()
             }
-
-            // -------------------------------------------------
-            // قراءة كود الاستجابة
-            // -------------------------------------------------
 
             val responseCode =
                 connection.responseCode
 
-            // -------------------------------------------------
-            // نجاح الطلب
-            // -------------------------------------------------
+            val networkTime =
+                System.currentTimeMillis() -
+                        networkStart
+
+            android.util.Log.d(
+                "GeminiDateService",
+                "Network/Gemini time: ${networkTime}ms"
+            )
+
+            // =================================================
+            // نجاح
+            // =================================================
 
             if (
                 responseCode ==
@@ -171,9 +239,10 @@ class GeminiDateService {
                             it.readText()
                         }
 
-                // -------------------------------------------------
-                // تحويل الرد إلى JSON
-                // -------------------------------------------------
+                android.util.Log.d(
+                    "GeminiDateService",
+                    "Response received"
+                )
 
                 val jsonResponse =
                     JSONObject(responseText)
@@ -181,11 +250,7 @@ class GeminiDateService {
                 val expiryDate =
                     jsonResponse.optString(
                         "expiryDate"
-                    )
-
-                // -------------------------------------------------
-                // تم العثور على التاريخ
-                // -------------------------------------------------
+                    ).trim()
 
                 if (
                     expiryDate.isNotBlank() &&
@@ -206,10 +271,6 @@ class GeminiDateService {
                 }
 
             } else {
-
-                // -------------------------------------------------
-                // خطأ من Supabase
-                // -------------------------------------------------
 
                 val errorText =
                     try {
@@ -234,10 +295,6 @@ class GeminiDateService {
             }
 
         } catch (e: Exception) {
-
-            // -------------------------------------------------
-            // خطأ في الشبكة أو الاتصال
-            // -------------------------------------------------
 
             e.printStackTrace()
 
