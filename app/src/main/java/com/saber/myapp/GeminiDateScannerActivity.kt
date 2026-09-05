@@ -1,6 +1,7 @@
 package com.saber.myapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -80,7 +81,11 @@ private var isProcessing = false
 private var isFlashOn = false
 
 companion object {
+
     private const val REQUEST_CAMERA = 200
+
+    // النتيجة التي سيتم إرجاعها للشاشة السابقة
+    const val EXTRA_DATE = "recognized_date"
 }
 
 // =====================================================
@@ -120,7 +125,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         findViewById(R.id.geminiProgressOverlay)
 
     // =================================================
-    // Gemini
+    // إنشاء خدمة Gemini
     // =================================================
 
     geminiDateService =
@@ -167,7 +172,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     }
 
     // =================================================
-    // فحص صلاحية الكاميرا
+    // تشغيل الكاميرا
     // =================================================
 
     checkCameraPermission()
@@ -218,7 +223,8 @@ override fun onRequestPermissionsResult(
 
         if (
             grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
+            grantResults[0] ==
+            PackageManager.PERMISSION_GRANTED
         ) {
 
             startCamera()
@@ -288,10 +294,6 @@ private fun startCamera() {
                     preview,
                     imageCapture
                 )
-
-            // =========================================
-            // تحديث حالة الفلاش
-            // =========================================
 
             isFlashOn = false
 
@@ -420,7 +422,7 @@ private fun takePhoto() {
                 }
 
                 // =====================================
-                // عرض الصورة الثابتة
+                // عرض الصورة الملتقطة فوق الكاميرا
                 // =====================================
 
                 showCapturedImage(bitmap)
@@ -432,7 +434,7 @@ private fun takePhoto() {
                 stopCamera()
 
                 // =====================================
-                // إظهار رسالة Gemini فوق الصورة
+                // إظهار رسالة Gemini
                 // =====================================
 
                 showGeminiProgress()
@@ -494,6 +496,8 @@ private fun stopCamera() {
         camera = null
         imageCapture = null
 
+        isFlashOn = false
+
     } catch (e: Exception) {
 
         e.printStackTrace()
@@ -530,34 +534,51 @@ private fun sendImageToGemini(
 
     lifecycleScope.launch {
 
-        val startTime =
-            System.currentTimeMillis()
-
         val result =
             geminiDateService.fetchExpiryDate(
                 bitmap
             )
 
-        val elapsed =
-            System.currentTimeMillis() -
-                    startTime
-
-        // =============================================
-        // إخفاء رسالة الانتظار
-        // =============================================
-
-        hideGeminiProgress()
-
-        // =============================================
-        // النتيجة
-        // =============================================
+        // =================================================
+        // نجاح Gemini
+        // =================================================
 
         result.onSuccess { expiryDate ->
 
-            tvResult.text =
-                "✅ تاريخ الانتهاء:\n\n$expiryDate\n\n⚡ ${elapsed}ms"
+            // إخفاء رسالة الانتظار
+            hideGeminiProgress()
 
-        }.onFailure { error ->
+            // =============================================
+            // إرسال التاريخ للشاشة السابقة
+            // =============================================
+
+            val resultIntent =
+                Intent()
+
+            resultIntent.putExtra(
+                EXTRA_DATE,
+                expiryDate
+            )
+
+            setResult(
+                RESULT_OK,
+                resultIntent
+            )
+
+            // =============================================
+            // العودة مباشرة
+            // =============================================
+
+            finish()
+        }
+
+        // =================================================
+        // فشل Gemini
+        // =================================================
+
+        .onFailure { error ->
+
+            hideGeminiProgress()
 
             val errorMessage =
                 error.message
@@ -571,9 +592,9 @@ private fun sendImageToGemini(
                 errorMessage,
                 Toast.LENGTH_LONG
             ).show()
-        }
 
-        finishProcessing()
+            finishProcessing()
+        }
     }
 }
 
@@ -589,9 +610,6 @@ private fun finishProcessing() {
     btnFlash.isEnabled = true
 
     btnCapture.alpha = 1.0f
-
-    // لا نعيد تشغيل الكاميرا تلقائيًا.
-    // الصورة تبقى ثابتة حتى يقرر المستخدم التقاط صورة جديدة.
 }
 
 // =====================================================
