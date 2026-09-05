@@ -2,12 +2,17 @@ package com.saber.myapp
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -27,114 +32,256 @@ import java.util.concurrent.Executors
 
 class GeminiDateScannerActivity : AppCompatActivity() {
 
-    private lateinit var previewView: PreviewView
-    private lateinit var btnCapture: Button
-    private lateinit var tvResult: TextView
+// =====================================================
+// عناصر الواجهة
+// =====================================================
 
-    private var imageCapture: ImageCapture? = null
-    private var cameraProvider: ProcessCameraProvider? = null
-    private var preview: Preview? = null
+private lateinit var previewView: PreviewView
+private lateinit var capturedImageView: ImageView
 
-    private lateinit var cameraExecutor: ExecutorService
-    private lateinit var geminiDateService: GeminiDateService
+private lateinit var btnCapture: ImageButton
+private lateinit var btnHelp: ImageButton
+private lateinit var btnFlash: ImageButton
 
-    private var isProcessing = false
+private lateinit var tvResult: TextView
+private lateinit var geminiProgressOverlay: LinearLayout
 
-    companion object {
-        private const val REQUEST_CAMERA = 200
+// =====================================================
+// CameraX
+// =====================================================
+
+private var imageCapture: ImageCapture? = null
+private var cameraProvider: ProcessCameraProvider? = null
+private var preview: Preview? = null
+private var camera: Camera? = null
+
+// =====================================================
+// Gemini
+// =====================================================
+
+private lateinit var geminiDateService: GeminiDateService
+
+// =====================================================
+// Executor
+// =====================================================
+
+private lateinit var cameraExecutor: ExecutorService
+
+// =====================================================
+// حالة المعالجة
+// =====================================================
+
+private var isProcessing = false
+
+// =====================================================
+// الفلاش
+// =====================================================
+
+private var isFlashOn = false
+
+companion object {
+    private const val REQUEST_CAMERA = 200
+}
+
+// =====================================================
+// onCreate
+// =====================================================
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    setContentView(
+        R.layout.activity_gemini_date_scanner
+    )
+
+    // =================================================
+    // ربط عناصر الواجهة
+    // =================================================
+
+    previewView =
+        findViewById(R.id.previewViewGemini)
+
+    capturedImageView =
+        findViewById(R.id.capturedImageView)
+
+    btnCapture =
+        findViewById(R.id.btnCaptureGemini)
+
+    btnHelp =
+        findViewById(R.id.btnHelp)
+
+    btnFlash =
+        findViewById(R.id.btnFlash)
+
+    tvResult =
+        findViewById(R.id.tvGeminiResult)
+
+    geminiProgressOverlay =
+        findViewById(R.id.geminiProgressOverlay)
+
+    // =================================================
+    // Gemini
+    // =================================================
+
+    geminiDateService =
+        GeminiDateService()
+
+    // =================================================
+    // Executor
+    // =================================================
+
+    cameraExecutor =
+        Executors.newSingleThreadExecutor()
+
+    // =================================================
+    // زر التصوير
+    // =================================================
+
+    btnCapture.setOnClickListener {
+
+        if (!isProcessing) {
+            takePhoto()
+        }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    // =================================================
+    // زر الفلاش
+    // =================================================
 
-        setContentView(
-            R.layout.activity_gemini_date_scanner
+    btnFlash.setOnClickListener {
+
+        toggleFlash()
+    }
+
+    // =================================================
+    // زر المساعدة
+    // =================================================
+
+    btnHelp.setOnClickListener {
+
+        Toast.makeText(
+            this,
+            "التقط صورة واضحة للمنتج ليقوم Gemini بقراءة تاريخ الانتهاء",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    // =================================================
+    // فحص صلاحية الكاميرا
+    // =================================================
+
+    checkCameraPermission()
+}
+
+// =====================================================
+// صلاحية الكاميرا
+// =====================================================
+
+private fun checkCameraPermission() {
+
+    if (
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            REQUEST_CAMERA
         )
 
-        previewView =
-            findViewById(R.id.previewViewGemini)
+    } else {
 
-        btnCapture =
-            findViewById(R.id.btnCaptureGemini)
-
-        tvResult =
-            findViewById(R.id.tvGeminiResult)
-
-        geminiDateService =
-            GeminiDateService()
-
-        cameraExecutor =
-            Executors.newSingleThreadExecutor()
-
-        btnCapture.setOnClickListener {
-
-            if (!isProcessing) {
-                takePhoto()
-            }
-        }
-
-        checkCameraPermission()
+        startCamera()
     }
+}
 
-    // =====================================================
-    // صلاحية الكاميرا
-    // =====================================================
+// =====================================================
+// نتيجة طلب صلاحية الكاميرا
+// =====================================================
 
-    private fun checkCameraPermission() {
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+
+    super.onRequestPermissionsResult(
+        requestCode,
+        permissions,
+        grantResults
+    )
+
+    if (requestCode == REQUEST_CAMERA) {
 
         if (
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
+            grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
 
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CAMERA
-            )
+            startCamera()
 
         } else {
 
-            startCamera()
+            Toast.makeText(
+                this,
+                "يجب السماح باستخدام الكاميرا",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
+}
 
-    // =====================================================
-    // تشغيل الكاميرا
-    // =====================================================
+// =====================================================
+// تشغيل الكاميرا
+// =====================================================
 
-    private fun startCamera() {
+private fun startCamera() {
 
-        val cameraProviderFuture =
-            ProcessCameraProvider.getInstance(this)
+    val cameraProviderFuture =
+        ProcessCameraProvider.getInstance(this)
 
-        cameraProviderFuture.addListener({
+    cameraProviderFuture.addListener({
 
-            try {
+        try {
 
-                val provider =
-                    cameraProviderFuture.get()
+            val provider =
+                cameraProviderFuture.get()
 
-                cameraProvider = provider
+            cameraProvider =
+                provider
 
-                preview =
-                    Preview.Builder().build()
+            // =========================================
+            // Preview
+            // =========================================
 
-                preview?.setSurfaceProvider(
-                    previewView.surfaceProvider
-                )
+            preview =
+                Preview.Builder().build()
 
-                imageCapture =
-                    ImageCapture.Builder()
-                        .setCaptureMode(
-                            ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
-                        )
-                        .build()
+            preview?.setSurfaceProvider(
+                previewView.surfaceProvider
+            )
 
-                provider.unbindAll()
+            // =========================================
+            // ImageCapture
+            // =========================================
 
+            imageCapture =
+                ImageCapture.Builder()
+                    .setCaptureMode(
+                        ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
+                    )
+                    .build()
+
+            // =========================================
+            // ربط الكاميرا
+            // =========================================
+
+            provider.unbindAll()
+
+            camera =
                 provider.bindToLifecycle(
                     this,
                     CameraSelector.DEFAULT_BACK_CAMERA,
@@ -142,230 +289,353 @@ class GeminiDateScannerActivity : AppCompatActivity() {
                     imageCapture
                 )
 
-            } catch (e: Exception) {
+            // =========================================
+            // تحديث حالة الفلاش
+            // =========================================
 
-                Toast.makeText(
-                    this,
-                    "فشل تشغيل الكاميرا: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+            isFlashOn = false
 
-                tvResult.text =
-                    "❌ خطأ في تشغيل الكاميرا:\n${e.message}"
-            }
+        } catch (e: Exception) {
 
-        }, ContextCompat.getMainExecutor(this))
-    }
+            Toast.makeText(
+                this,
+                "فشل تشغيل الكاميرا: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
 
-    // =====================================================
-    // التقاط الصورة
-    // =====================================================
+            tvResult.text =
+                "❌ خطأ في تشغيل الكاميرا:\n${e.message}"
+        }
 
-    private fun takePhoto() {
+    }, ContextCompat.getMainExecutor(this))
+}
 
-        if (isProcessing) {
+// =====================================================
+// تشغيل / إيقاف الفلاش
+// =====================================================
+
+private fun toggleFlash() {
+
+    val currentCamera =
+        camera ?: run {
+
+            Toast.makeText(
+                this,
+                "الكاميرا غير جاهزة",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
-        val capture =
-            imageCapture ?: run {
+    if (!currentCamera.cameraInfo.hasFlashUnit()) {
 
-                Toast.makeText(
-                    this,
-                    "الكاميرا غير جاهزة",
-                    Toast.LENGTH_SHORT
-                ).show()
+        Toast.makeText(
+            this,
+            "الفلاش غير متوفر",
+            Toast.LENGTH_SHORT
+        ).show()
 
-                return
-            }
+        return
+    }
 
-        val photoFile =
-            createImageFile()
+    isFlashOn =
+        !isFlashOn
 
-        val outputOptions =
-            ImageCapture.OutputFileOptions
-                .Builder(photoFile)
-                .build()
+    currentCamera.cameraControl.enableTorch(
+        isFlashOn
+    )
+}
 
-        isProcessing = true
+// =====================================================
+// التقاط الصورة
+// =====================================================
 
-        btnCapture.isEnabled = false
-        btnCapture.text = "⏳ جاري التحليل..."
+private fun takePhoto() {
 
-        tvResult.text =
-            "📸 تم التقاط الصورة\n\n🤖 جاري تحليل التاريخ..."
+    if (isProcessing) {
+        return
+    }
 
-        capture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
+    val capture =
+        imageCapture ?: run {
 
-            object : ImageCapture.OnImageSavedCallback {
+            Toast.makeText(
+                this,
+                "الكاميرا غير جاهزة",
+                Toast.LENGTH_SHORT
+            ).show()
 
-                override fun onImageSaved(
-                    output: ImageCapture.OutputFileResults
-                ) {
+            return
+        }
 
-                    // =================================================
-                    // إيقاف الكاميرا فور نجاح الالتقاط
-                    // =================================================
+    val photoFile =
+        createImageFile()
 
-                    stopCameraPreview()
+    val outputOptions =
+        ImageCapture.OutputFileOptions
+            .Builder(photoFile)
+            .build()
 
-                    val bitmap =
-                        BitmapFactory.decodeFile(
-                            photoFile.absolutePath
-                        )
+    // =================================================
+    // بدء المعالجة
+    // =================================================
 
-                    if (bitmap == null) {
+    isProcessing = true
 
-                        finishProcessing()
+    btnCapture.isEnabled = false
+    btnFlash.isEnabled = false
 
-                        tvResult.text =
-                            "❌ تعذر قراءة الصورة"
+    // =================================================
+    // التقاط الصورة
+    // =================================================
 
-                        return
-                    }
+    capture.takePicture(
+        outputOptions,
+        ContextCompat.getMainExecutor(this),
 
-                    sendImageToGemini(bitmap)
-                }
+        object : ImageCapture.OnImageSavedCallback {
 
-                override fun onError(
-                    exception: ImageCaptureException
-                ) {
+            override fun onImageSaved(
+                output: ImageCapture.OutputFileResults
+            ) {
+
+                // =====================================
+                // قراءة الصورة
+                // =====================================
+
+                val bitmap =
+                    BitmapFactory.decodeFile(
+                        photoFile.absolutePath
+                    )
+
+                if (bitmap == null) {
 
                     finishProcessing()
 
                     tvResult.text =
-                        "❌ فشل التقاط الصورة:\n${exception.message}"
+                        "❌ تعذر قراءة الصورة"
 
-                    Toast.makeText(
-                        this@GeminiDateScannerActivity,
-                        "حدث خطأ أثناء التقاط الصورة",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    return
                 }
+
+                // =====================================
+                // عرض الصورة الثابتة
+                // =====================================
+
+                showCapturedImage(bitmap)
+
+                // =====================================
+                // إيقاف الكاميرا
+                // =====================================
+
+                stopCamera()
+
+                // =====================================
+                // إظهار رسالة Gemini فوق الصورة
+                // =====================================
+
+                showGeminiProgress()
+
+                // =====================================
+                // إرسال الصورة للتحليل
+                // =====================================
+
+                sendImageToGemini(bitmap)
             }
-        )
-    }
 
-    // =====================================================
-    // إيقاف الكاميرا أثناء تحليل Gemini
-    // =====================================================
+            override fun onError(
+                exception: ImageCaptureException
+            ) {
 
-    private fun stopCameraPreview() {
-
-        try {
-
-            cameraProvider?.unbindAll()
-
-        } catch (e: Exception) {
-
-            e.printStackTrace()
-        }
-    }
-
-    // =====================================================
-    // إرسال الصورة إلى Gemini
-    // =====================================================
-
-    private fun sendImageToGemini(
-        bitmap: android.graphics.Bitmap
-    ) {
-
-        lifecycleScope.launch {
-
-            tvResult.text =
-                "🤖 Gemini يقوم بتحليل الصورة...\n\nيرجى الانتظار"
-
-            val startTime =
-                System.currentTimeMillis()
-
-            val result =
-                geminiDateService.fetchExpiryDate(
-                    bitmap
-                )
-
-            val elapsed =
-                System.currentTimeMillis() - startTime
-
-            // =================================================
-            // النتيجة
-            // =================================================
-
-            result.onSuccess { expiryDate ->
+                finishProcessing()
 
                 tvResult.text =
-                    "✅ تاريخ الانتهاء:\n\n$expiryDate\n\n⚡ ${elapsed}ms"
-
-            }.onFailure { error ->
-
-                val errorMessage =
-                    error.message
-                        ?: "خطأ غير معروف"
-
-                tvResult.text =
-                    "❌ لم يتم العثور على تاريخ\n\n$errorMessage"
+                    "❌ فشل التقاط الصورة:\n${exception.message}"
 
                 Toast.makeText(
                     this@GeminiDateScannerActivity,
-                    errorMessage,
-                    Toast.LENGTH_LONG
+                    "حدث خطأ أثناء التقاط الصورة",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
-
-            finishProcessing()
         }
+    )
+}
+
+// =====================================================
+// عرض الصورة الملتقطة
+// =====================================================
+
+private fun showCapturedImage(
+    bitmap: Bitmap
+) {
+
+    capturedImageView.setImageBitmap(
+        bitmap
+    )
+
+    capturedImageView.visibility =
+        View.VISIBLE
+}
+
+// =====================================================
+// إيقاف الكاميرا
+// =====================================================
+
+private fun stopCamera() {
+
+    try {
+
+        camera?.cameraControl?.enableTorch(false)
+
+        cameraProvider?.unbindAll()
+
+        camera = null
+        imageCapture = null
+
+    } catch (e: Exception) {
+
+        e.printStackTrace()
     }
+}
 
-    // =====================================================
-    // إنهاء حالة المعالجة
-    // =====================================================
+// =====================================================
+// إظهار رسالة Gemini
+// =====================================================
 
-    private fun finishProcessing() {
+private fun showGeminiProgress() {
 
-        isProcessing = false
+    geminiProgressOverlay.visibility =
+        View.VISIBLE
+}
 
-        btnCapture.isEnabled = true
+// =====================================================
+// إخفاء رسالة Gemini
+// =====================================================
 
-        btnCapture.text =
-            "📸 التقاط الصورة"
-    }
+private fun hideGeminiProgress() {
 
-    // =====================================================
-    // إنشاء ملف الصورة
-    // =====================================================
+    geminiProgressOverlay.visibility =
+        View.GONE
+}
 
-    private fun createImageFile(): File {
+// =====================================================
+// إرسال الصورة إلى Gemini
+// =====================================================
 
-        val timeStamp =
-            SimpleDateFormat(
-                "yyyyMMdd_HHmmss",
-                Locale.getDefault()
-            ).format(Date())
+private fun sendImageToGemini(
+    bitmap: Bitmap
+) {
 
-        return File.createTempFile(
-            "GEMINI_DATE_$timeStamp",
-            ".jpg",
-            getExternalFilesDir(null)
-        )
-    }
+    lifecycleScope.launch {
 
-    // =====================================================
-    // تنظيف الموارد
-    // =====================================================
+        val startTime =
+            System.currentTimeMillis()
 
-    override fun onDestroy() {
+        val result =
+            geminiDateService.fetchExpiryDate(
+                bitmap
+            )
 
-        try {
-            cameraProvider?.unbindAll()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val elapsed =
+            System.currentTimeMillis() -
+                    startTime
+
+        // =============================================
+        // إخفاء رسالة الانتظار
+        // =============================================
+
+        hideGeminiProgress()
+
+        // =============================================
+        // النتيجة
+        // =============================================
+
+        result.onSuccess { expiryDate ->
+
+            tvResult.text =
+                "✅ تاريخ الانتهاء:\n\n$expiryDate\n\n⚡ ${elapsed}ms"
+
+        }.onFailure { error ->
+
+            val errorMessage =
+                error.message
+                    ?: "خطأ غير معروف"
+
+            tvResult.text =
+                "❌ لم يتم العثور على تاريخ\n\n$errorMessage"
+
+            Toast.makeText(
+                this@GeminiDateScannerActivity,
+                errorMessage,
+                Toast.LENGTH_LONG
+            ).show()
         }
 
-        super.onDestroy()
-
-        if (::cameraExecutor.isInitialized) {
-            cameraExecutor.shutdown()
-        }
+        finishProcessing()
     }
+}
+
+// =====================================================
+// إنهاء المعالجة
+// =====================================================
+
+private fun finishProcessing() {
+
+    isProcessing = false
+
+    btnCapture.isEnabled = true
+    btnFlash.isEnabled = true
+
+    btnCapture.alpha = 1.0f
+
+    // لا نعيد تشغيل الكاميرا تلقائيًا.
+    // الصورة تبقى ثابتة حتى يقرر المستخدم التقاط صورة جديدة.
+}
+
+// =====================================================
+// إنشاء ملف الصورة
+// =====================================================
+
+private fun createImageFile(): File {
+
+    val timeStamp =
+        SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.getDefault()
+        ).format(Date())
+
+    return File.createTempFile(
+        "GEMINI_DATE_$timeStamp",
+        ".jpg",
+        getExternalFilesDir(null)
+    )
+}
+
+// =====================================================
+// تنظيف الموارد
+// =====================================================
+
+override fun onDestroy() {
+
+    try {
+
+        camera?.cameraControl?.enableTorch(false)
+
+        cameraProvider?.unbindAll()
+
+    } catch (e: Exception) {
+
+        e.printStackTrace()
+    }
+
+    if (::cameraExecutor.isInitialized) {
+
+        cameraExecutor.shutdown()
+    }
+
+    super.onDestroy()
+}
+
 }
