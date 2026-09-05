@@ -4,44 +4,28 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- 1. أركان إطار المسح الضوئي الذكي (Scan Corners - Glow) -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FF00FF66"
-        android:strokeWidth="1.8"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M3,7 V5 C3,3.9 3.9,3 5,3 H7 M17,3 H19 C20.1,3 21,3.9 21,5 V7 M21,17 V19 C21,20.1 20.1,21 19,21 H17 M7,21 H5 C3.9,21 3,20.1 3,19 V17" />
-
-    <!-- 2. أركان المسح (الخط الأساسي المضيء) -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#00FF66"
-        android:strokeWidth="1.0"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M3,7 V5 C3,3.9 3.9,3 5,3 H7 M17,3 H19 C20.1,3 21,3.9 21,5 V7 M21,17 V19 C21,20.1 20.1,21 19,21 H17 M7,21 H5 C3.9,21 3,20.1 3,19 V17" />
-
-    <!-- 3. رمز التقويم في المنتصف (توهج خفيف) -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FF00FF66"
-        android:strokeWidth="1.4"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M7,10 H17 V17 C17,17.5 16.5,18 16,18 H8 C7.5,18 7,17.5 7,17 Z M9,7 V10 M15,7 V10 M7,13 H17" />
-
-    <!-- 4. رمز التقويم (القلب الأبيض الناعم للنيون) -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#E0FFEC"
-        android:strokeWidth="0.8"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M7,10 H17 V17 C17,17.5 16.5,18 16,18 H8 C7.5,18 7,17.5 7,17 Z M9,7 V10 M15,7 V10 M7,13 H17" />
-
-    <!-- 5. نقطة مسح ذكية (Gemini Node) -->
+    <!-- 1. الخلفية المربعة الملونة (بدون الخلفية البيضاء الخارجية) -->
     <path
         android:fillColor="#00FF66"
-        android:pathData="M12,15m-1,0a1,1 0 1,1 2,0a1,1 0 1,1 -2,0" />
+        android:pathData="M 6,2 H 18 C 20.2,2 22,3.8 22,6 V 18 C 22,20.2 20.2,22 18,22 H 6 C 3.8,22 2,20.2 2,18 V 6 C 2,3.8 3.8,2 6,2 Z" />
+
+    <!-- 2. الإطار الداخلي والأحرف والنجمات باللون الأبيض المفرغ داخل المربع -->
+    <path
+        android:fillColor="#121212"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="
+            M14,6.5 H7 C5.6,6.5 4.5,7.6 4.5,9 V16 C4.5,17.4 5.6,18.5 7,18.5 H15 C16.4,18.5 17.5,17.4 17.5,16 V12.5
+            M6.5,16 L9.2,9.5 H9.8 L12.5,16 M7.3,14 H11.7
+            M14.2,9.5 V16" />
+
+    <!-- 3. النجوم المضيئة (AI Sparkles) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M17.5,4.5 Q17.5,7 20,7 Q17.5,7 17.5,9.5 Q17.5,7 15,7 Q17.5,7 17.5,4.5 Z
+            M15.5,4 Q15.5,5 16.5,5 Q15.5,5 15.5,6 Q15.5,5 14.5,5 Q15.5,5 15.5,4 Z
+            M15.5,10.5 Q15.5,11.5 16.5,11.5 Q15.5,11.5 15.5,12.5 Q15.5,11.5 14.5,11.5 Q15.5,11.5 15.5,10.5 Z" />
 </vector>
