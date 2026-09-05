@@ -56,9 +56,13 @@ private lateinit var btnFlash: ImageButton
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
 
-    companion object {
-        private const val REQUEST_CAMERA = 100
-        const val EXTRA_DATE = "recognized_date"
+
+        companion object {
+    private const val REQUEST_CAMERA = 100
+    private const val REQUEST_GEMINI_DATE = 101
+
+    const val EXTRA_DATE = "recognized_date"
+        }
     }
 
     // ============================================================
@@ -148,15 +152,18 @@ private lateinit var btnFlash: ImageButton
         // زر S.OCR
         // ========================================================
 
-        btnSOCR.setOnClickListener {
+     btnSOCR.setOnClickListener {
 
-            val intent = Intent(
-                this,
-                GeminiDateScannerActivity::class.java
-            )
+    val intent = Intent(
+        this,
+        GeminiDateScannerActivity::class.java
+    )
 
-            startActivity(intent)
-        }
+    startActivityForResult(
+        intent,
+        REQUEST_GEMINI_DATE
+    )
+     }
 
         // ========================================================
         // زر الفلاش
@@ -198,7 +205,56 @@ private lateinit var btnFlash: ImageButton
 
         checkCameraPermission()
     }
-    // ============================================================
+   override fun onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+) {
+    super.onActivityResult(
+        requestCode,
+        resultCode,
+        data
+    )
+
+    if (
+        requestCode == REQUEST_GEMINI_DATE &&
+        resultCode == RESULT_OK
+    ) {
+
+        val recognizedDate =
+            data?.getStringExtra(
+                GeminiDateScannerActivity.EXTRA_DATE
+            )
+
+        if (!recognizedDate.isNullOrBlank()) {
+
+            // تمرير التاريخ إلى AddProductActivity
+            val resultIntent = Intent()
+
+            resultIntent.putExtra(
+                EXTRA_DATE,
+                recognizedDate
+            )
+
+            setResult(
+                RESULT_OK,
+                resultIntent
+            )
+
+            // إغلاق شاشة OCR المحلية
+            finish()
+
+        } else {
+
+            Toast.makeText(
+                this,
+                "لم يتم استلام تاريخ من Gemini",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+   }
+// ============================================================
     // القسم الثاني
     // الكاميرا + التقاط الصورة + OCR
     // ============================================================
