@@ -57,13 +57,13 @@ private lateinit var btnFlash: ImageButton
     private lateinit var cameraExecutor: ExecutorService
 
 
-        companion object {
-    private const val REQUEST_CAMERA = 100
-    private const val REQUEST_GEMINI_DATE = 101
+            companion object {
+        private const val REQUEST_CAMERA = 100
+        private const val REQUEST_GEMINI_DATE = 101
 
-    const val EXTRA_DATE = "recognized_date"
-        }
-    }
+        const val EXTRA_DATE = "recognized_date"
+    } // تم إغلاق companion object فقط، ونستكمل بقية الكلاس بشكل طبيعي
+            
 
     // ============================================================
     // إنشاء الشاشة
