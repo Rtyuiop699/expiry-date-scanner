@@ -322,25 +322,26 @@ private fun loadCategories() {
     val category =
         binding.autoCompleteCategories.text.toString().trim()
 
-    // =========================
-    // التحقق من البيانات الأساسية
-    // =========================
+   // =========================
+// التحقق من البيانات الأساسية
+// =========================
 
-    if (
-        name.isBlank() ||
-        rawDate.isBlank() ||
-        normalizedDate == null ||
-        currentImagePath == null
-          category.isBlank() ||
-    ) {
-        Toast.makeText(
-            this,
-            "يرجى ملء جميع الحقول وإضافة صورة",
-            Toast.LENGTH_SHORT
-        ).show()
+if (
+    name.isBlank() ||
+    rawDate.isBlank() ||
+    normalizedDate == null ||
+    currentImagePath == null ||
+    category.isBlank()
+) {
+    Toast.makeText(
+        this,
+        "يرجى ملء جميع الحقول وإضافة صورة",
+        Toast.LENGTH_SHORT
+    ).show()
 
-        return
-    }
+    return
+}
+
 
     // =========================
     // الكميات
