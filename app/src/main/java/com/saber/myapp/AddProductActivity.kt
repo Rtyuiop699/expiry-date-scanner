@@ -14,7 +14,8 @@ import java.util.Locale
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import android.view.View
+
+
 
 class AddProductActivity : AppCompatActivity() {
 
