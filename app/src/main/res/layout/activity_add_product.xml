@@ -24,7 +24,6 @@
         app:titleTextColor="#000000"
         app:menu="@menu/addproductmenu" />
 
-
     <!-- ========================= -->
     <!-- المحتوى -->
     <!-- ========================= -->
@@ -39,7 +38,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
-
 
             <!-- ========================= -->
             <!-- الصورة وأزرار الصورة -->
@@ -75,7 +73,6 @@
 
                 </LinearLayout>
 
-
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="150dp"
                     android:layout_height="150dp"
@@ -93,7 +90,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- التصنيف -->
@@ -123,9 +119,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <!-- زر إضافة تصنيف -->
-
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btnAddCategory"
                     android:layout_width="56dp"
@@ -139,7 +133,6 @@
                     app:fabSize="normal" />
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- اسم المنتج -->
@@ -166,7 +159,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
@@ -175,7 +167,6 @@
                     android:tint="#F44336" />
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- الباركود -->
@@ -203,7 +194,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
@@ -211,66 +201,58 @@
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
-
-
             <!-- ========================= -->
-            <!-- تاريخ الانتهاء + OCR -->
-            <!-- ========================= -->
+<!-- تاريخ الانتهاء + OCR -->
+<!-- ========================= -->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layoutDirection="ltr"
-                android:layout_marginTop="16dp">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layoutDirection="ltr"
+    android:layout_marginTop="16dp">
 
+    <!-- زر OCR -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnScanDate"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="مسح تاريخ الانتهاء"
+        android:src="@drawable/ic_ocr"
+        app:backgroundTint="#025144"
+        app:tint="#FFFFFF"
+        app:elevation="6dp"
+        app:fabSize="normal" />
 
-                <!-- زر OCR -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="تاريخ الانتهاء"
+        app:boxBackgroundMode="outline">
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btnScanDate"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="مسح تاريخ الانتهاء"
-                    android:src="@drawable/ic_ocr"
-                    app:backgroundTint="#025144"
-                    app:tint="#FFFFFF"
-                    app:elevation="6dp"
-                    app:fabSize="normal" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date" />
 
+    </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="تاريخ الانتهاء"
-                    app:boxBackgroundMode="outline">
+    <ImageView
+        android:id="@+id/iconCalendar"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/iccalendar"
+        android:tint="#4CAF50"
+        android:contentDescription="تاريخ الانتهاء" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="date" />
+</LinearLayout>
 
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <ImageView
-                    android:id="@+id/iconCalendar"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/iccalendar"
-                    android:tint="#4CAF50"
-                    android:contentDescription="تاريخ الانتهاء" />
-
-            </LinearLayout>
-
-
-
-        <!-- ========================= -->
+<!-- ========================= -->
 <!-- الكميات والأسعار -->
 <!-- ========================= -->
 
@@ -309,7 +291,6 @@
 
     </LinearLayout>
 
-
     <!-- ========================= -->
     <!-- الكميات -->
     <!-- ========================= -->
@@ -344,7 +325,6 @@
 
         </LinearLayout>
 
-
         <!-- الباكت -->
         <LinearLayout
             android:id="@+id/layoutPackQuantity"
@@ -368,7 +348,6 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-
 
         <!-- الحبات -->
         <LinearLayout
@@ -395,7 +374,6 @@
 
     </LinearLayout>
 
-
     <!-- ========================= -->
     <!-- زر يوجد باكت -->
     <!-- ========================= -->
@@ -407,330 +385,298 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
 
-
     <!-- زر الحساب -->
-
     <Button
         android:id="@+id/btnCalculate"
         android:text="احسب"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
+    <!-- ========================= -->
+<!-- الأسعار -->
+<!-- ========================= -->
 
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp">
 
     <!-- ========================= -->
-    <!-- الأسعار -->
+    <!-- عمود الشراء -->
     <!-- ========================= -->
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp">
+        android:layout_weight="1"
+        android:layout_marginEnd="5dp">
 
-        <!-- ========================= -->
-        <!-- عمود الشراء -->
-        <!-- ========================= -->
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp">
+            android:text="أسعار الشراء"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="أسعار الشراء"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp" />
-
-
-            <!-- سعر شراء الكرتون - إدخال -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="سعر شراء الكرتون">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editCartonPurchasePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <!-- سعر شراء الباكت -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutPackPurchasePrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="سعر شراء الباكت">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvPackPurchasePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <!-- سعر شراء الحبة -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="سعر شراء الحبة">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvPiecePurchasePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <!-- إجمالي الشراء -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="إجمالي الشراء">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvTotalPurchasePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
-
-
-        <!-- ========================= -->
-        <!-- عمود البيع -->
-        <!-- ========================= -->
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
+        <!-- سعر شراء الكرتون - إدخال -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="5dp">
+            android:hint="سعر شراء الكرتون">
 
-            <TextView
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editCartonPurchasePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="أسعار البيع"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp" />
+                android:inputType="numberDecimal" />
 
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- سعر بيع الحبة - إدخال -->
+        <!-- سعر شراء الباكت -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutPackPurchasePrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="سعر شراء الباكت">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvPackPurchasePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="سعر بيع الحبة">
+                android:focusable="false"
+                android:clickable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editPieceSalePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <!-- سعر شراء الحبة -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="سعر شراء الحبة">
 
-
-            <!-- سعر بيع الباكت -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutPackSalePrice"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvPiecePurchasePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="سعر بيع الباكت">
+                android:focusable="false"
+                android:clickable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvPackSalePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <!-- إجمالي الشراء -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="إجمالي الشراء">
 
-
-            <!-- سعر بيع الكرتون -->
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvTotalPurchasePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="سعر بيع الكرتون">
+                android:focusable="false"
+                android:clickable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvCartonSalePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <!-- إجمالي البيع -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="إجمالي البيع">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvTotalSalePrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 
-
     <!-- ========================= -->
-    <!-- الأرباح -->
+    <!-- عمود البيع -->
     <!-- ========================= -->
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="الأرباح"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="8dp" />
-
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:weightSum="2">
+        android:layout_weight="1"
+        android:layout_marginStart="5dp">
 
-        <!-- أرباح الحبة والباكت -->
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp">
+            android:text="أسعار البيع"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
 
-            <!-- ربح الحبة -->
+        <!-- سعر بيع الحبة - إدخال -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="سعر بيع الحبة">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editPieceSalePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="الربح في الحبة">
+                android:inputType="numberDecimal" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvPieceProfit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <!-- سعر بيع الباكت -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutPackSalePrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="سعر بيع الباكت">
 
-
-            <!-- ربح الباكت -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutPackProfit"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvPackSalePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="الربح في الباكت">
+                android:focusable="false"
+                android:clickable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvPackProfit"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- سعر بيع الكرتون -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="سعر بيع الكرتون">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvCartonSalePrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- إجمالي البيع -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="إجمالي البيع">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tvTotalSalePrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+                    <!-- ========================= -->
+                <!-- الأرباح -->
+                <!-- ========================= -->
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
+                    android:text="الأرباح"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="8dp" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2">
 
-        </LinearLayout>
+                    <!-- أرباح الحبة والباكت -->
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="5dp">
 
+                        <!-- ربح الحبة -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="الربح في الحبة">
 
-        <!-- أرباح الكرتون والإجمالي -->
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tvPieceProfit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:clickable="false" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="5dp">
+                        </com.google.android.material.textfield.TextInputLayout>
 
-            
+                        <!-- ربح الباكت -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/layoutPackProfit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:hint="الربح في الباكت">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tvPackProfit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:clickable="false" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <!-- أرباح الكرتون والإجمالي -->
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp">
+
                         <!-- ربح الكرتون -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="الربح في الكرتون">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="الربح في الكرتون">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tvCartonProfit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:clickable="false" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvCartonProfit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+                        <!-- إجمالي الربح -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:hint="إجمالي الربح">
 
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tvTotalProfit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:clickable="false" />
 
-            <!-- إجمالي الربح -->
+                        </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="إجمالي الربح">
+                    </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tvTotalProfit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:clickable="false" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-                        </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>   <!-- إغلاق LinearLayout الخاص بالكميات والأسعار -->
 
@@ -739,4 +685,5 @@
     </ScrollView>
 
 </LinearLayout>               <!-- إغلاق LinearLayout الخارجي -->
+    
             
