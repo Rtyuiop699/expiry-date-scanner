@@ -269,125 +269,7 @@
             </LinearLayout>
 
 
-            <!-- ========================= -->
-            <!-- الكميات -->
-            <!-- ========================= -->
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
-
-
-                <!-- عنوان القسم -->
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="الكميات"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginBottom="8dp" />
-
-
-                <!-- عناوين الكميات -->
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:weightSum="3">
-
-                    <TextView
-                        android:text="عدد الكراتين"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:text="الباكت في الكرتون"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:text="الحبات في الباكت"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-
-                <!-- حقول الكميات -->
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:weightSum="3"
-                    android:layout_marginTop="8dp">
-
-                    <EditText
-                        android:id="@+id/editCarton"
-                        android:hint="الكراتين"
-                        android:inputType="number"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <EditText
-                        android:id="@+id/editPack"
-                        android:hint="الباكت"
-                        android:inputType="number"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <EditText
-                        android:id="@+id/editPiece"
-                        android:hint="الحبات"
-                        android:inputType="number"
-                        android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-
-                <!-- يوجد باكت -->
-
-                <Button
-                    android:id="@+id/btnHasPack"
-                    android:text="يوجد باكت ✔️"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-
-                <!-- زر الحساب -->
-
-                <Button
-                    android:id="@+id/btnCalculate"
-                    android:text="احسب"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-            </LinearLayout>
-
-
-            <!-- ========================= -->
-            <!-- الأسعار -->
-            <!-- ========================= -->
         <!-- ========================= -->
 <!-- الكميات والأسعار -->
 <!-- ========================= -->
@@ -847,9 +729,11 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+                </LinearLayout>
 
     </LinearLayout>
+
+</ScrollView>
 
 </LinearLayout>
             
