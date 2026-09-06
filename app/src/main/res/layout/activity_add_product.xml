@@ -730,11 +730,13 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+                        </LinearLayout>
 
-    </LinearLayout>
+            </LinearLayout>   <!-- إغلاق LinearLayout الخاص بالكميات والأسعار -->
 
-</ScrollView>
+        </LinearLayout>       <!-- إغلاق LinearLayout الداخلي (الموجود داخل ScrollView) -->
 
-</LinearLayout>
+    </ScrollView>
+
+</LinearLayout>               <!-- إغلاق LinearLayout الخارجي -->
             
