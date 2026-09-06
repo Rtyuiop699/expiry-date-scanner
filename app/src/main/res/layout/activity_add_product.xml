@@ -695,7 +695,8 @@
             android:layout_weight="1"
             android:layout_marginStart="5dp">
 
-            <!-- ربح الكرتون -->
+            
+                        <!-- ربح الكرتون -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -729,7 +730,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -737,5 +738,3 @@
 
 </LinearLayout>
             
-
-                    
