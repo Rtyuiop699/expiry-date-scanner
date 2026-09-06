@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import android.view.View
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -18,6 +19,7 @@ import android.view.View
 class AddProductActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddProductBinding
+    private var hasPack = true
     private lateinit var databaseHelper: DatabaseHelper
     private var currentImagePath: String? = null
     private val REQUEST_PRODUCT_CAMERA = 1001
@@ -153,11 +155,40 @@ binding.btnScanDate.setOnClickListener {
     // 6. --- زر الباكت ---
     binding.btnHasPack.setOnClickListener {
 
-        Toast.makeText(
-            this,
-            "تم تحديد أن المنتج يحتوي على باكت",
-            Toast.LENGTH_SHORT
-        ).show()
+    hasPack = !hasPack
+
+    if (hasPack) {
+
+        // يوجد باكت
+        binding.btnHasPack.text = "يوجد باكت ✓"
+
+        binding.layoutPackQuantity.visibility = View.VISIBLE
+
+        binding.layoutPackPurchasePrice.visibility = View.VISIBLE
+        binding.layoutPackSalePrice.visibility = View.VISIBLE
+        binding.layoutPackProfit.visibility = View.VISIBLE
+
+    } else {
+
+        // لا يوجد باكت
+        binding.btnHasPack.text = "لا يوجد باكت ✕"
+
+        binding.layoutPackQuantity.visibility = View.GONE
+
+        binding.layoutPackPurchasePrice.visibility = View.GONE
+        binding.layoutPackSalePrice.visibility = View.GONE
+        binding.layoutPackProfit.visibility = View.GONE
+
+        // تنظيف قيمة الباكت حتى لا تدخل في الحساب
+        binding.editPack.setText("")
+
+        binding.tvPackPurchasePrice.setText("")
+        binding.tvPackSalePrice.setText("")
+        binding.tvPackProfit.setText("")
+    }
+
+    // إعادة الحساب مباشرة
+    calculateQuantity()
     }
 
     // 7. --- حساب الكمية ---
