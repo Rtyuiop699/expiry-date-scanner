@@ -471,8 +471,10 @@ if (
     val packsPerCarton =
         binding.editPack.text.toString().toIntOrNull() ?: 0
 
-    // عدد الحبات داخل الباكت
-    val piecesPerPack =
+    // الرقم الموجود في editPiece
+    // إذا يوجد باكت = الحبات داخل الباكت
+    // إذا لا يوجد باكت = الحبات داخل الكرتون
+    val pieces =
         binding.editPiece.text.toString().toIntOrNull() ?: 0
 
 
@@ -493,121 +495,222 @@ if (
             .toDoubleOrNull() ?: 0.0
 
 
-    // =========================
-    // أسعار الشراء
-    // =========================
+    // =====================================================
+    // الحالة الأولى: المنتج يحتوي على باكت
+    // =====================================================
 
-    // سعر شراء الباكت
-    val packPurchasePrice =
-        if (packsPerCarton > 0)
-            cartonPurchasePrice / packsPerCarton
-        else
-            0.0
+    if (hasPack) {
 
-    // سعر شراء الحبة
-    val piecePurchasePrice =
-        if (piecesPerPack > 0)
-            packPurchasePrice / piecesPerPack
-        else
-            0.0
+        // =========================
+        // أسعار الشراء
+        // =========================
 
-    // سعر شراء جميع الكراتين
-    val totalPurchasePrice =
-        cartonPurchasePrice * cartons
+        val packPurchasePrice =
+            if (packsPerCarton > 0)
+                cartonPurchasePrice / packsPerCarton
+            else
+                0.0
 
+        val piecePurchasePrice =
+            if (pieces > 0)
+                packPurchasePrice / pieces
+            else
+                0.0
 
-    // =========================
-    // أسعار البيع
-    // =========================
-
-    // سعر بيع الباكت
-    val packSalePrice =
-        pieceSalePrice * piecesPerPack
-
-    // سعر بيع الكرتون
-    val cartonSalePrice =
-        packSalePrice * packsPerCarton
-
-    // سعر بيع جميع الكراتين
-    val totalSalePrice =
-        cartonSalePrice * cartons
+        val totalPurchasePrice =
+            cartonPurchasePrice * cartons
 
 
-    // =========================
-    // الأرباح
-    // =========================
+        // =========================
+        // أسعار البيع
+        // =========================
 
-    // ربح الحبة
-    val pieceProfit =
-        pieceSalePrice - piecePurchasePrice
+        val packSalePrice =
+            pieceSalePrice * pieces
 
-    // ربح الباكت
-    val packProfit =
-        packSalePrice - packPurchasePrice
+        val cartonSalePrice =
+            packSalePrice * packsPerCarton
 
-    // ربح الكرتون
-    val cartonProfit =
-        cartonSalePrice - cartonPurchasePrice
-
-    // ربح جميع الكراتين
-    val totalProfit =
-        totalSalePrice - totalPurchasePrice
+        val totalSalePrice =
+            cartonSalePrice * cartons
 
 
-    // =========================
-    // عرض أسعار الشراء
-    // =========================
+        // =========================
+        // الأرباح
+        // =========================
 
-    binding.tvPackPurchasePrice.setText(
-        formatPrice(packPurchasePrice)
-    )
+        val pieceProfit =
+            pieceSalePrice - piecePurchasePrice
 
-    binding.tvPiecePurchasePrice.setText(
-        formatPrice(piecePurchasePrice)
-    )
+        val packProfit =
+            packSalePrice - packPurchasePrice
 
-    binding.tvTotalPurchasePrice.setText(
-        formatPrice(totalPurchasePrice)
-    )
+        val cartonProfit =
+            cartonSalePrice - cartonPurchasePrice
 
-
-    // =========================
-    // عرض أسعار البيع
-    // =========================
-
-    binding.tvPackSalePrice.setText(
-        formatPrice(packSalePrice)
-    )
-
-    binding.tvCartonSalePrice.setText(
-        formatPrice(cartonSalePrice)
-    )
-
-    binding.tvTotalSalePrice.setText(
-        formatPrice(totalSalePrice)
-    )
+        val totalProfit =
+            totalSalePrice - totalPurchasePrice
 
 
-    // =========================
-    // عرض الأرباح
-    // =========================
+        // =========================
+        // عرض أسعار الشراء
+        // =========================
 
-    binding.tvPieceProfit.setText(
-        formatPrice(pieceProfit)
-    )
+        binding.tvPackPurchasePrice.setText(
+            formatPrice(packPurchasePrice)
+        )
 
-    binding.tvPackProfit.setText(
-        formatPrice(packProfit)
-    )
+        binding.tvPiecePurchasePrice.setText(
+            formatPrice(piecePurchasePrice)
+        )
 
-    binding.tvCartonProfit.setText(
-        formatPrice(cartonProfit)
-    )
+        binding.tvTotalPurchasePrice.setText(
+            formatPrice(totalPurchasePrice)
+        )
 
-    binding.tvTotalProfit.setText(
-        formatPrice(totalProfit)
-    )
-   } 
+
+        // =========================
+        // عرض أسعار البيع
+        // =========================
+
+        binding.tvPackSalePrice.setText(
+            formatPrice(packSalePrice)
+        )
+
+        binding.tvCartonSalePrice.setText(
+            formatPrice(cartonSalePrice)
+        )
+
+        binding.tvTotalSalePrice.setText(
+            formatPrice(totalSalePrice)
+        )
+
+
+        // =========================
+        // عرض الأرباح
+        // =========================
+
+        binding.tvPieceProfit.setText(
+            formatPrice(pieceProfit)
+        )
+
+        binding.tvPackProfit.setText(
+            formatPrice(packProfit)
+        )
+
+        binding.tvCartonProfit.setText(
+            formatPrice(cartonProfit)
+        )
+
+        binding.tvTotalProfit.setText(
+            formatPrice(totalProfit)
+        )
+
+    } else {
+
+        // =====================================================
+        // الحالة الثانية: المنتج لا يحتوي على باكت
+        // =====================================================
+
+        // هنا pieces تعني:
+        // عدد الحبات داخل الكرتون مباشرة
+
+        val piecesPerCarton = pieces
+
+
+        // =========================
+        // أسعار الشراء
+        // =========================
+
+        val piecePurchasePrice =
+            if (piecesPerCarton > 0)
+                cartonPurchasePrice / piecesPerCarton
+            else
+                0.0
+
+        val totalPurchasePrice =
+            cartonPurchasePrice * cartons
+
+
+        // =========================
+        // أسعار البيع
+        // =========================
+
+        val cartonSalePrice =
+            pieceSalePrice * piecesPerCarton
+
+        val totalSalePrice =
+            cartonSalePrice * cartons
+
+
+        // =========================
+        // الأرباح
+        // =========================
+
+        val pieceProfit =
+            pieceSalePrice - piecePurchasePrice
+
+        val cartonProfit =
+            cartonSalePrice - cartonPurchasePrice
+
+        val totalProfit =
+            totalSalePrice - totalPurchasePrice
+
+
+        // =========================
+        // أسعار الشراء
+        // =========================
+
+        // لا يوجد باكت
+        binding.tvPackPurchasePrice.setText("")
+
+        binding.tvPiecePurchasePrice.setText(
+            formatPrice(piecePurchasePrice)
+        )
+
+        binding.tvTotalPurchasePrice.setText(
+            formatPrice(totalPurchasePrice)
+        )
+
+
+        // =========================
+        // أسعار البيع
+        // =========================
+
+        // لا يوجد باكت
+        binding.tvPackSalePrice.setText("")
+
+        binding.tvCartonSalePrice.setText(
+            formatPrice(cartonSalePrice)
+        )
+
+        binding.tvTotalSalePrice.setText(
+            formatPrice(totalSalePrice)
+        )
+
+
+        // =========================
+        // الأرباح
+        // =========================
+
+        binding.tvPieceProfit.setText(
+            formatPrice(pieceProfit)
+        )
+
+        // لا يوجد باكت
+        binding.tvPackProfit.setText("")
+
+        binding.tvCartonProfit.setText(
+            formatPrice(cartonProfit)
+        )
+
+        binding.tvTotalProfit.setText(
+            formatPrice(totalProfit)
+        )
+    }
+   }
+
+        
 
     private fun formatPrice(price: Double): String {
     return if (price % 1.0 == 0.0) {
