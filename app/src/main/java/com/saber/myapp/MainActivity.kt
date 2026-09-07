@@ -1046,6 +1046,8 @@ val allProducts =
 
     } else {
         super.onBackPressed()
-    }
         }
+    }
+
+}
         
