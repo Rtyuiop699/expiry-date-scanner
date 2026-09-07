@@ -1014,53 +1014,51 @@ val allProducts =
     // التعامل مع زر الرجوع
     // =========================================================
 
-    override fun onBackPressed() {
+        override fun onBackPressed() {
 
-    // -----------------------------------------------------
-    // 1. إغلاق Balloon أولاً
-    // -----------------------------------------------------
+        // -----------------------------------------------------
+        // 1. إغلاق Balloon أولاً
+        // -----------------------------------------------------
 
-    if (currentBalloon != null) {
-        closeProductBalloon()
-        return
-    }
-
-
-    // -----------------------------------------------------
-    // 2. التعامل مع حقل البحث وإعادته لوضعه الطبيعي
-    // -----------------------------------------------------
-
-    val searchField = findViewById<EditText>(R.id.searchField)
-    val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-    val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
-
-    if (searchField.hasFocus()) {
-
-        // أ) إخفاء لوحة المفاتيح
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
-
-        // ب) إلغاء التركيز والمؤشر
-        searchField.clearFocus()
-        searchField.isCursorVisible = false
-
-        // ج) إرجاع الأزرار وتقليص حقل البحث بحركة سلسة
-        if (searchAndActionsBar != null && actionsContainer != null) {
-            androidx.transition.TransitionManager.beginDelayedTransition(searchAndActionsBar)
-            actionsContainer.visibility = View.VISIBLE
+        if (currentBalloon != null) {
+            closeProductBalloon()
+            return
         }
 
-    } else {
 
-        // -------------------------------------------------
-        // 3. الرجوع الطبيعي
-        // -------------------------------------------------
+        // -----------------------------------------------------
+        // 2. التعامل مع حقل البحث وإعادته لوضعه الطبيعي
+        // -----------------------------------------------------
 
-        super.onBackPressed()
-    }
-    
-    
+        val searchField = findViewById<EditText>(R.id.searchField)
+        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
+
+        if (searchField != null && searchField.hasFocus()) {
+
+            // أ) إخفاء لوحة المفاتيح
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+
+            // ب) إلغاء التركيز والمؤشر
+            searchField.clearFocus()
+            searchField.isCursorVisible = false
+
+            // ج) إرجاع الأزرار وتقليص حقل البحث بحركة سلسة
+            if (searchAndActionsBar != null && actionsContainer != null) {
+                androidx.transition.TransitionManager.beginDelayedTransition(searchAndActionsBar)
+                actionsContainer.visibility = View.VISIBLE
+            }
+
+        } else {
+
+            // -------------------------------------------------
+            // 3. الرجوع الطبيعي
+            // -------------------------------------------------
+
+            super.onBackPressed()
         }
-    }
-    
-}
+
+    } // <--- قوس إغلاق دالة onBackPressed
+
+} // <--- قوس إغلاق كلاس MainActivity (السطر الأخير بالملف)
