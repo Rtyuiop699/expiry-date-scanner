@@ -1,11 +1,8 @@
 package com.saber.myapp
 
-import android.widget.LinearLayout
-import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.transition.TransitionManager
+package com.saber.myapp
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -16,12 +13,14 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
+import androidx.transition.TransitionManager
 
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -31,6 +30,7 @@ import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
+
 
 
 class MainActivity : AppCompatActivity() {
