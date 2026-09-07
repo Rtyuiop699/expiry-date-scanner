@@ -1,5 +1,11 @@
 package com.saber.myapp
 
+import android.widget.LinearLayout
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.transition.TransitionManager
+
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -1016,49 +1022,30 @@ val allProducts =
 
         override fun onBackPressed() {
 
-        // -----------------------------------------------------
-        // 1. إغلاق Balloon أولاً
-        // -----------------------------------------------------
+    if (currentBalloon != null) {
+        closeProductBalloon()
+        return
+    }
 
-        if (currentBalloon != null) {
-            closeProductBalloon()
-            return
+    val searchField = findViewById<EditText>(R.id.searchField)
+    val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+    val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
+
+    if (searchField != null && searchField.hasFocus()) {
+
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+
+        searchField.clearFocus()
+        searchField.isCursorVisible = false
+
+        if (searchAndActionsBar != null && actionsContainer != null) {
+            TransitionManager.beginDelayedTransition(searchAndActionsBar)
+            actionsContainer.visibility = View.VISIBLE
         }
 
-
-        // -----------------------------------------------------
-        // 2. التعامل مع حقل البحث وإعادته لوضعه الطبيعي
-        // -----------------------------------------------------
-
-        val searchField = findViewById<EditText>(R.id.searchField)
-        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
-
-        if (searchField != null && searchField.hasFocus()) {
-
-            // أ) إخفاء لوحة المفاتيح
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
-
-            // ب) إلغاء التركيز والمؤشر
-            searchField.clearFocus()
-            searchField.isCursorVisible = false
-
-            // ج) إرجاع الأزرار وتقليص حقل البحث بحركة سلسة
-            if (searchAndActionsBar != null && actionsContainer != null) {
-                androidx.transition.TransitionManager.beginDelayedTransition(searchAndActionsBar)
-                actionsContainer.visibility = View.VISIBLE
-            }
-
-        } else {
-
-            // -------------------------------------------------
-            // 3. الرجوع الطبيعي
-            // -------------------------------------------------
-
-            super.onBackPressed()
+    } else {
+        super.onBackPressed()
+    }
         }
-
-    } // <--- قوس إغلاق دالة onBackPressed
-
-} // <--- قوس إغلاق كلاس MainActivity (السطر الأخير بالملف)
+        
