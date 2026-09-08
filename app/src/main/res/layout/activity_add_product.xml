@@ -617,7 +617,9 @@
     </LinearLayout>
 
 </LinearLayout>
-                    <!-- ========================= -->
+        
+
+                                <!-- ========================= -->
                 <!-- الأرباح -->
                 <!-- ========================= -->
 
@@ -722,12 +724,9 @@
 
                 </LinearLayout>
 
-            </LinearLayout>   <!-- إغلاق LinearLayout الخاص بالكميات والأسعار -->
-
         </LinearLayout>       <!-- إغلاق LinearLayout الداخلي (الموجود داخل ScrollView) -->
 
     </ScrollView>
 
-</LinearLayout>               <!-- إغلاق LinearLayout الخارجي -->
-    
-            
+</LinearLayout>               <!-- إغلاق LinearLayout الرئيسي في آخر الملف -->
+                            
