@@ -11,52 +11,64 @@
     <!-- ========================= -->
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:background="@android:color/white"
-        android:elevation="0dp"
-        app:title="إدارة المخزون"
-        app:titleTextColor="@android:color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    android:id="@+id/toolbar"
+    android:layout_width="0dp"
+    android:layout_height="64dp"
+    android:background="@android:color/white"
+    android:elevation="0dp"
+    app:title="إدارة المخزون"
+    app:titleTextColor="@android:color/black"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_gravity="end">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="end">
 
-            <!-- مساعدة -->
-            <ImageView
-                android:id="@+id/btnHelp"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_help"
-                android:tint="#1976D2"
-                android:contentDescription="مساعدة"
-                android:clickable="true"
-                android:focusable="true" />
+        <!-- ترتيب -->
+        <ImageView
+            android:id="@+id/btnSort"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_sort"
+            android:tint="#1976D2"
+            android:contentDescription="ترتيب"
+            android:clickable="true"
+            android:focusable="true" />
 
-            <!-- إعدادات -->
-            <ImageView
-                android:id="@+id/btnSettings"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_settings"
-                android:tint="#555555"
-                android:contentDescription="إعدادات"
-                android:clickable="true"
-                android:focusable="true" />
+        <!-- مساعدة -->
+        <ImageView
+            android:id="@+id/btnHelp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_help"
+            android:tint="#1976D2"
+            android:contentDescription="مساعدة"
+            android:clickable="true"
+            android:focusable="true" />
 
-        </LinearLayout>
+        <!-- إعدادات -->
+        <ImageView
+            android:id="@+id/btnSettings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_settings"
+            android:tint="#555555"
+            android:contentDescription="إعدادات"
+            android:clickable="true"
+            android:focusable="true" />
 
-    </com.google.android.material.appbar.MaterialToolbar>
+    </LinearLayout>
 
+</com.google.android.material.appbar.MaterialToolbar>
+    
 
     <!-- ========================= -->
     <!-- الخط السفلي للشريط العلوي -->
