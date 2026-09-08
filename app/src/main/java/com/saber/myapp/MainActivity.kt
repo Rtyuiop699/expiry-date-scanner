@@ -1,7 +1,5 @@
 package com.saber.myapp
 
-package com.saber.myapp
-
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
