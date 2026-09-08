@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,73 +7,80 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- ========================= -->
+
+    <!-- ========================================================= -->
     <!-- 1. الشريط العلوي -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
 
     <com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/toolbar"
-    android:layout_width="0dp"
-    android:layout_height="64dp"
-    android:background="@android:color/white"
-    android:elevation="0dp"
-    app:title="إدارة المخزون"
-    app:titleTextColor="@android:color/black"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@android:color/white"
+        android:elevation="0dp"
+        app:title="إدارة المخزون"
+        app:titleTextColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_gravity="end">
+        <!-- مجموعة أيقونات الشريط العلوي -->
+        <!-- الاتجاه يرث تلقائياً من لغة التطبيق -->
 
-        <!-- ترتيب -->
-        <ImageView
-            android:id="@+id/btnSort"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_sort"
-            android:tint="#1976D2"
-            android:contentDescription="ترتيب"
-            android:clickable="true"
-            android:focusable="true" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_gravity="end">
 
-        <!-- مساعدة -->
-        <ImageView
-            android:id="@+id/btnHelp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_help"
-            android:tint="#1976D2"
-            android:contentDescription="مساعدة"
-            android:clickable="true"
-            android:focusable="true" />
+            <!-- ترتيب -->
 
-        <!-- إعدادات -->
-        <ImageView
-            android:id="@+id/btnSettings"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_settings"
-            android:tint="#555555"
-            android:contentDescription="إعدادات"
-            android:clickable="true"
-            android:focusable="true" />
+            <ImageView
+                android:id="@+id/btnSort"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_sort"
+                android:tint="#1976D2"
+                android:contentDescription="ترتيب"
+                android:clickable="true"
+                android:focusable="true" />
 
-    </LinearLayout>
+            <!-- مساعدة -->
 
-</com.google.android.material.appbar.MaterialToolbar>
-    
+            <ImageView
+                android:id="@+id/btnHelp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_help"
+                android:tint="#1976D2"
+                android:contentDescription="مساعدة"
+                android:clickable="true"
+                android:focusable="true" />
 
-    <!-- ========================= -->
+            <!-- إعدادات -->
+
+            <ImageView
+                android:id="@+id/btnSettings"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_settings"
+                android:tint="#555555"
+                android:contentDescription="إعدادات"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+
+    <!-- ========================================================= -->
     <!-- الخط السفلي للشريط العلوي -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
 
     <View
         android:id="@+id/toolbarDivider"
@@ -85,7 +93,7 @@
 
 
     <!-- ========================================================= -->
-    <!-- 2 & 3. شريط البحث والأزرار في سطر واحد افقي -->
+    <!-- 2 & 3. شريط البحث والأزرار -->
     <!-- ========================================================= -->
 
     <LinearLayout
@@ -103,7 +111,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+
+        <!-- ===================================================== -->
         <!-- حقل البحث -->
+        <!-- ===================================================== -->
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/searchContainer"
             android:layout_width="0dp"
@@ -124,16 +136,23 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
+                <!-- أيقونة البحث -->
+
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
-                    app:tint="#777777" />
+                    app:tint="#777777"
+                    android:contentDescription="بحث" />
+
+
+                <!-- حقل البحث -->
 
                 <EditText
                     android:id="@+id/searchField"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
                     android:background="@android:color/transparent"
                     android:gravity="center_vertical"
@@ -149,7 +168,11 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- حاوية الأزرار جهة اليسار -->
+
+        <!-- ===================================================== -->
+        <!-- حاوية الأزرار -->
+        <!-- ===================================================== -->
+
         <LinearLayout
             android:id="@+id/actionsContainer"
             android:layout_width="wrap_content"
@@ -159,27 +182,27 @@
             android:layout_marginStart="8dp"
             android:visibility="visible">
 
-            <!-- زر اختيار متعدد -->
+            <!-- اختيار متعدد -->
+
             <ImageView
-    android:id="@+id/btnMultiSelect"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:padding="10dp"
-    android:src="@drawable/ic_check_box"
-    android:contentDescription="اختيار متعدد"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="?attr/selectableItemBackgroundBorderless" />
-            
-            
+                android:id="@+id/btnMultiSelect"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_check_box"
+                android:contentDescription="اختيار متعدد"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
         </LinearLayout>
 
     </LinearLayout>
 
 
-    <!-- ========================= -->
+    <!-- ========================================================= -->
     <!-- 4. قائمة التصنيفات -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
 
     <HorizontalScrollView
         android:id="@+id/categoriesScroll"
@@ -190,10 +213,22 @@
         android:scrollbars="none"
         android:overScrollMode="never"
         android:clipToPadding="false"
-        android:layoutDirection="rtl"
+        android:padding="0dp"
         app:layout_constraintTop_toBottomOf="@id/searchAndActionsBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <!--
+            ChipGroup يرث اتجاه التطبيق.
+
+            العربية:
+            RTL
+            أول عنصر "الكل" يكون من جهة اليمين.
+
+            الإنجليزية:
+            LTR
+            أول عنصر "All" يكون من جهة اليسار.
+        -->
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupCategories"
@@ -204,7 +239,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:background="@android:color/white"
-            android:layoutDirection="rtl"
             app:singleSelection="true"
             app:singleLine="true"
             app:chipSpacingHorizontal="8dp"
@@ -213,9 +247,9 @@
     </HorizontalScrollView>
 
 
-    <!-- ========================= -->
+    <!-- ========================================================= -->
     <!-- الكاميرا -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
 
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
@@ -228,9 +262,9 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- ========================= -->
+    <!-- ========================================================= -->
     <!-- قائمة المنتجات -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -243,7 +277,7 @@
 
 
     <!-- ========================================================= -->
-    <!-- الأزرار العائمة عند الضغط المطول -->
+    <!-- أزرار الإجراءات عند الضغط المطول -->
     <!-- ========================================================= -->
 
     <LinearLayout
@@ -258,7 +292,9 @@
         android:clipToPadding="false"
         android:padding="0dp">
 
+
         <!-- تعديل -->
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnActionEdit"
             android:layout_width="56dp"
@@ -273,7 +309,9 @@
             app:elevation="8dp"
             app:pressedTranslationZ="12dp" />
 
+
         <!-- PDF -->
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnActionPdf"
             android:layout_width="56dp"
@@ -288,7 +326,9 @@
             app:elevation="8dp"
             app:pressedTranslationZ="12dp" />
 
+
         <!-- طباعة -->
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnActionPrint"
             android:layout_width="56dp"
@@ -303,7 +343,9 @@
             app:elevation="8dp"
             app:pressedTranslationZ="12dp" />
 
+
         <!-- حذف -->
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnActionDelete"
             android:layout_width="56dp"
@@ -321,9 +363,9 @@
     </LinearLayout>
 
 
-    <!-- ========================= -->
-    <!-- زر الإضافة -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
+    <!-- زر الإضافة / مسح الباركود -->
+    <!-- ========================================================= -->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -342,4 +384,3 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-                    
