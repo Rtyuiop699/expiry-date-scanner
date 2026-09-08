@@ -619,6 +619,7 @@
 </LinearLayout>
         
 
+
                                 <!-- ========================= -->
                 <!-- الأرباح -->
                 <!-- ========================= -->
@@ -722,11 +723,13 @@
 
                     </LinearLayout>
 
-                </LinearLayout>
+                </LinearLayout> <!-- 1. إغلاق LinearLayout الخاص بقسم الأرباح الأفقية -->
 
-        </LinearLayout>       <!-- إغلاق LinearLayout الداخلي (الموجود داخل ScrollView) -->
+            </LinearLayout>     <!-- 2. إغلاق LinearLayout الداخلي المجمع للواجهة كاملة -->
 
-    </ScrollView>
+        </LinearLayout>         <!-- 3. إغلاق LinearLayout الحاوي داخل الـ ScrollView -->
 
-</LinearLayout>               <!-- إغلاق LinearLayout الرئيسي في آخر الملف -->
-                            
+    </ScrollView>             <!-- 4. إغلاق ScrollView -->
+
+</LinearLayout>                 <!-- 5. إغلاق LinearLayout الرئيسي للملف (Root) -->
+                                
