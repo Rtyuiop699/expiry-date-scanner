@@ -617,10 +617,8 @@
     </LinearLayout>
 
 </LinearLayout>
-        
-
-
-                                <!-- ========================= -->
+    
+                                                     
                 <!-- الأرباح -->
                 <!-- ========================= -->
 
@@ -723,13 +721,12 @@
 
                     </LinearLayout>
 
-                </LinearLayout> <!-- 1. إغلاق LinearLayout الخاص بقسم الأرباح الأفقية -->
+                </LinearLayout> <!-- إغلاق LinearLayout الخاص بقسم الأرباح الأفقية -->
 
-            </LinearLayout>     <!-- 2. إغلاق LinearLayout الداخلي المجمع للواجهة كاملة -->
+            </LinearLayout> <!-- إغلاق LinearLayout الداخلي المجمع للواجهة كاملة (الذي يبدأ بعد الأسعار) -->
 
-        </LinearLayout>         <!-- 3. إغلاق LinearLayout الحاوي داخل الـ ScrollView -->
+        </LinearLayout> <!-- إغلاق LinearLayout الحاوي داخل الـ ScrollView -->
 
-    </ScrollView>             <!-- 4. إغلاق ScrollView -->
+    </ScrollView> <!-- إغلاق ScrollView -->
 
-</LinearLayout>                 <!-- 5. إغلاق LinearLayout الرئيسي للملف (Root) -->
-                                
+</LinearLayout> <!-- إغلاق LinearLayout الرئيسي للملف (Root) -->
