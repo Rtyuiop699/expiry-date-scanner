@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
@@ -24,6 +25,7 @@
         app:titleTextColor="#000000"
         app:menu="@menu/addproductmenu" />
 
+
     <!-- ========================= -->
     <!-- المحتوى -->
     <!-- ========================= -->
@@ -39,24 +41,30 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- ========================= -->
+
+            <!-- ================================================= -->
             <!-- الصورة وأزرار الصورة -->
-            <!-- ========================= -->
+            <!-- الصورة يمين - الأزرار يسار -->
+            <!-- ================================================= -->
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="end"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
+
+                <!-- ========================= -->
+                <!-- أزرار الصورة - اليسار -->
+                <!-- ========================= -->
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginEnd="12dp"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginEnd="12dp">
 
                     <Button
                         android:id="@+id/btnCaptureImage"
@@ -72,6 +80,11 @@
                         android:layout_marginTop="8dp" />
 
                 </LinearLayout>
+
+
+                <!-- ========================= -->
+                <!-- صورة المنتج - اليمين -->
+                <!-- ========================= -->
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="150dp"
@@ -90,6 +103,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
+
 
             <!-- ========================= -->
             <!-- التصنيف -->
@@ -119,7 +133,9 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+
                 <!-- زر إضافة تصنيف -->
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btnAddCategory"
                     android:layout_width="56dp"
@@ -134,8 +150,10 @@
 
             </LinearLayout>
 
+
             <!-- ========================= -->
             <!-- اسم المنتج -->
+            <!-- الأيقونة يمين الحقل -->
             <!-- ========================= -->
 
             <LinearLayout
@@ -144,6 +162,19 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginTop="16dp">
+
+                <!-- أيقونة اسم المنتج - اليمين -->
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ictagred"
+                    android:tint="#F44336"
+                    android:contentDescription="اسم المنتج" />
+
+
+                <!-- حقل اسم المنتج -->
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
@@ -159,17 +190,12 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ictagred"
-                    android:layout_marginStart="8dp"
-                    android:tint="#F44336" />
-
             </LinearLayout>
 
+
             <!-- ========================= -->
-            <!-- الباركود -->
+            <!-- رمز الباركود -->
+            <!-- الأيقونة يمين الحقل -->
             <!-- ========================= -->
 
             <LinearLayout
@@ -178,6 +204,18 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginTop="16dp">
+
+                <!-- أيقونة الباركود - اليمين -->
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/icbarcode"
+                    android:contentDescription="رمز الباركود" />
+
+
+                <!-- حقل الباركود -->
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
@@ -194,64 +232,72 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+            </LinearLayout>
+
+
+            <!-- ========================= -->
+            <!-- تاريخ الانتهاء + OCR -->
+            <!-- ========================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layoutDirection="ltr"
+                android:layout_marginTop="16dp">
+
+                <!-- زر OCR -->
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnScanDate"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="مسح تاريخ الانتهاء"
+                    android:src="@drawable/ic_ocr"
+                    app:backgroundTint="#025144"
+                    app:tint="#FFFFFF"
+                    app:elevation="6dp"
+                    app:fabSize="normal" />
+
+
+                <!-- حقل تاريخ الانتهاء -->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="تاريخ الانتهاء"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="date" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <!-- أيقونة التقويم -->
+
                 <ImageView
+                    android:id="@+id/iconCalendar"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/icbarcode"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/iccalendar"
+                    android:tint="#4CAF50"
+                    android:contentDescription="تاريخ الانتهاء" />
 
             </LinearLayout>
-            <!-- ========================= -->
-<!-- تاريخ الانتهاء + OCR -->
-<!-- ========================= -->
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:layoutDirection="ltr"
-    android:layout_marginTop="16dp">
+        </LinearLayout>
 
-    <!-- زر OCR -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnScanDate"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="مسح تاريخ الانتهاء"
-        android:src="@drawable/ic_ocr"
-        app:backgroundTint="#025144"
-        app:tint="#FFFFFF"
-        app:elevation="6dp"
-        app:fabSize="normal" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="تاريخ الانتهاء"
-        app:boxBackgroundMode="outline">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="date" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/iconCalendar"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="8dp"
-        android:src="@drawable/iccalendar"
-        android:tint="#4CAF50"
-        android:contentDescription="تاريخ الانتهاء" />
+    </ScrollView>
 
 </LinearLayout>
-
 <!-- ========================= -->
 <!-- الكميات والأسعار -->
 <!-- ========================= -->
