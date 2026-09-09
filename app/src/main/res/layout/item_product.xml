@@ -1,117 +1,132 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical">
+
+<!-- ========================================================= -->
+<!-- المحتوى الرئيسي -->
+<!-- ========================================================= -->
+
+<FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="96dp"
+    android:padding="8dp">
 
-    <!-- ========================================================= -->
-    <!-- الصف الرئيسي -->
-    <!-- يتم التحكم بالمواقع يدويًا وليس بواسطة RTL / LTR -->
-    <!-- ========================================================= -->
+    <!-- ===================================================== -->
+    <!-- 1. المعلومات - مثبتة في أقصى اليسار -->
+    <!-- التاريخ -->
+    <!-- المتبقي -->
+    <!-- الباركود -->
+    <!-- ===================================================== -->
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layoutDirection="ltr"
-        android:padding="8dp">
+        android:id="@+id/infoContainer"
+        android:layout_width="130dp"
+        android:layout_height="80dp"
+        android:layout_gravity="start|center_vertical"
+        android:orientation="vertical"
+        android:gravity="start|center_vertical">
 
-        <!-- ===================================================== -->
-        <!-- 1. معلومات المنتج - ثابتة في أقصى اليسار -->
-        <!-- التاريخ / المتبقي / الباركود -->
-        <!-- ===================================================== -->
+        <!-- تاريخ الانتهاء -->
+
         <LinearLayout
-            android:layout_width="105dp"
-            android:layout_height="80dp"
-            android:orientation="vertical"
-            android:gravity="start|center_vertical"
-            android:layout_gravity="start">
-            <!-- تاريخ الانتهاء -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="start|center_vertical">
-                <TextView
-                    android:id="@+id/textViewExpiryLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="تاريخ الانتهاء"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:gravity="start" />
-                <TextView
-                    android:id="@+id/textViewExpiry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="11/9/2026"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:gravity="start" />
-            </LinearLayout>
-            <!-- الأيام المتبقية -->
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start|center_vertical">
+
             <TextView
-                android:id="@+id/textViewRemaining"
-                android:layout_width="match_parent"
+                android:id="@+id/textViewExpiryLabel"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="متبقي 5 أيام"
+                android:text="تاريخ الانتهاء"
                 android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:gravity="start" />
-            <!-- الباركود -->
+                android:textColor="@android:color/black" />
+
             <TextView
-                android:id="@+id/textViewBarcode"
-                android:layout_width="match_parent"
+                android:id="@+id/textViewExpiry"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="846046484"
-                android:textSize="13sp"
-                android:textColor="@android:color/darker_gray"
-                android:gravity="start" />
+                android:layout_marginStart="5dp"
+                android:text="11/9/2026"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+
         </LinearLayout>
 
-        <!-- ===================================================== -->
-        <!-- 2. اسم المنتج - في المنتصف -->
-        <!-- بين المعلومات والصورة -->
-        <!-- ===================================================== -->
-        <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="ايسكريم نانا"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:gravity="center_vertical|center"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:breakStrategy="simple"
-            android:hyphenationFrequency="none" />
+        <!-- الأيام المتبقية -->
 
-        <!-- ===================================================== -->
-        <!-- 3. صورة المنتج - ثابتة في أقصى اليمين -->
-        <!-- ===================================================== -->
-        <ImageView
-            android:id="@+id/imageViewProduct"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="end|center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_report_image"
-            android:background="@android:color/darker_gray" />
+        <TextView
+            android:id="@+id/textViewRemaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="متبقي 5 أيام"
+            android:textSize="14sp"
+            android:textColor="@android:color/black" />
+
+        <!-- الباركود -->
+
+        <TextView
+            android:id="@+id/textViewBarcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="846046484"
+            android:textSize="13sp"
+            android:textColor="@android:color/darker_gray" />
+
     </LinearLayout>
 
-    <!-- ========================================================= -->
-    <!-- الخط الفاصل -->
-    <!-- ========================================================= -->
-    <View
+
+    <!-- ===================================================== -->
+    <!-- 2. الصورة - مثبتة في أقصى اليمين -->
+    <!-- ===================================================== -->
+
+    <ImageView
+        android:id="@+id/imageViewProduct"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="end|center_vertical"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_report_image"
+        android:background="@android:color/darker_gray" />
+
+
+    <!-- ===================================================== -->
+    <!-- 3. اسم المنتج - المنطقة الوسطى -->
+    <!-- ===================================================== -->
+
+    <TextView
+        android:id="@+id/textViewName"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="#D9D9D9" />
+        android:layout_height="80dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="138dp"
+        android:layout_marginEnd="88dp"
+        android:text="ايسكريم نانا"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:breakStrategy="simple"
+        android:hyphenationFrequency="none" />
+
+</FrameLayout>
+
+
+<!-- ========================================================= -->
+<!-- الخط الفاصل بين المنتجات -->
+<!-- ========================================================= -->
+
+<View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:background="#D9D9D9" />
+
 </LinearLayout>
