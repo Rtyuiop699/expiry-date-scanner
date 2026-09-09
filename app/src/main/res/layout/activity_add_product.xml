@@ -24,14 +24,14 @@
         app:titleTextColor="#000000"
         app:menu="@menu/addproductmenu" />
 
-
     <!-- ========================= -->
     <!-- المحتوى -->
     <!-- ========================= -->
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
@@ -39,7 +39,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
-
 
             <!-- ================================================= -->
             <!-- الصورة وأزرار الصورة -->
@@ -80,7 +79,6 @@
 
                 </LinearLayout>
 
-
                 <!-- ========================= -->
                 <!-- صورة المنتج - اليمين -->
                 <!-- ========================= -->
@@ -102,7 +100,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- التصنيف -->
@@ -132,7 +129,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <!-- زر إضافة تصنيف -->
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -148,7 +144,6 @@
                     app:fabSize="normal" />
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- اسم المنتج -->
@@ -172,7 +167,6 @@
                     android:tint="#F44336"
                     android:contentDescription="اسم المنتج" />
 
-
                 <!-- حقل اسم المنتج -->
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -190,7 +184,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- رمز الباركود -->
@@ -213,7 +206,6 @@
                     android:src="@drawable/icbarcode"
                     android:contentDescription="رمز الباركود" />
 
-
                 <!-- حقل الباركود -->
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -232,7 +224,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
 
             <!-- ========================= -->
             <!-- تاريخ الانتهاء + OCR -->
@@ -260,7 +251,6 @@
                     app:elevation="6dp"
                     app:fabSize="normal" />
 
-
                 <!-- حقل تاريخ الانتهاء -->
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -278,7 +268,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <!-- أيقونة التقويم -->
 
                 <ImageView
@@ -292,10 +281,10 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-
-    </ScrollView>
-
+            <!-- ================================================= -->
+            <!-- نهاية الجزء العلوي -->
+            <!-- لا نغلق ScrollView أو LinearLayout الداخلي هنا -->
+            <!-- ================================================= -->
 <!-- ========================= -->
 <!-- الكميات والأسعار -->
 <!-- ========================= -->
@@ -534,8 +523,7 @@
     <!-- ========================= -->
     <!-- عمود البيع -->
     <!-- ========================= -->
-
-    <LinearLayout
+   <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -617,8 +605,7 @@
     </LinearLayout>
 
 </LinearLayout>
-    
-                                                     
+                              <!-- ========================= -->
                 <!-- الأرباح -->
                 <!-- ========================= -->
 
@@ -681,7 +668,7 @@
                     </LinearLayout>
 
                     <!-- أرباح الكرتون والإجمالي -->
-                    <LinearLayout
+                          <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -721,12 +708,13 @@
 
                     </LinearLayout>
 
-                </LinearLayout> <!-- إغلاق LinearLayout الخاص بقسم الأرباح الأفقية -->
+                </LinearLayout>
 
-            </LinearLayout> <!-- إغلاق LinearLayout الداخلي المجمع للواجهة كاملة (الذي يبدأ بعد الأسعار) -->
+            </LinearLayout>   <!-- إغلاق LinearLayout الخاص بالكميات والأسعار -->
 
-        </LinearLayout> <!-- إغلاق LinearLayout الحاوي داخل الـ ScrollView -->
+        </LinearLayout>       <!-- إغلاق LinearLayout الداخلي (الموجود داخل ScrollView) -->
 
-    </ScrollView> <!-- إغلاق ScrollView -->
+    </ScrollView>
 
-</LinearLayout> <!-- إغلاق LinearLayout الرئيسي للملف (Root) -->
+</LinearLayout>               <!-- إغلاق LinearLayout الخارجي -->
+    
