@@ -4,80 +4,129 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layoutDirection="ltr">
 
+    <!-- ========================================================= -->
     <!-- محتوى المنتج -->
+    <!-- الصورة يمين - المعلومات يسار -->
+    <!-- ========================================================= -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layoutDirection="ltr">
 
-        <!-- معلومات المنتج -->
+        <!-- ===================================================== -->
+        <!-- معلومات المنتج - يسار الصورة -->
+        <!-- ===================================================== -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingEnd="8dp">
+            android:paddingEnd="8dp"
+            android:layoutDirection="ltr">
 
+            <!-- ================================================= -->
             <!-- الصف الأول -->
+            <!-- الاسم يسار + تاريخ الانتهاء يمين -->
+            <!-- ================================================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layoutDirection="ltr">
 
-                <!-- تاريخ الانتهاء -->
-                <TextView
-                    android:id="@+id/textViewExpiryLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="تاريخ الانتهاء"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black" />
+                <!-- ============================================= -->
+                <!-- اسم المنتج -->
+                <!-- ============================================= -->
 
                 <TextView
-                    android:id="@+id/textViewExpiry"
+                    android:id="@+id/textViewName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="11/9/2026"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black" />
-
-                <!-- اسم المنتج -->
-                <TextView
-                    android:id="@+id/textViewName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="ايسكريم نانا"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:gravity="start"
+                    android:textDirection="rtl"
+                    android:layoutDirection="rtl"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:breakStrategy="simple"
+                    android:hyphenationFrequency="none" />
+
+                <!-- ============================================= -->
+                <!-- تاريخ الانتهاء -->
+                <!-- ============================================= -->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:layout_marginStart="8dp"
+                    android:layoutDirection="rtl">
+
+                    <TextView
+                        android:id="@+id/textViewExpiryLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="تاريخ الانتهاء"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="end" />
+
+                    <TextView
+                        android:id="@+id/textViewExpiry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11/9/2026"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="end" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
+
+            <!-- ================================================= -->
             <!-- الصف الثاني -->
+            <!-- المتبقي + الباركود -->
+            <!-- ================================================= -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layoutDirection="ltr">
 
                 <!-- المتبقي -->
+
                 <TextView
                     android:id="@+id/textViewRemaining"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="متبقي 5 أيام"
                     android:textSize="14sp"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textDirection="rtl"
+                    android:layoutDirection="rtl" />
 
                 <!-- الباركود -->
+
                 <TextView
                     android:id="@+id/textViewBarcode"
                     android:layout_width="0dp"
@@ -87,13 +136,18 @@
                     android:text="846046484"
                     android:textSize="13sp"
                     android:textColor="@android:color/darker_gray"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textDirection="ltr" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- صورة المنتج -->
+
+        <!-- ===================================================== -->
+        <!-- صورة المنتج - ثابتة في اليمين -->
+        <!-- ===================================================== -->
+
         <ImageView
             android:id="@+id/imageViewProduct"
             android:layout_width="80dp"
@@ -105,7 +159,10 @@
     </LinearLayout>
 
 
+    <!-- ========================================================= -->
     <!-- الخط الفاصل بين المنتجات -->
+    <!-- ========================================================= -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
