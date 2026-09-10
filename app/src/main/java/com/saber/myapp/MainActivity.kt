@@ -51,6 +51,15 @@ class MainActivity : AppCompatActivity() {
     // نص البحث الحالي
     private var currentSearchText = ""
 
+    // =========================================================
+// وضع التحديد المتعدد
+// =========================================================
+
+private var isSelectionMode = false
+
+// المنتجات المحددة
+private val selectedProducts =
+    mutableSetOf<Int>()
     // المنتج المحدد عبر الضغط المطول
     private var selectedProduct: Product? = null
 
@@ -475,7 +484,94 @@ searchField.setOnFocusChangeListener { _, hasFocus ->
     }
         
         }
+// =========================================================
+// الدخول إلى وضع التحديد المتعدد
+// =========================================================
 
+private fun enterSelectionMode(
+    searchField: EditText,
+    actionsContainer: LinearLayout,
+    searchAndActionsBar: LinearLayout,
+    searchContainer: View
+) {
+
+    if (isSelectionMode) {
+        return
+    }
+
+    isSelectionMode = true
+
+    // إلغاء التركيز من البحث
+    searchField.clearFocus()
+    searchField.isCursorVisible = false
+
+    // إخفاء لوحة المفاتيح
+    val imm =
+        getSystemService(
+            Context.INPUT_METHOD_SERVICE
+        ) as? InputMethodManager
+
+    imm?.hideSoftInputFromWindow(
+        searchField.windowToken,
+        0
+    )
+
+    // -----------------------------------------------------
+    // إلغاء أي تحديد سابق
+    // -----------------------------------------------------
+
+    selectedProducts.clear()
+
+    // -----------------------------------------------------
+    // بدء الحركة
+    // -----------------------------------------------------
+
+    TransitionManager.beginDelayedTransition(
+        searchAndActionsBar
+    )
+
+    // -----------------------------------------------------
+    // تصغير حقل البحث
+    // -----------------------------------------------------
+
+    val searchParams =
+        searchContainer.layoutParams
+
+    searchParams.width = dpToPx(52)
+
+    searchParams.height = dpToPx(52)
+
+    searchContainer.layoutParams =
+        searchParams
+
+    // -----------------------------------------------------
+    // إخفاء نص البحث
+    // -----------------------------------------------------
+
+    searchField.setText("")
+
+    searchField.visibility =
+        View.GONE
+
+    // -----------------------------------------------------
+    // تحويل حاوية الأزرار إلى أدوات التحديد
+    // -----------------------------------------------------
+
+    setupSelectionActions(
+        actionsContainer
+    )
+
+    actionsContainer.visibility =
+        View.VISIBLE
+
+    // -----------------------------------------------------
+    // إخبار ProductListHandler بالدخول في وضع التحديد
+    // -----------------------------------------------------
+
+    listHandler.setSelectionMode(
+        true
+    )
+}
     // =========================================================
     // إغلاق Balloon
     // =========================================================
