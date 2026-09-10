@@ -18,37 +18,79 @@ class ProductListHandler(
 
     fun setup(products: MutableList<Product>) {
 
-        adapter = ProductAdapter(
+        if (adapter == null) {
 
-            products,
+            adapter = ProductAdapter(
 
-            // الضغط العادي
-            { product ->
+                products,
 
-                onProductClicked(product)
-            },
+                // الضغط العادي
+                { product ->
 
-            // الضغط المطول
-            { view, product ->
+                    onProductClicked(product)
+                },
 
-                onProductLongClicked(
-                    view,
-                    product
-                )
-            }
-        )
+                // الضغط المطول
+                { view, product ->
 
-        recyclerView.layoutManager =
-            LinearLayoutManager(
-                recyclerView.context
+                    onProductLongClicked(
+                        view,
+                        product
+                    )
+                }
             )
 
-        recyclerView.adapter =
-            adapter
+            recyclerView.layoutManager =
+                LinearLayoutManager(
+                    recyclerView.context
+                )
+
+            recyclerView.adapter =
+                adapter
+
+        } else {
+
+            // تحديث البيانات بدون إنشاء Adapter جديد
+            adapter?.setProducts(
+                products
+            )
+        }
     }
 
     // =========================================================
-    // تحديث البيانات
+    // تفعيل / إيقاف وضع التحديد المتعدد
+    // =========================================================
+
+    fun setSelectionMode(
+        enabled: Boolean
+    ) {
+
+        adapter?.setSelectionMode(
+            enabled
+        )
+    }
+
+    // =========================================================
+    // إلغاء جميع التحديدات
+    // =========================================================
+
+    fun clearSelection() {
+
+        adapter?.clearSelection()
+    }
+
+    // =========================================================
+    // الحصول على المنتجات المحددة
+    // =========================================================
+
+    fun getSelectedProducts(): List<Product> {
+
+        return adapter?.getSelectedProducts()
+            ?: emptyList()
+    }
+
+    // =========================================================
+    // تحديث القائمة
     // =========================================================
 
     fun refreshData() {
