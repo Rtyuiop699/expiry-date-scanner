@@ -1132,34 +1132,97 @@ val allProducts =
     // التعامل مع زر الرجوع
     // =========================================================
 
-        override fun onBackPressed() {
+        
+// =========================================================
+// التعامل مع زر الرجوع
+// =========================================================
 
-    if (currentBalloon != null) {
-        closeProductBalloon()
+override fun onBackPressed() {
+
+    // =====================================================
+    // أولاً: إذا كان وضع التحديد فعالاً
+    // =====================================================
+
+    if (isSelectionMode) {
+
+        exitSelectionMode()
+
         return
     }
 
-    val searchField = findViewById<EditText>(R.id.searchField)
-    val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-    val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
 
-    if (searchField != null && searchField.hasFocus()) {
+    // =====================================================
+    // ثانياً: إذا كان Balloon مفتوحاً
+    // =====================================================
 
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+    if (currentBalloon != null) {
 
-        searchField.clearFocus()
-        searchField.isCursorVisible = false
+        closeProductBalloon()
 
-        if (searchAndActionsBar != null && actionsContainer != null) {
-            TransitionManager.beginDelayedTransition(searchAndActionsBar)
-            actionsContainer.visibility = View.VISIBLE
-        }
-
-    } else {
-        super.onBackPressed()
-        }
+        return
     }
 
+
+    val searchField =
+        findViewById<EditText>(
+            R.id.searchField
+        )
+
+    val actionsContainer =
+        findViewById<LinearLayout>(
+            R.id.actionsContainer
+        )
+
+    val searchAndActionsBar =
+        findViewById<LinearLayout>(
+            R.id.searchAndActionsBar
+        )
+
+
+    // =====================================================
+    // ثالثاً: البحث نشط
+    // =====================================================
+
+    if (searchField.hasFocus()) {
+
+        val imm =
+            getSystemService(
+                Context.INPUT_METHOD_SERVICE
+            ) as? InputMethodManager
+
+        imm?.hideSoftInputFromWindow(
+            searchField.windowToken,
+            0
+        )
+
+        searchField.clearFocus()
+
+        searchField.isCursorVisible =
+            false
+
+
+        TransitionManager.beginDelayedTransition(
+            searchAndActionsBar
+        )
+
+        actionsContainer.visibility =
+            View.VISIBLE
+
+        return
+    }
+private fun dpToPx(
+    dp: Int
+): Int {
+
+    return (
+        dp *
+            resources.displayMetrics.density
+        ).toInt()
 }
-        
+
+    // =====================================================
+    // رابعاً: الخروج من الشاشة
+    // =====================================================
+
+    super.onBackPressed()
+}
