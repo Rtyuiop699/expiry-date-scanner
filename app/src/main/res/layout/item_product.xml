@@ -20,7 +20,7 @@ android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/infoContainer"
-        android:layout_width="130dp"
+        android:layout_width="145dp"
         android:layout_height="80dp"
         android:layout_gravity="left|center_vertical"
         android:orientation="vertical"
@@ -102,7 +102,7 @@ android:orientation="vertical">
     <!-- 3. اسم المنتج - في المنطقة الوسطى -->
     <!-- ===================================================== -->
 
-    <TextView
+<TextView
     android:id="@+id/textViewName"
     android:layout_width="match_parent"
     android:layout_height="80dp"
@@ -116,7 +116,7 @@ android:orientation="vertical">
     android:textStyle="bold"
     android:textColor="@android:color/black"
 
-    android:gravity="center_vertical|right"
+    android:gravity="top|right"
     android:textDirection="rtl"
     android:layoutDirection="rtl"
 
@@ -126,7 +126,8 @@ android:orientation="vertical">
     android:breakStrategy="simple"
     android:hyphenationFrequency="none"
 
-    android:includeFontPadding="true" />
+    android:includeFontPadding="true"
+    android:lineSpacingExtra="2dp" />
 </FrameLayout>
 <!-- ========================================================= -->
 <!-- الخط الفاصل بين المنتجات -->
