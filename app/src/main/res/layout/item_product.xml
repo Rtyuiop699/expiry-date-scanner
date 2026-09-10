@@ -127,7 +127,7 @@ android:orientation="vertical">
     android:hyphenationFrequency="none"
 
     android:includeFontPadding="true" />
-
+</FrameLayout>
 <!-- ========================================================= -->
 <!-- الخط الفاصل بين المنتجات -->
 <!-- ========================================================= -->
