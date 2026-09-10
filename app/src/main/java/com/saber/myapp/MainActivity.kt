@@ -959,7 +959,7 @@ class MainActivity : AppCompatActivity() {
 
         val chipGroup =
             findViewById<ChipGroup>(
-                R.id.categoryChipGroup
+                R.id.chipGroupCategories
             )
 
         chipGroup.removeAllViews()
