@@ -30,7 +30,6 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 
 
-
 class MainActivity : AppCompatActivity() {
 
     // =========================================================
@@ -45,25 +44,26 @@ class MainActivity : AppCompatActivity() {
     private val productList =
         mutableListOf<Product>()
 
-    // التصنيف الحالي
     private var currentCategory = "الكل"
 
-    // نص البحث الحالي
     private var currentSearchText = ""
 
     // =========================================================
-// وضع التحديد المتعدد
-// =========================================================
+    // وضع التحديد المتعدد
+    // =========================================================
 
-private var isSelectionMode = false
+    private var isSelectionMode = false
 
-// المنتجات المحددة
-private val selectedProducts =
-    mutableSetOf<Int>()
+    // =========================================================
     // المنتج المحدد عبر الضغط المطول
+    // =========================================================
+
     private var selectedProduct: Product? = null
 
+    // =========================================================
     // Balloon الحالي
+    // =========================================================
+
     private var currentBalloon: Balloon? = null
 
 
@@ -103,7 +103,6 @@ private val selectedProducts =
             R.layout.activity_main
         )
 
-
         // =====================================================
         // قاعدة البيانات
         // =====================================================
@@ -120,44 +119,110 @@ private val selectedProducts =
             ProductListHandler(
                 findViewById(R.id.recyclerView),
 
-                // ---------------------------------------------
-                // الضغط العادي
-                // ---------------------------------------------
-
                 onProductClicked = { product ->
 
-                    Toast.makeText(
-                        this,
-                        "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (!isSelectionMode) {
+
+                        Toast.makeText(
+                            this,
+                            "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 },
 
-                // ---------------------------------------------
-                // الضغط المطول
-                // ---------------------------------------------
+                onProductLongClicked = { view, product ->
 
-                onProductLongClicked = {
-                        view,
-                        product ->
+                    if (!isSelectionMode) {
 
-                    showProductBalloon(
-                        view,
-                        product
-                    )
+                        showProductBalloon(
+                            view,
+                            product
+                        )
+                    }
                 }
             )
-          val searchField = findViewById<EditText>(R.id.searchField)
-val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
 
-searchField.setOnFocusChangeListener { _, hasFocus ->
-    if (hasFocus) {
-        androidx.transition.TransitionManager.beginDelayedTransition(searchAndActionsBar)
-        actionsContainer.visibility = View.GONE
-        searchField.isCursorVisible = true
-    }
-}
+
+        // =====================================================
+        // عناصر البحث والأزرار
+        // =====================================================
+
+        val searchField =
+            findViewById<EditText>(
+                R.id.searchField
+            )
+
+        val actionsContainer =
+            findViewById<LinearLayout>(
+                R.id.actionsContainer
+            )
+
+        val searchAndActionsBar =
+            findViewById<LinearLayout>(
+                R.id.searchAndActionsBar
+            )
+
+        val searchContainer =
+            findViewById<View>(
+                R.id.searchContainer
+            )
+
+        val btnMultiSelect =
+            findViewById<ImageView>(
+                R.id.btnMultiSelect
+            )
+
+
+        // =====================================================
+        // زر التحديد المتعدد
+        // =====================================================
+
+        btnMultiSelect?.setOnClickListener {
+
+            enterSelectionMode(
+                searchField,
+                actionsContainer,
+                searchAndActionsBar,
+                searchContainer
+            )
+        }
+
+
+        // =====================================================
+        // الضغط على البحث
+        // =====================================================
+
+        searchField.setOnFocusChangeListener { _, hasFocus ->
+
+            if (hasFocus && !isSelectionMode) {
+
+                TransitionManager.beginDelayedTransition(
+                    searchAndActionsBar
+                )
+
+                actionsContainer.visibility =
+                    View.GONE
+
+                searchField.visibility =
+                    View.VISIBLE
+
+                searchField.isCursorVisible =
+                    true
+
+                searchField.requestFocus()
+
+                val imm =
+                    getSystemService(
+                        Context.INPUT_METHOD_SERVICE
+                    ) as? InputMethodManager
+
+                imm?.showSoftInput(
+                    searchField,
+                    InputMethodManager.SHOW_IMPLICIT
+                )
+            }
+        }
 
 
         // =====================================================
@@ -246,424 +311,763 @@ searchField.setOnFocusChangeListener { _, hasFocus ->
     // إظهار Balloon عند الضغط المطول
     // =========================================================
 
-    // تحديد هل تظهر القائمة فوق أم تحت المنتج
-        // -----------------------------------------------------
-
-        private fun showProductBalloon(
-    anchorView: View,
-    product: Product
-) {
-
-    // -----------------------------------------------------
-    // إغلاق Balloon السابق
-    // -----------------------------------------------------
-
-    currentBalloon?.dismiss()
-    currentBalloon = null
-
-    selectedProduct = product
-
-
-    // -----------------------------------------------------
-    // تحديد مكان المنتج على الشاشة
-    // -----------------------------------------------------
-
-    val location = IntArray(2)
-
-    anchorView.getLocationOnScreen(location)
-
-    val anchorTop = location[1]
-
-    val anchorBottom =
-        anchorTop + anchorView.height
-
-    val screenHeight =
-        resources.displayMetrics.heightPixels
-
-
-    // -----------------------------------------------------
-    // المساحة فوق وتحت المنتج
-    // -----------------------------------------------------
-
-    val spaceAbove = anchorTop
-
-    val spaceBelow =
-        screenHeight - anchorBottom
-
-
-    // إذا كانت المساحة أسفل المنتج أكبر
-    // تظهر القائمة أسفله
-    val showBelow =
-        spaceBelow >= spaceAbove
-
-
-    // -----------------------------------------------------
-    // اتجاه السهم
-    // -----------------------------------------------------
-
-    val arrowOrientation =
-        if (showBelow) {
-
-            ArrowOrientation.TOP
-
-        } else {
-
-            ArrowOrientation.BOTTOM
-        }
-
-
-    // -----------------------------------------------------
-    // إنشاء Balloon
-    // -----------------------------------------------------
-
-    val balloon =
-        Balloon.Builder(this)
-
-            .setLayout(
-                R.layout.layout_popup_menu
-            )
-
-            .setArrowSize(10)
-
-            .setArrowOrientation(
-                arrowOrientation
-            )
-
-            .setArrowPositionRules(
-                ArrowPositionRules.ALIGN_ANCHOR
-            )
-
-            .setCornerRadius(16f)
-
-            .setBackgroundColor(
-    Color.parseColor("#F1F3F4")
-)
-            
-            
-
-            .setElevation(8)
-
-            .setDismissWhenClicked(false)
-
-            .setDismissWhenTouchOutside(true)
-
-            .setBalloonAnimation(
-                BalloonAnimation.FADE
-            )
-
-            .build()
-
-
-    currentBalloon = balloon
-
-
-    // -----------------------------------------------------
-    // محتوى Balloon
-    // -----------------------------------------------------
-
-    val menuView =
-        balloon.getContentView()
-
-
-    // =====================================================
-    // زر التعديل
-    // =====================================================
-
-    menuView
-        .findViewById<android.widget.ImageButton>(
-            R.id.btnActionEdit
-        )
-        ?.setOnClickListener {
-
-            selectedProduct?.let { selected ->
-
-                val intent =
-                    Intent(
-                        this,
-                        AddProductActivity::class.java
-                    ).apply {
-
-                        putExtra(
-                            "BARCODE_EXTRA",
-                            selected.barcode
-                        )
-                    }
-
-                addProductLauncher.launch(intent)
-            }
-
-            closeProductBalloon()
-        }
-
-
-    // =====================================================
-    // زر PDF
-    // =====================================================
-
-    menuView
-        .findViewById<android.widget.ImageButton>(
-            R.id.btnActionPdf
-        )
-        ?.setOnClickListener {
-
-            selectedProduct?.let { selected ->
-
-                Toast.makeText(
-                    this,
-                    "تصدير PDF للمنتج: ${selected.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            closeProductBalloon()
-        }
-
-
-    // =====================================================
-    // زر الطباعة
-    // =====================================================
-
-    menuView
-        .findViewById<android.widget.ImageButton>(
-            R.id.btnActionPrint
-        )
-        ?.setOnClickListener {
-
-            selectedProduct?.let { selected ->
-
-                Toast.makeText(
-                    this,
-                    "طباعة: ${selected.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            closeProductBalloon()
-        }
-
-
-    // =====================================================
-    // زر الحذف
-    // =====================================================
-
-    menuView
-        .findViewById<android.widget.ImageButton>(
-            R.id.btnActionDelete
-        )
-        ?.setOnClickListener {
-
-            val selected =
-                selectedProduct
-
-            closeProductBalloon()
-
-            if (selected != null) {
-
-                showDeleteConfirmationDialog(
-                    selected
-                )
-            }
-        }
-
-
-    // -----------------------------------------------------
-    // إظهار Balloon
-    // -----------------------------------------------------
-
-    if (showBelow) {
-
-        balloon.showAlignBottom(
-            anchorView
-        )
-
-    } else {
-
-        balloon.showAlignTop(
-            anchorView
-        )
-    }
-        
-        }
-// =========================================================
-// الدخول إلى وضع التحديد المتعدد
-// =========================================================
-
-private fun enterSelectionMode(
-    searchField: EditText,
-    actionsContainer: LinearLayout,
-    searchAndActionsBar: LinearLayout,
-    searchContainer: View
-) {
-
-    if (isSelectionMode) {
-        return
-    }
-
-    isSelectionMode = true
-
-    // إلغاء التركيز من البحث
-    searchField.clearFocus()
-    searchField.isCursorVisible = false
-
-    // إخفاء لوحة المفاتيح
-    val imm =
-        getSystemService(
-            Context.INPUT_METHOD_SERVICE
-        ) as? InputMethodManager
-
-    imm?.hideSoftInputFromWindow(
-        searchField.windowToken,
-        0
-    )
-
-    // -----------------------------------------------------
-    // إلغاء أي تحديد سابق
-    // -----------------------------------------------------
-
-    selectedProducts.clear()
-
-    // -----------------------------------------------------
-    // بدء الحركة
-    // -----------------------------------------------------
-
-    TransitionManager.beginDelayedTransition(
-        searchAndActionsBar
-    )
-
-    // -----------------------------------------------------
-    // تصغير حقل البحث
-    // -----------------------------------------------------
-
-    val searchParams =
-        searchContainer.layoutParams
-
-    searchParams.width = dpToPx(52)
-
-    searchParams.height = dpToPx(52)
-
-    searchContainer.layoutParams =
-        searchParams
-
-    // -----------------------------------------------------
-    // إخفاء نص البحث
-    // -----------------------------------------------------
-
-    searchField.setText("")
-
-    searchField.visibility =
-        View.GONE
-
-    // -----------------------------------------------------
-    // تحويل حاوية الأزرار إلى أدوات التحديد
-    // -----------------------------------------------------
-
-    setupSelectionActions(
-        actionsContainer
-    )
-
-    actionsContainer.visibility =
-        View.VISIBLE
-
-    // -----------------------------------------------------
-    // إخبار ProductListHandler بالدخول في وضع التحديد
-    // -----------------------------------------------------
-
-    listHandler.setSelectionMode(
-        true
-    )
-}
-private fun updateSelectedCount() {
-
-    val container =
-        findViewById<LinearLayout>(
-            R.id.actionsContainer
-        )
-
-    val counter =
-        container.tag as? TextView
-            ?: return
-
-    counter.text =
-        if (selectedProducts.isEmpty()) {
-            ""
-        } else {
-            selectedProducts.size.toString()
-        }
-}
-    // =========================================================
-    // إغلاق Balloon
-    // =========================================================
-
-    private fun closeProductBalloon() {
+    private fun showProductBalloon(
+        anchorView: View,
+        product: Product
+    ) {
 
         currentBalloon?.dismiss()
-
         currentBalloon = null
 
-        selectedProduct = null
-    }
-       
+        selectedProduct = product
 
-    // =========================================================
-// نافذة تأكيد حذف المنتج
-// =========================================================
-// =========================================================
-// نافذة تأكيد حذف المنتج
-// =========================================================
+        val location =
+            IntArray(2)
 
-private fun showDeleteConfirmationDialog(product: Product) {
-
-    AlertDialog.Builder(this)
-        .setTitle("حذف المنتج")
-        .setMessage(
-            "هل أنت متأكد من رغبتك في حذف ${product.name}؟"
+        anchorView.getLocationOnScreen(
+            location
         )
-        .setPositiveButton("حذف") { _, _ ->
 
-            // حذف المنتج فعلياً من قاعدة البيانات
-            val deletedRows =
-                databaseHelper.deleteProduct(product.barcode)
+        val anchorTop =
+            location[1]
 
-            if (deletedRows > 0) {
+        val anchorBottom =
+            anchorTop + anchorView.height
 
-                // تحديث قائمة المنتجات
-                loadProductsFromDatabase()
+        val screenHeight =
+            resources.displayMetrics.heightPixels
 
-                // إلغاء تحديد المنتج
-                selectedProduct = null
+        val spaceAbove =
+            anchorTop
 
-                Toast.makeText(
-                    this,
-                    "تم حذف المنتج بنجاح",
-                    Toast.LENGTH_SHORT
-                ).show()
+        val spaceBelow =
+            screenHeight - anchorBottom
+
+        val showBelow =
+            spaceBelow >= spaceAbove
+
+        val arrowOrientation =
+            if (showBelow) {
+
+                ArrowOrientation.TOP
 
             } else {
 
+                ArrowOrientation.BOTTOM
+            }
+
+
+        val balloon =
+            Balloon.Builder(this)
+
+                .setLayout(
+                    R.layout.layout_popup_menu
+                )
+
+                .setArrowSize(10)
+
+                .setArrowOrientation(
+                    arrowOrientation
+                )
+
+                .setArrowPositionRules(
+                    ArrowPositionRules.ALIGN_ANCHOR
+                )
+
+                .setCornerRadius(16f)
+
+                .setBackgroundColor(
+                    Color.parseColor("#F1F3F4")
+                )
+
+                .setElevation(8)
+
+                .setDismissWhenClicked(false)
+
+                .setDismissWhenTouchOutside(true)
+
+                .setBalloonAnimation(
+                    BalloonAnimation.FADE
+                )
+
+                .build()
+
+
+        currentBalloon =
+            balloon
+
+        val menuView =
+            balloon.getContentView()
+
+
+        // =====================================================
+        // زر التعديل
+        // =====================================================
+
+        menuView
+            .findViewById<android.widget.ImageButton>(
+                R.id.btnActionEdit
+            )
+            ?.setOnClickListener {
+
+                selectedProduct?.let { selected ->
+
+                    val intent =
+                        Intent(
+                            this,
+                            AddProductActivity::class.java
+                        ).apply {
+
+                            putExtra(
+                                "BARCODE_EXTRA",
+                                selected.barcode
+                            )
+                        }
+
+                    addProductLauncher.launch(intent)
+                }
+
+                closeProductBalloon()
+            }
+
+
+        // =====================================================
+        // زر PDF
+        // =====================================================
+
+        menuView
+            .findViewById<android.widget.ImageButton>(
+                R.id.btnActionPdf
+            )
+            ?.setOnClickListener {
+
+                selectedProduct?.let { selected ->
+
+                    Toast.makeText(
+                        this,
+                        "تصدير PDF للمنتج: ${selected.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                closeProductBalloon()
+            }
+
+
+        // =====================================================
+        // زر الطباعة
+        // =====================================================
+
+        menuView
+            .findViewById<android.widget.ImageButton>(
+                R.id.btnActionPrint
+            )
+            ?.setOnClickListener {
+
+                selectedProduct?.let { selected ->
+
+                    Toast.makeText(
+                        this,
+                        "طباعة: ${selected.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                closeProductBalloon()
+            }
+
+
+        // =====================================================
+        // زر الحذف
+        // =====================================================
+
+        menuView
+            .findViewById<android.widget.ImageButton>(
+                R.id.btnActionDelete
+            )
+            ?.setOnClickListener {
+
+                val selected =
+                    selectedProduct
+
+                closeProductBalloon()
+
+                if (selected != null) {
+
+                    showDeleteConfirmationDialog(
+                        selected
+                    )
+                }
+            }
+
+
+        // =====================================================
+        // إظهار Balloon
+        // =====================================================
+
+        if (showBelow) {
+
+            balloon.showAlignBottom(
+                anchorView
+            )
+
+        } else {
+
+            balloon.showAlignTop(
+                anchorView
+            )
+        }
+    }
+
+
+    // =========================================================
+    // الدخول إلى وضع التحديد المتعدد
+    // =========================================================
+
+    private fun enterSelectionMode(
+        searchField: EditText,
+        actionsContainer: LinearLayout,
+        searchAndActionsBar: LinearLayout,
+        searchContainer: View
+    ) {
+
+        if (isSelectionMode) {
+            return
+        }
+
+        isSelectionMode = true
+
+        searchField.clearFocus()
+
+        searchField.isCursorVisible =
+            false
+
+        val imm =
+            getSystemService(
+                Context.INPUT_METHOD_SERVICE
+            ) as? InputMethodManager
+
+        imm?.hideSoftInputFromWindow(
+            searchField.windowToken,
+            0
+        )
+
+        closeProductBalloon()
+
+        TransitionManager.beginDelayedTransition(
+            searchAndActionsBar
+        )
+
+        searchContainer.layoutParams =
+            searchContainer.layoutParams.apply {
+
+                width =
+                    dpToPx(52)
+
+                height =
+                    dpToPx(52)
+
+                if (this is LinearLayout.LayoutParams) {
+
+                    weight = 0f
+                }
+            }
+
+        searchField.setText("")
+
+        searchField.visibility =
+            View.GONE
+
+        setupSelectionActions(
+            actionsContainer
+        )
+
+        actionsContainer.visibility =
+            View.VISIBLE
+
+        listHandler.setSelectionMode(
+            true
+        )
+    }
+
+
+    // =========================================================
+    // إعداد أزرار وضع التحديد
+    // =========================================================
+
+    private fun setupSelectionActions(
+        actionsContainer: LinearLayout
+    ) {
+                // =====================================================
+        // زر الحذف
+        // =====================================================
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnDeleteSelected
+            )
+            ?.setOnClickListener {
+
+                deleteSelectedProducts()
+            }
+
+
+        // =====================================================
+        // زر الطباعة
+        // =====================================================
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPrintSelected
+            )
+            ?.setOnClickListener {
+
+                printSelectedProducts()
+            }
+
+
+        // =====================================================
+        // زر PDF
+        // =====================================================
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPdfSelected
+            )
+            ?.setOnClickListener {
+
+                exportSelectedProductsToPdf()
+            }
+
+
+        // =====================================================
+        // إظهار الأزرار
+        // =====================================================
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnDeleteSelected
+            )
+            ?.visibility = View.VISIBLE
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPrintSelected
+            )
+            ?.visibility = View.VISIBLE
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPdfSelected
+            )
+            ?.visibility = View.VISIBLE
+    }
+
+
+    // =========================================================
+    // الخروج من وضع التحديد المتعدد
+    // =========================================================
+
+    private fun exitSelectionMode() {
+
+        if (!isSelectionMode) {
+            return
+        }
+
+        isSelectionMode = false
+
+        listHandler.clearSelection()
+
+        listHandler.setSelectionMode(
+            false
+        )
+
+        val searchField =
+            findViewById<EditText>(
+                R.id.searchField
+            )
+
+        val actionsContainer =
+            findViewById<LinearLayout>(
+                R.id.actionsContainer
+            )
+
+        val searchAndActionsBar =
+            findViewById<LinearLayout>(
+                R.id.searchAndActionsBar
+            )
+
+        val searchContainer =
+            findViewById<View>(
+                R.id.searchContainer
+            )
+
+        val btnMultiSelect =
+            findViewById<ImageView>(
+                R.id.btnMultiSelect
+            )
+
+
+        searchField.clearFocus()
+
+        searchField.isCursorVisible =
+            true
+
+
+        val imm =
+            getSystemService(
+                Context.INPUT_METHOD_SERVICE
+            ) as? InputMethodManager
+
+        imm?.hideSoftInputFromWindow(
+            searchField.windowToken,
+            0
+        )
+
+
+        TransitionManager.beginDelayedTransition(
+            searchAndActionsBar
+        )
+
+
+        // =====================================================
+        // إعادة البحث إلى الحجم الطبيعي
+        // =====================================================
+
+        searchContainer.layoutParams =
+            searchContainer.layoutParams.apply {
+
+                width = 0
+                height = dpToPx(52)
+
+                if (this is LinearLayout.LayoutParams) {
+                    weight = 1f
+                }
+            }
+
+
+        searchField.visibility =
+            View.VISIBLE
+
+
+        // =====================================================
+        // إخفاء أزرار العمليات
+        // =====================================================
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnDeleteSelected
+            )
+            ?.visibility = View.GONE
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPrintSelected
+            )
+            ?.visibility = View.GONE
+
+        actionsContainer
+            .findViewById<ImageView>(
+                R.id.btnPdfSelected
+            )
+            ?.visibility = View.GONE
+
+
+        // =====================================================
+        // إظهار زر التحديد
+        // =====================================================
+
+        btnMultiSelect.visibility =
+            View.VISIBLE
+
+        actionsContainer.visibility =
+            View.VISIBLE
+    }
+
+
+    // =========================================================
+    // حذف المنتجات المحددة
+    // =========================================================
+
+    private fun deleteSelectedProducts() {
+
+        val selectedProducts =
+            listHandler.getSelectedProducts()
+
+        if (selectedProducts.isEmpty()) {
+
+            Toast.makeText(
+                this,
+                "لم يتم تحديد أي منتج",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+
+        AlertDialog.Builder(this)
+
+            .setTitle("حذف المنتجات")
+
+            .setMessage(
+                "هل تريد حذف ${selectedProducts.size} منتج؟"
+            )
+
+            .setNegativeButton(
+                "إلغاء",
+                null
+            )
+
+            .setPositiveButton(
+                "حذف"
+            ) { _, _ ->
+
+                for (product in selectedProducts) {
+
+                    databaseHelper.deleteProduct(
+                        product.barcode
+                    )
+                }
+
+                exitSelectionMode()
+
+                loadProductsFromDatabase()
+
                 Toast.makeText(
                     this,
-                    "تعذر حذف المنتج",
+                    "تم حذف المنتجات المحددة",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }
-        .setNegativeButton("إلغاء") { dialog, _ ->
-            dialog.dismiss()
-        }
-        .show()
-}
-  
+
+            .show()
+    }
+
+
     // =========================================================
-    // onResume
+    // طباعة المنتجات المحددة
     // =========================================================
 
-    override fun onResume() {
+    private fun printSelectedProducts() {
 
-        super.onResume()
+        val selectedProducts =
+            listHandler.getSelectedProducts()
 
-        setupChips()
+        if (selectedProducts.isEmpty()) {
 
-        loadProductsFromDatabase()
+            Toast.makeText(
+                this,
+                "لم يتم تحديد أي منتج",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+
+        Toast.makeText(
+            this,
+            "طباعة ${selectedProducts.size} منتج",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+
+    // =========================================================
+    // تصدير المنتجات المحددة إلى PDF
+    // =========================================================
+
+    private fun exportSelectedProductsToPdf() {
+
+        val selectedProducts =
+            listHandler.getSelectedProducts()
+
+        if (selectedProducts.isEmpty()) {
+
+            Toast.makeText(
+                this,
+                "لم يتم تحديد أي منتج",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+
+        Toast.makeText(
+            this,
+            "تصدير ${selectedProducts.size} منتج إلى PDF",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+        // =========================================================
+    // التعامل مع نتيجة الباركود
+    // =========================================================
+
+    private fun handleBarcodeResult(
+        barcode: String
+    ) {
+
+        if (barcode.isBlank()) {
+            return
+        }
+
+        val intent =
+            Intent(
+                this,
+                AddProductActivity::class.java
+            ).apply {
+
+                putExtra(
+                    "BARCODE_EXTRA",
+                    barcode
+                )
+            }
+
+        addProductLauncher.launch(
+            intent
+        )
+    }
+
+
+    // =========================================================
+    // إعداد شريط الأدوات
+    // =========================================================
+
+    private fun setupToolbar() {
+
+        findViewById<ImageView>(
+            R.id.btnSettings
+        )?.setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    SettingsActivity::class.java
+                )
+            )
+        }
+    }
+
+
+    // =========================================================
+    // إعداد التصنيفات
+    // =========================================================
+
+    private fun setupChips() {
+
+        val chipGroup =
+            findViewById<ChipGroup>(
+                R.id.categoryChipGroup
+            )
+
+        chipGroup.removeAllViews()
+
+        val categories =
+            databaseHelper.getAllCategories()
+
+        addCategoryChip(
+            chipGroup,
+            "الكل"
+        )
+
+        for (category in categories) {
+
+            if (
+                category.isNotBlank() &&
+                category != "الكل"
+            ) {
+
+                addCategoryChip(
+                    chipGroup,
+                    category
+                )
+            }
+        }
+    }
+
+
+    // =========================================================
+    // إضافة Chip للتصنيف
+    // =========================================================
+
+    private fun addCategoryChip(
+        chipGroup: ChipGroup,
+        category: String
+    ) {
+
+        val chip =
+            Chip(this).apply {
+
+                text = category
+
+                isCheckable = true
+
+                isChecked =
+                    category == currentCategory
+
+                setTextColor(
+                    Color.BLACK
+                )
+
+                chipBackgroundColor =
+                    ColorStateList.valueOf(
+                        Color.parseColor(
+                            if (isChecked) {
+                                "#E8F5E9"
+                            } else {
+                                "#F1F3F4"
+                            }
+                        )
+                    )
+
+                setOnClickListener {
+
+                    currentCategory =
+                        category
+
+                    updateCategoryChipColors(
+                        chipGroup
+                    )
+
+                    applyFilters()
+                }
+            }
+
+        chipGroup.addView(
+            chip
+        )
+    }
+
+
+    // =========================================================
+    // تحديث ألوان التصنيفات
+    // =========================================================
+
+    private fun updateCategoryChipColors(
+        chipGroup: ChipGroup
+    ) {
+
+        for (i in 0 until chipGroup.childCount) {
+
+            val child =
+                chipGroup.getChildAt(i)
+
+            if (child is Chip) {
+
+                child.chipBackgroundColor =
+                    ColorStateList.valueOf(
+                        Color.parseColor(
+                            if (child.isChecked) {
+                                "#E8F5E9"
+                            } else {
+                                "#F1F3F4"
+                            }
+                        )
+                    )
+            }
+        }
     }
 
 
@@ -678,7 +1082,6 @@ private fun showDeleteConfirmationDialog(product: Product) {
                 R.id.searchField
             )
 
-
         searchField.addTextChangedListener(
             object : TextWatcher {
 
@@ -689,7 +1092,6 @@ private fun showDeleteConfirmationDialog(product: Product) {
                     after: Int
                 ) {
                 }
-
 
                 override fun onTextChanged(
                     s: CharSequence?,
@@ -706,7 +1108,6 @@ private fun showDeleteConfirmationDialog(product: Product) {
                     applyFilters()
                 }
 
-
                 override fun afterTextChanged(
                     s: Editable?
                 ) {
@@ -717,150 +1118,43 @@ private fun showDeleteConfirmationDialog(product: Product) {
 
 
     // =========================================================
-    // إعداد الشريط العلوي
+    // تطبيق البحث والتصنيف
     // =========================================================
 
-    private fun setupToolbar() {
+    private fun applyFilters() {
 
-        // -----------------------------------------------------
-        // المساعدة
-        // -----------------------------------------------------
+        val searchText =
+            currentSearchText
+                .lowercase()
+                .trim()
 
-        findViewById<ImageView>(
-            R.id.btnHelp
-        )?.setOnClickListener {
+        val filtered =
+            productList.filter { product ->
 
-            showHelpDialog()
-        }
+                val matchesCategory =
+                    currentCategory == "الكل" ||
+                    product.category == currentCategory
 
+                val matchesSearch =
+                    searchText.isEmpty() ||
+                    product.name
+                        .lowercase()
+                        .contains(searchText) ||
+                    product.barcode
+                        .lowercase()
+                        .contains(searchText)
 
-        // -----------------------------------------------------
-        // الإعدادات
-        // -----------------------------------------------------
-
-        findViewById<ImageView>(
-            R.id.btnSettings
-        )?.setOnClickListener { anchorView ->
-
-            showSettingsMenu(
-                anchorView
-            )
-        }
-
-
-        // -----------------------------------------------------
-        // PDF
-        // -----------------------------------------------------
-
-        findViewById<ImageView>(
-            R.id.btnPdf
-        )?.setOnClickListener {
-
-            Toast.makeText(
-                this,
-                "PDF",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-
-    // =========================================================
-    // نافذة المساعدة
-    // =========================================================
-
-    private fun showHelpDialog() {
-
-        val dialogView =
-            layoutInflater.inflate(
-                R.layout.dialoghelp,
-                null
-            )
-
-
-        val builder =
-            AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setCancelable(true)
-
-
-        val dialog =
-            builder.create()
-
-
-        dialogView
-            .findViewById<android.widget.Button>(
-                R.id.btnCloseHelp
-            )
-            ?.setOnClickListener {
-
-                dialog.dismiss()
+                matchesCategory &&
+                        matchesSearch
             }
 
+        listHandler.setup(
+            filtered.toMutableList()
+        )
 
-        dialog.show()
-    }
-
-
-    // =========================================================
-    // الإعدادات
-    // =========================================================
-
-    private fun showSettingsMenu(
-        anchor: View
-    ) {
-
-        val intent =
-            Intent(
-                this,
-                SettingsActivity::class.java
-            )
-
-        startActivity(intent)
-    }
-
-
-    // =========================================================
-    // التعامل مع نتيجة الباركود
-    // =========================================================
-
-    private fun handleBarcodeResult(
-        barcode: String
-    ) {
-
-        val existingProduct =
-            databaseHelper.getProductByBarcode(
-                barcode
-            )
-
-
-        if (existingProduct != null) {
-
-            Toast.makeText(
-                this,
-                "⚠️ المنتج موجود مسبقاً: ${existingProduct.name}",
-                Toast.LENGTH_SHORT
-            ).show()
-
-        } else {
-
-            val intent =
-                Intent(
-                    this,
-                    AddProductActivity::class.java
-                )
-
-
-            intent.putExtra(
-                "BARCODE_EXTRA",
-                barcode
-            )
-
-
-            addProductLauncher.launch(
-                intent
-            )
-        }
+        listHandler.setSelectionMode(
+            isSelectionMode
+        )
     }
 
 
@@ -876,455 +1170,162 @@ private fun showDeleteConfirmationDialog(product: Product) {
             databaseHelper.getAllProducts()
         )
 
+        setupChips()
+
         applyFilters()
     }
 
 
     // =========================================================
-    // إعداد التصنيفات
+    // إغلاق Balloon
     // =========================================================
 
-    private fun setupChips() {
+    private fun closeProductBalloon() {
 
-        val chipGroup =
-            findViewById<ChipGroup>(
-                R.id.chipGroupCategories
-            )
-                ?: return
+        currentBalloon?.dismiss()
 
+        currentBalloon = null
 
-        chipGroup.removeAllViews()
+        selectedProduct = null
+    }
 
 
-        // -----------------------------------------------------
-        // إنشاء قائمة التصنيفات
-        // -----------------------------------------------------
+    // =========================================================
+    // تحويل dp إلى px
+    // =========================================================
 
-        val categories =
-            mutableListOf<String>()
+    private fun dpToPx(
+        dp: Int
+    ): Int {
 
+        return (
+            dp *
+                resources.displayMetrics.density
+            ).toInt()
+    }
+        // =========================================================
+    // نافذة تأكيد حذف منتج واحد
+    // =========================================================
 
-        categories.add(
-            "الكل"
-        )
+    private fun showDeleteConfirmationDialog(
+        product: Product
+    ) {
 
+        AlertDialog.Builder(this)
 
-        categories.addAll(
-            databaseHelper.getAllCategories()
-        )
+            .setTitle("حذف المنتج")
 
-
-        // -----------------------------------------------------
-        // إنشاء Chips
-        // -----------------------------------------------------
-
-        categories.forEach { category ->
-
-            val chip =
-                Chip(this)
-
-
-            chip.text =
-                category
-
-
-            chip.isCheckable =
-                true
-
-
-            chip.textSize =
-                14f
-
-
-            chip.setTextColor(
-                Color.BLACK
+            .setMessage(
+                "هل تريد حذف المنتج:\n\n${product.name}؟"
             )
 
+            .setNegativeButton(
+                "إلغاء",
+                null
+            )
 
-            chip.chipBackgroundColor =
-                ColorStateList.valueOf(
-                    Color.TRANSPARENT
+            .setPositiveButton(
+                "حذف"
+            ) { _, _ ->
+
+                databaseHelper.deleteProduct(
+                    product.barcode
                 )
 
+                loadProductsFromDatabase()
 
-            chip.chipStrokeWidth =
-                1.5f
-
-
-            chip.chipStrokeColor =
-                ColorStateList.valueOf(
-                    Color.parseColor(
-                        "#CCCCCC"
-                    )
-                )
-
-
-            chip.setChipCornerRadius(
-                50f
-            )
-
-
-            chip.setPadding(
-                16,
-                8,
-                16,
-                8
-            )
-
-
-            // -------------------------------------------------
-            // عند تحديد التصنيف
-            // -------------------------------------------------
-
-            chip.setOnCheckedChangeListener {
-                    _,
-                    isChecked ->
-
-                if (isChecked) {
-
-                    currentCategory =
-                        category
-
-
-                    chip.chipBackgroundColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-
-                    chip.chipStrokeColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#025144"
-                            )
-                        )
-
-
-                    chip.setTextColor(
-                        Color.WHITE
-                    )
-
-
-                    applyFilters()
-
-                } else {
-
-                    chip.chipBackgroundColor =
-                        ColorStateList.valueOf(
-                            Color.TRANSPARENT
-                        )
-
-
-                    chip.chipStrokeColor =
-                        ColorStateList.valueOf(
-                            Color.parseColor(
-                                "#CCCCCC"
-                            )
-                        )
-
-
-                    chip.setTextColor(
-                        Color.BLACK
-                    )
-                }
+                Toast.makeText(
+                    this,
+                    "تم حذف المنتج",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
-
-            chipGroup.addView(
-                chip
-            )
-        }
-
-
-        // -----------------------------------------------------
-        // إعادة تحديد التصنيف الحالي
-        // -----------------------------------------------------
-
-        if (chipGroup.childCount > 0) {
-
-            val selectedIndex =
-                categories.indexOf(
-                    currentCategory
-                )
-
-
-            val index =
-                if (selectedIndex >= 0) {
-
-                    selectedIndex
-
-                } else {
-
-                    0
-                }
-
-
-            val selectedChip =
-                chipGroup.getChildAt(
-                    index
-                ) as Chip
-
-
-            selectedChip.isChecked =
-                true
-        }
-    }
-private fun dpToPx(
-    dp: Int
-): Int {
-
-    return (
-        dp *
-            resources.displayMetrics.density
-        ).toInt()
-}
-// =========================================================
-// الخروج من وضع التحديد
-// =========================================================
-
-private fun exitSelectionMode() {
-
-    val searchField =
-        findViewById<EditText>(
-            R.id.searchField
-        )
-
-    val actionsContainer =
-        findViewById<LinearLayout>(
-            R.id.actionsContainer
-        )
-
-    val searchAndActionsBar =
-        findViewById<LinearLayout>(
-            R.id.searchAndActionsBar
-        )
-
-    val searchContainer =
-        findViewById<View>(
-            R.id.searchContainer
-        )
-
-
-    // -----------------------------------------------------
-    // إلغاء وضع التحديد
-    // -----------------------------------------------------
-
-    isSelectionMode =
-        false
-
-
-    // -----------------------------------------------------
-    // مسح المنتجات المحددة
-    // -----------------------------------------------------
-
-    selectedProducts.clear()
-
-
-    // -----------------------------------------------------
-    // إخبار الـAdapter
-    // -----------------------------------------------------
-
-    listHandler.setSelectionMode(
-        false
-    )
-
-
-    // -----------------------------------------------------
-    // بدء الحركة
-    // -----------------------------------------------------
-
-    TransitionManager.beginDelayedTransition(
-        searchAndActionsBar
-    )
-
-
-    // -----------------------------------------------------
-    // إعادة حقل البحث
-    // -----------------------------------------------------
-
-    searchContainer.layoutParams =
-        searchContainer.layoutParams.apply {
-
-            width = 0
-            height = dpToPx(52)
-        }
-
-
-    searchField.visibility =
-        View.VISIBLE
-
-    searchField.isCursorVisible =
-        false
-
-
-    // -----------------------------------------------------
-    // إعادة زر التحديد الأصلي
-    // -----------------------------------------------------
-
-    actionsContainer.removeAllViews()
-
-    actionsContainer.addView(
-        findViewById<ImageView>(
-            R.id.btnMultiSelect
-        )
-    )
-
-
-    actionsContainer.visibility =
-        View.VISIBLE
-}
-    // =========================================================
-    // تطبيق البحث + التصنيف
-    // =========================================================
-
-    private fun applyFilters() {
-
-val allProducts =  
-        databaseHelper.getAllProducts()  
-
-
-    val search =  
-        currentSearchText  
-            .trim()  
-            .lowercase()  
-
-
-    val filteredList =  
-        allProducts.filter { product ->  
-
-            // ---------------------------------------------  
-            // مطابقة التصنيف  
-            // ---------------------------------------------  
-
-            val matchesCategory =  
-                currentCategory == "الكل" ||  
-                product.category ==  
-                currentCategory  
-
-
-            // ---------------------------------------------  
-            // مطابقة البحث  
-            // ---------------------------------------------  
-
-            val matchesSearch =  
-                search.isEmpty() ||  
-
-                product.name  
-                    .lowercase()  
-                    .contains(search) ||  
-
-                product.barcode  
-                    .lowercase()  
-                    .contains(search)  
-
-
-            matchesCategory &&  
-            matchesSearch  
-        }  
-
-
-    listHandler.setup(  
-        filteredList.toMutableList()  
-    )  
+            .show()
     }
 
-        // =========================================================
+
+    // =========================================================
     // التعامل مع زر الرجوع
     // =========================================================
 
-        
-// =========================================================
-// التعامل مع زر الرجوع
-// =========================================================
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
 
-override fun onBackPressed() {
+        // =====================================================
+        // إذا كان وضع التحديد المتعدد فعالاً
+        // =====================================================
 
-    // =====================================================
-    // أولاً: إذا كان وضع التحديد فعالاً
-    // =====================================================
+        if (isSelectionMode) {
 
-    if (isSelectionMode) {
+            exitSelectionMode()
 
-        exitSelectionMode()
+            return
+        }
 
-        return
+
+        // =====================================================
+        // إذا كان البحث نشطاً
+        // =====================================================
+
+        val searchField =
+            findViewById<EditText>(
+                R.id.searchField
+            )
+
+        if (searchField.hasFocus()) {
+
+            searchField.clearFocus()
+
+            searchField.isCursorVisible =
+                false
+
+            val imm =
+                getSystemService(
+                    Context.INPUT_METHOD_SERVICE
+                ) as? InputMethodManager
+
+            imm?.hideSoftInputFromWindow(
+                searchField.windowToken,
+                0
+            )
+
+            val actionsContainer =
+                findViewById<LinearLayout>(
+                    R.id.actionsContainer
+                )
+
+            actionsContainer.visibility =
+                View.VISIBLE
+
+            val btnMultiSelect =
+                findViewById<ImageView>(
+                    R.id.btnMultiSelect
+                )
+
+            btnMultiSelect.visibility =
+                View.VISIBLE
+
+            return
+        }
+
+
+        // =====================================================
+        // السلوك الطبيعي لزر الرجوع
+        // =====================================================
+
+        super.onBackPressed()
     }
 
 
-    // =====================================================
-    // ثانياً: إذا كان Balloon مفتوحاً
-    // =====================================================
+    // =========================================================
+    // عند إيقاف النشاط
+    // =========================================================
 
-    if (currentBalloon != null) {
+    override fun onDestroy() {
 
         closeProductBalloon()
 
-        return
+        super.onDestroy()
     }
-
-
-    val searchField =
-        findViewById<EditText>(
-            R.id.searchField
-        )
-
-    val actionsContainer =
-        findViewById<LinearLayout>(
-            R.id.actionsContainer
-        )
-
-    val searchAndActionsBar =
-        findViewById<LinearLayout>(
-            R.id.searchAndActionsBar
-        )
-
-
-    // =====================================================
-    // ثالثاً: البحث نشط
-    // =====================================================
-
-    if (searchField.hasFocus()) {
-
-        val imm =
-            getSystemService(
-                Context.INPUT_METHOD_SERVICE
-            ) as? InputMethodManager
-
-        imm?.hideSoftInputFromWindow(
-            searchField.windowToken,
-            0
-        )
-
-        searchField.clearFocus()
-
-        searchField.isCursorVisible =
-            false
-
-
-        TransitionManager.beginDelayedTransition(
-            searchAndActionsBar
-        )
-
-        actionsContainer.visibility =
-            View.VISIBLE
-
-        return
-    }
-private fun dpToPx(
-    dp: Int
-): Int {
-
-    return (
-        dp *
-            resources.displayMetrics.density
-        ).toInt()
-}
-
-    // =====================================================
-    // رابعاً: الخروج من الشاشة
-    // =====================================================
-
-    super.onBackPressed()
 }
