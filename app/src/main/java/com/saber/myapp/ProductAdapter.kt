@@ -1,9 +1,11 @@
 package com.saber.myapp
 
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
@@ -16,39 +18,22 @@ class ProductAdapter(
     private val products: MutableList<Product>,
     private val onItemClick: (Product) -> Unit,
     private val onItemLongClick: (View, Product) -> Unit
-) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(), Filterable {
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>(),
+    Filterable {
 
     private var filteredProducts: MutableList<Product> =
         products.toMutableList()
 
     // =========================================================
-    // تحديث القائمة
+    // وضع التحديد المتعدد
     // =========================================================
 
-    fun setProducts(newProducts: List<Product>) {
+    private var selectionMode = false
 
-        products.clear()
-        products.addAll(newProducts)
+    // نخزن ID المنتجات المحددة
+    private val selectedProductIds =
+        mutableSetOf<Int>()
 
-        filteredProducts.clear()
-        filteredProducts.addAll(newProducts)
-
-        notifyDataSetChanged()
-    }
-
-    fun getProductAt(position: Int): Product {
-        return filteredProducts[position]
-    }
-
-    fun removeAt(position: Int) {
-
-        val item = filteredProducts[position]
-
-        filteredProducts.removeAt(position)
-        products.remove(item)
-
-        notifyItemRemoved(position)
-    }
 
     // =========================================================
     // ViewHolder
@@ -58,20 +43,179 @@ class ProductAdapter(
         RecyclerView.ViewHolder(itemView) {
 
         val imageView: ImageView =
-            itemView.findViewById(R.id.imageViewProduct)
+            itemView.findViewById(
+                R.id.imageViewProduct
+            )
 
         val nameView: TextView =
-            itemView.findViewById(R.id.textViewName)
+            itemView.findViewById(
+                R.id.textViewName
+            )
 
         val expiryView: TextView =
-            itemView.findViewById(R.id.textViewExpiry)
+            itemView.findViewById(
+                R.id.textViewExpiry
+            )
 
         val remainingView: TextView =
-            itemView.findViewById(R.id.textViewRemaining)
+            itemView.findViewById(
+                R.id.textViewRemaining
+            )
 
         val barcodeView: TextView =
-            itemView.findViewById(R.id.textViewBarcode)
+            itemView.findViewById(
+                R.id.textViewBarcode
+            )
+
+        // مربع التحديد
+        val checkBox: CheckBox =
+            itemView.findViewById(
+                R.id.checkBoxSelect
+            )
     }
+
+
+    // =========================================================
+    // تحديث القائمة
+    // =========================================================
+
+    fun setProducts(
+        newProducts: List<Product>
+    ) {
+
+        products.clear()
+        products.addAll(newProducts)
+
+        filteredProducts.clear()
+        filteredProducts.addAll(newProducts)
+
+        // إزالة IDs لم تعد موجودة
+        val validIds =
+            newProducts
+                .map { it.id }
+                .toSet()
+
+        selectedProductIds.retainAll(
+            validIds
+        )
+
+        notifyDataSetChanged()
+    }
+
+
+    // =========================================================
+    // تفعيل / إيقاف وضع التحديد
+    // =========================================================
+
+    fun setSelectionMode(
+        enabled: Boolean
+    ) {
+
+        selectionMode = enabled
+
+        if (!enabled) {
+
+            selectedProductIds.clear()
+        }
+
+        notifyDataSetChanged()
+    }
+
+
+    // =========================================================
+    // إلغاء جميع التحديدات
+    // =========================================================
+
+    fun clearSelection() {
+
+        selectedProductIds.clear()
+
+        notifyDataSetChanged()
+    }
+
+
+    // =========================================================
+    // الحصول على المنتجات المحددة
+    // =========================================================
+
+    fun getSelectedProducts(): List<Product> {
+
+        return products.filter { product ->
+
+            selectedProductIds.contains(
+                product.id
+            )
+        }
+    }
+
+
+    // =========================================================
+    // تغيير حالة تحديد منتج
+    // =========================================================
+
+    private fun toggleSelection(
+        product: Product
+    ) {
+
+        if (
+            selectedProductIds.contains(
+                product.id
+            )
+        ) {
+
+            selectedProductIds.remove(
+                product.id
+            )
+
+        } else {
+
+            selectedProductIds.add(
+                product.id
+            )
+        }
+
+        notifyDataSetChanged()
+    }
+
+
+    // =========================================================
+    // الحصول على منتج حسب الموضع
+    // =========================================================
+
+    fun getProductAt(
+        position: Int
+    ): Product {
+
+        return filteredProducts[position]
+    }
+
+
+    // =========================================================
+    // حذف عنصر من القائمة
+    // =========================================================
+
+    fun removeAt(
+        position: Int
+    ) {
+
+        val item =
+            filteredProducts[position]
+
+        filteredProducts.removeAt(
+            position
+        )
+
+        products.remove(item)
+
+        selectedProductIds.remove(
+            item.id
+        )
+
+        notifyItemRemoved(
+            position
+        )
+    }
+
 
     // =========================================================
     // إنشاء العنصر
@@ -82,8 +226,10 @@ class ProductAdapter(
         viewType: Int
     ): ProductViewHolder {
 
-        val view = LayoutInflater.from(parent.context)
-            .inflate(
+        val view =
+            LayoutInflater.from(
+                parent.context
+            ).inflate(
                 R.layout.item_product,
                 parent,
                 false
@@ -91,6 +237,7 @@ class ProductAdapter(
 
         return ProductViewHolder(view)
     }
+
 
     // =========================================================
     // ربط البيانات
@@ -101,28 +248,36 @@ class ProductAdapter(
         position: Int
     ) {
 
-        val product = filteredProducts[position]
+        val product =
+            filteredProducts[position]
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // اسم المنتج
-        // -----------------------------------------------------
+        // =====================================================
 
-        holder.nameView.text = product.name
+        holder.nameView.text =
+            product.name
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // تاريخ الانتهاء
-        // -----------------------------------------------------
+        // =====================================================
 
-        holder.expiryView.text = product.expiryDate
+        holder.expiryView.text =
+            product.expiryDate
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // حساب الأيام المتبقية
-        // -----------------------------------------------------
+        // =====================================================
 
         try {
 
             val expiryDate =
-                LocalDate.parse(product.expiryDate)
+                LocalDate.parse(
+                    product.expiryDate
+                )
 
             val today =
                 LocalDate.now()
@@ -177,22 +332,28 @@ class ProductAdapter(
                 "تاريخ غير صالح"
         }
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // الباركود
-        // -----------------------------------------------------
+        // =====================================================
 
         holder.barcodeView.text =
             "Barcode: ${product.barcode}"
 
-        // -----------------------------------------------------
-        // صورة المنتج
-        // -----------------------------------------------------
 
-        val path = product.imagePath
+        // =====================================================
+        // صورة المنتج
+        // =====================================================
+
+        val path =
+            product.imagePath
 
         when {
 
+            // -------------------------------------------------
             // صورة محلية
+            // -------------------------------------------------
+
             !path.isNullOrEmpty() &&
                     !path.startsWith("http") -> {
 
@@ -207,7 +368,9 @@ class ProductAdapter(
                         )
 
                     holder.imageView
-                        .setImageBitmap(bitmap)
+                        .setImageBitmap(
+                            bitmap
+                        )
 
                 } else {
 
@@ -219,12 +382,18 @@ class ProductAdapter(
                 }
             }
 
+
+            // -------------------------------------------------
             // صورة من الإنترنت
+            // -------------------------------------------------
+
             !path.isNullOrEmpty() &&
                     path.startsWith("http") -> {
 
                 com.bumptech.glide.Glide
-                    .with(holder.itemView.context)
+                    .with(
+                        holder.itemView.context
+                    )
                     .load(path)
                     .placeholder(
                         android.R.drawable
@@ -234,10 +403,16 @@ class ProductAdapter(
                         android.R.drawable
                             .ic_menu_report_image
                     )
-                    .into(holder.imageView)
+                    .into(
+                        holder.imageView
+                    )
             }
 
+
+            // -------------------------------------------------
             // لا توجد صورة
+            // -------------------------------------------------
+
             else -> {
 
                 holder.imageView
@@ -248,14 +423,93 @@ class ProductAdapter(
             }
         }
 
+
         // =====================================================
-        // الضغط العادي
+        // وضع التحديد
+        // =====================================================
+
+        val isSelected =
+            selectedProductIds.contains(
+                product.id
+            )
+
+
+        if (selectionMode) {
+
+            holder.checkBox.visibility =
+                View.VISIBLE
+
+            holder.checkBox.isChecked =
+                isSelected
+
+        } else {
+
+            holder.checkBox.visibility =
+                View.GONE
+
+            holder.checkBox.isChecked =
+                false
+        }
+
+
+        // =====================================================
+        // خلفية المنتج المحدد
+        // =====================================================
+
+        if (
+            selectionMode &&
+            isSelected
+        ) {
+
+            holder.itemView.setBackgroundColor(
+                Color.parseColor(
+                    "#FFF0F0"
+                )
+            )
+
+        } else {
+
+            holder.itemView.setBackgroundColor(
+                Color.TRANSPARENT
+            )
+        }
+
+
+        // =====================================================
+        // الضغط على مربع التحديد
+        // =====================================================
+
+        holder.checkBox.setOnClickListener {
+
+            if (selectionMode) {
+
+                toggleSelection(
+                    product
+                )
+            }
+        }
+
+
+        // =====================================================
+        // الضغط العادي على المنتج
         // =====================================================
 
         holder.itemView.setOnClickListener {
 
-            onItemClick(product)
+            if (selectionMode) {
+
+                toggleSelection(
+                    product
+                )
+
+            } else {
+
+                onItemClick(
+                    product
+                )
+            }
         }
+
 
         // =====================================================
         // الضغط المطول
@@ -263,14 +517,30 @@ class ProductAdapter(
 
         holder.itemView.setOnLongClickListener { view ->
 
-            onItemLongClick(
-                view,
-                product
-            )
+            if (selectionMode) {
 
-            true
+                // أثناء التحديد:
+                // الضغط المطول يحدد / يلغي التحديد
+                toggleSelection(
+                    product
+                )
+
+                true
+
+            } else {
+
+                // الوضع الطبيعي:
+                // يبقى الـBalloon كما كان
+                onItemLongClick(
+                    view,
+                    product
+                )
+
+                true
+            }
         }
     }
+
 
     // =========================================================
     // عدد العناصر
@@ -280,6 +550,7 @@ class ProductAdapter(
 
         return filteredProducts.size
     }
+
 
     // =========================================================
     // البحث
@@ -310,11 +581,15 @@ class ProductAdapter(
 
                             it.name
                                 .lowercase()
-                                .contains(query) ||
+                                .contains(
+                                    query
+                                ) ||
 
                             it.barcode
                                 .lowercase()
-                                .contains(query)
+                                .contains(
+                                    query
+                                )
                         }
                     }
 
@@ -327,21 +602,26 @@ class ProductAdapter(
                 return filterResults
             }
 
+
             override fun publishResults(
                 constraint: CharSequence?,
                 results: FilterResults?
             ) {
 
                 filteredProducts =
-                    if (constraint
-                            .isNullOrEmpty()) {
+                    if (
+                        constraint
+                            .isNullOrEmpty()
+                    ) {
 
                         products.toMutableList()
 
                     } else {
 
-                        (results?.values
-                            as? List<Product>)
+                        (
+                            results?.values
+                                as? List<Product>
+                        )
                             ?.toMutableList()
                             ?: mutableListOf()
                     }
@@ -350,4 +630,4 @@ class ProductAdapter(
             }
         }
     }
-}
+    }
