@@ -166,79 +166,80 @@
     </com.google.android.material.card.MaterialCardView>
 
 
-    <!-- ===================================================== -->
-    <!-- أزرار العمليات -->
-    <!-- ===================================================== -->
+  <!-- ===================================================== -->
+<!-- أزرار العمليات -->
+<!-- ===================================================== -->
 
-    <LinearLayout
-        android:id="@+id/actionsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="52dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginStart="8dp"
-        android:layoutDirection="ltr">
+<LinearLayout
+    android:id="@+id/actionsContainer"
+    android:layout_width="0dp"
+    android:layout_height="52dp"
+    android:layout_weight="1"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginStart="8dp"
+    android:layoutDirection="ltr">
 
-        <!-- زر التحديد المتعدد -->
+    <!-- زر التحديد المتعدد -->
 
-        <ImageView
-            android:id="@+id/btnMultiSelect"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_check_box"
-            android:contentDescription="اختيار متعدد"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="visible" />
+    <ImageView
+        android:id="@+id/btnMultiSelect"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_check_box"
+        android:contentDescription="اختيار متعدد"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="visible" />
 
-        <!-- زر الحذف -->
+    <!-- زر الحذف -->
 
-        <ImageView
-            android:id="@+id/btnDeleteSelected"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/icdeletered"
-            android:contentDescription="حذف المنتجات المحددة"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="gone" />
+    <ImageView
+        android:id="@+id/btnDeleteSelected"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:src="@drawable/icdeletered"
+        android:contentDescription="حذف المنتجات المحددة"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone" />
 
-        <!-- زر الطباعة -->
+    <!-- زر الطباعة -->
 
-        <ImageView
-            android:id="@+id/btnPrintSelected"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/icprint"
-            android:contentDescription="طباعة المنتجات المحددة"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="gone" />
+    <ImageView
+        android:id="@+id/btnPrintSelected"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:src="@drawable/icprint"
+        android:contentDescription="طباعة المنتجات المحددة"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone" />
 
-        <!-- زر PDF -->
+    <!-- زر PDF -->
 
-        <ImageView
-            android:id="@+id/btnPdfSelected"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="10dp"
-            android:src="@drawable/icpdf"
-            android:contentDescription="PDF للمنتجات المحددة"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="gone" />
-
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/btnPdfSelected"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:padding="10dp"
+        android:src="@drawable/icpdf"
+        android:contentDescription="PDF للمنتجات المحددة"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone" />
 
 </LinearLayout>
-
 
 
     <!-- ========================================================= -->
