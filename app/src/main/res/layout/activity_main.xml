@@ -93,111 +93,187 @@
 
 
     <!-- ========================================================= -->
-    <!-- 2 & 3. شريط البحث والأزرار -->
-    <!-- ========================================================= -->
+<!-- 2 & 3. شريط البحث والأزرار -->
+<!-- ========================================================= -->
 
-    <LinearLayout
-        android:id="@+id/searchAndActionsBar"
+<LinearLayout
+    android:id="@+id/searchAndActionsBar"
+    android:layout_width="0dp"
+    android:layout_height="52dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="4dp"
+    android:animateLayoutChanges="true"
+    android:layoutDirection="rtl"
+    app:layout_constraintTop_toBottomOf="@id/toolbarDivider"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
+
+
+    <!-- ===================================================== -->
+    <!-- حقل البحث -->
+    <!-- ===================================================== -->
+    <!--
+         في الوضع الطبيعي:
+         يأخذ المساحة المتبقية.
+
+         في وضع التحديد:
+         MainActivity يصغره إلى 52dp
+         ويخفي EditText ليصبح دائرة بحث.
+    -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchContainer"
         android:layout_width="0dp"
         android:layout_height="52dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
-        android:animateLayoutChanges="true"
-        app:layout_constraintTop_toBottomOf="@id/toolbarDivider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-
-        <!-- ===================================================== -->
-        <!-- حقل البحث -->
-        <!-- ===================================================== -->
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/searchContainer"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardBackgroundColor="#F1F3F4"
-            app:cardCornerRadius="26dp"
-            app:cardElevation="0dp"
-            app:strokeColor="#D0D0D0"
-            app:strokeWidth="1dp"
-            app:cardPreventCornerOverlap="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <!-- أيقونة البحث -->
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="#777777"
-                    android:contentDescription="بحث" />
-
-
-                <!-- حقل البحث -->
-
-                <EditText
-                    android:id="@+id/searchField"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:hint="بحث عن منتج..."
-                    android:textSize="15sp"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#777777"
-                    android:maxLines="1"
-                    android:inputType="text"
-                    android:importantForAutofill="no" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-
-        <!-- ===================================================== -->
-        <!-- حاوية الأزرار -->
-        <!-- ===================================================== -->
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
+        app:cardBackgroundColor="#F1F3F4"
+        app:cardCornerRadius="26dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#D0D0D0"
+        app:strokeWidth="1dp"
+        app:cardPreventCornerOverlap="false">
 
         <LinearLayout
-            android:id="@+id/actionsContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:visibility="visible">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layoutDirection="ltr">
 
-            <!-- اختيار متعدد -->
+            <!-- أيقونة البحث -->
 
             <ImageView
-                android:id="@+id/btnMultiSelect"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_check_box"
-                android:contentDescription="اختيار متعدد"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless" />
+                android:id="@+id/searchIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="#777777"
+                android:contentDescription="بحث" />
+
+            <!-- حقل النص -->
+
+            <EditText
+                android:id="@+id/searchField"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                android:hint="بحث عن منتج..."
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:textColorHint="#777777"
+                android:maxLines="1"
+                android:inputType="text"
+                android:importantForAutofill="no" />
 
         </LinearLayout>
 
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ===================================================== -->
+    <!-- حاوية الأزرار -->
+    <!-- ===================================================== -->
+    <!--
+         الوضع الطبيعي:
+         يظهر btnMultiSelect فقط.
+
+         وضع التحديد:
+         يختفي btnMultiSelect
+         وتظهر أزرار:
+         حذف - طباعة - PDF
+    -->
+
+    <LinearLayout
+        android:id="@+id/actionsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layoutDirection="ltr">
+
+
+        <!-- ================================================= -->
+        <!-- زر التحديد المتعدد -->
+        <!-- ================================================= -->
+
+        <ImageView
+            android:id="@+id/btnMultiSelect"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_check_box"
+            android:contentDescription="اختيار متعدد"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="visible" />
+
+
+        <!-- ================================================= -->
+        <!-- زر حذف المنتجات المحددة -->
+        <!-- ================================================= -->
+
+        <ImageView
+            android:id="@+id/btnDeleteSelected"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="حذف المنتجات المحددة"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone" />
+
+
+        <!-- ================================================= -->
+        <!-- زر طباعة المنتجات المحددة -->
+        <!-- ================================================= -->
+
+        <ImageView
+            android:id="@+id/btnPrintSelected"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@android:drawable/ic_menu_print"
+            android:contentDescription="طباعة المنتجات المحددة"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone" />
+
+
+        <!-- ================================================= -->
+        <!-- زر PDF للمنتجات المحددة -->
+        <!-- ================================================= -->
+
+        <ImageView
+            android:id="@+id/btnPdfSelected"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:src="@android:drawable/ic_menu_save"
+            android:contentDescription="PDF للمنتجات المحددة"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone" />
+
     </LinearLayout>
+
+</LinearLayout>
+
 
 
     <!-- ========================================================= -->
