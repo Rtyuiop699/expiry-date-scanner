@@ -1071,8 +1071,110 @@ private fun showDeleteConfirmationDialog(product: Product) {
                 true
         }
     }
+private fun dpToPx(
+    dp: Int
+): Int {
+
+    return (
+        dp *
+            resources.displayMetrics.density
+        ).toInt()
+}
+// =========================================================
+// الخروج من وضع التحديد
+// =========================================================
+
+private fun exitSelectionMode() {
+
+    val searchField =
+        findViewById<EditText>(
+            R.id.searchField
+        )
+
+    val actionsContainer =
+        findViewById<LinearLayout>(
+            R.id.actionsContainer
+        )
+
+    val searchAndActionsBar =
+        findViewById<LinearLayout>(
+            R.id.searchAndActionsBar
+        )
+
+    val searchContainer =
+        findViewById<View>(
+            R.id.searchContainer
+        )
 
 
+    // -----------------------------------------------------
+    // إلغاء وضع التحديد
+    // -----------------------------------------------------
+
+    isSelectionMode =
+        false
+
+
+    // -----------------------------------------------------
+    // مسح المنتجات المحددة
+    // -----------------------------------------------------
+
+    selectedProducts.clear()
+
+
+    // -----------------------------------------------------
+    // إخبار الـAdapter
+    // -----------------------------------------------------
+
+    listHandler.setSelectionMode(
+        false
+    )
+
+
+    // -----------------------------------------------------
+    // بدء الحركة
+    // -----------------------------------------------------
+
+    TransitionManager.beginDelayedTransition(
+        searchAndActionsBar
+    )
+
+
+    // -----------------------------------------------------
+    // إعادة حقل البحث
+    // -----------------------------------------------------
+
+    searchContainer.layoutParams =
+        searchContainer.layoutParams.apply {
+
+            width = 0
+            height = dpToPx(52)
+        }
+
+
+    searchField.visibility =
+        View.VISIBLE
+
+    searchField.isCursorVisible =
+        false
+
+
+    // -----------------------------------------------------
+    // إعادة زر التحديد الأصلي
+    // -----------------------------------------------------
+
+    actionsContainer.removeAllViews()
+
+    actionsContainer.addView(
+        findViewById<ImageView>(
+            R.id.btnMultiSelect
+        )
+    )
+
+
+    actionsContainer.visibility =
+        View.VISIBLE
+}
     // =========================================================
     // تطبيق البحث + التصنيف
     // =========================================================
