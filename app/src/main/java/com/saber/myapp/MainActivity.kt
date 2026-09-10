@@ -572,6 +572,24 @@ private fun enterSelectionMode(
         true
     )
 }
+private fun updateSelectedCount() {
+
+    val container =
+        findViewById<LinearLayout>(
+            R.id.actionsContainer
+        )
+
+    val counter =
+        container.tag as? TextView
+            ?: return
+
+    counter.text =
+        if (selectedProducts.isEmpty()) {
+            ""
+        } else {
+            selectedProducts.size.toString()
+        }
+}
     // =========================================================
     // إغلاق Balloon
     // =========================================================
