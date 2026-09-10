@@ -1007,20 +1007,25 @@ class MainActivity : AppCompatActivity() {
                 isChecked =
                     category == currentCategory
 
-                setTextColor(
-                    Color.BLACK
-                )
+                setTextColor(Color.BLACK)
 
-                chipBackgroundColor =
-                    ColorStateList.valueOf(
-                        Color.parseColor(
-                            if (isChecked) {
-                                "#E8F5E9"
-                            } else {
-                                "#F1F3F4"
-                            }
-                        )
-                    )
+chipStrokeWidth = 0f
+
+chipStrokeColor =
+    ColorStateList.valueOf(
+        Color.TRANSPARENT
+    )
+
+chipBackgroundColor =
+    ColorStateList.valueOf(
+        Color.parseColor(
+            if (isChecked) {
+                "#E8F5E9"
+            } else {
+                "#F1F3F4"
+            }
+        )
+    )
 
                 setOnClickListener {
 
@@ -1053,20 +1058,20 @@ class MainActivity : AppCompatActivity() {
 
             val child =
                 chipGroup.getChildAt(i)
-
             if (child is Chip) {
 
-                child.chipBackgroundColor =
-                    ColorStateList.valueOf(
-                        Color.parseColor(
-                            if (child.isChecked) {
-                                "#E8F5E9"
-                            } else {
-                                "#F1F3F4"
-                            }
-                        )
-                    )
+    child.chipBackgroundColor =
+        ColorStateList.valueOf(
+            Color.parseColor(
+                if (child.isChecked) {
+                    "#E8F5E9"
+                } else {
+                    "#F1F3F4"
+                }
+            )
+        )
             }
+            
         }
     }
 
