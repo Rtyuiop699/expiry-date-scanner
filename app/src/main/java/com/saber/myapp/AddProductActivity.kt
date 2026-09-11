@@ -445,18 +445,178 @@ if (
     finish()
     }
 
-    private fun setupToolbar() {
-        binding.topAppBar.setNavigationOnClickListener { finish() }
-        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.btnSaveAction -> { saveProduct(); true }
-                R.id.btnPrint -> { Toast.makeText(this, "جاري الطباعة...", Toast.LENGTH_SHORT).show(); true }
-                R.id.btnPdf -> { Toast.makeText(this, "جاري إنشاء ملف PDF...", Toast.LENGTH_SHORT).show(); true }
-                R.id.btnDelete -> { Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show(); true }
-                else -> false
+     private fun setupToolbar() {
+
+    binding.topAppBar.setNavigationOnClickListener {
+        finish()
+    }
+
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+
+        when (menuItem.itemId) {
+
+            R.id.btnSaveAction -> {
+                saveProduct()
+                true
             }
+
+            R.id.btnPrint -> {
+                Toast.makeText(
+                    this,
+                    "جاري الطباعة...",
+                    Toast.LENGTH_SHORT
+                ).show()
+                true
+            }
+
+            R.id.btnPdf -> {
+
+                // =========================
+                // التحقق من البيانات الأساسية
+                // =========================
+
+                val name =
+                    binding.editTextProductName.text
+                        .toString()
+                        .trim()
+
+                val rawDate =
+                    binding.editTextDate.text
+                        .toString()
+                        .trim()
+
+                val normalizedDate =
+                    normalizeDate(rawDate)
+
+                val category =
+                    binding.autoCompleteCategories.text
+                        .toString()
+                        .trim()
+
+                if (name.isBlank()) {
+
+                    Toast.makeText(
+                        this,
+                        "يرجى إدخال اسم المنتج أولاً",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnMenuItemClickListener true
+                }
+
+                if (
+                    rawDate.isBlank() ||
+                    normalizedDate == null
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        "يرجى إدخال تاريخ انتهاء صحيح أولاً",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnMenuItemClickListener true
+                }
+
+                if (category.isBlank()) {
+
+                    Toast.makeText(
+                        this,
+                        "يرجى اختيار التصنيف أولاً",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnMenuItemClickListener true
+                }
+
+                // =========================
+                // إنشاء المنتج مؤقتاً للـ PDF
+                // =========================
+
+                val barcode =
+                    binding.editTextBarcode.text
+                        .toString()
+                        .trim()
+
+                val product = Product(
+                    id = 0,
+                    barcode = barcode,
+                    name = name,
+                    expiryDate = normalizedDate,
+
+                    cartons =
+                        binding.editCarton.text
+                            .toString()
+                            .toIntOrNull() ?: 0,
+
+                    packsPerCarton =
+                        binding.editPack.text
+                            .toString()
+                            .toIntOrNull() ?: 0,
+
+                    piecesPerPack =
+                        binding.editPiece.text
+                            .toString()
+                            .toIntOrNull() ?: 0,
+
+                    cartonPurchasePrice =
+                        binding.editCartonPurchasePrice.text
+                            .toString()
+                            .toDoubleOrNull() ?: 0.0,
+
+                    pieceSalePrice =
+                        binding.editPieceSalePrice.text
+                            .toString()
+                            .toDoubleOrNull() ?: 0.0,
+
+                    imagePath = currentImagePath,
+
+                    category = category
+                )
+
+                // =========================
+                // إنشاء PDF
+                // =========================
+
+                try {
+
+                    val pdfFile =
+                        ProductPdfGenerator(this)
+                            .createPdf(product)
+
+                    Toast.makeText(
+                        this,
+                        "تم إنشاء ملف PDF بنجاح",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                } catch (e: Exception) {
+
+                    Toast.makeText(
+                        this,
+                        "فشل إنشاء PDF: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    e.printStackTrace()
+                }
+
+                true
+            }
+
+            R.id.btnDelete -> {
+                Toast.makeText(
+                    this,
+                    "تم حذف المنتج",
+                    Toast.LENGTH_SHORT
+                ).show()
+                true
+            }
+
+            else -> false
         }
     }
+     }   
 
    private fun calculateQuantity() {
 
