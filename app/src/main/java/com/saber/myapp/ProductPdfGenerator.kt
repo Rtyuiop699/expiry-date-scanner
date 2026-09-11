@@ -8,7 +8,7 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
 import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
-import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
+import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import java.io.File
 
@@ -42,7 +42,28 @@ class ProductPdfGenerator(
 
         PDDocument().use { document ->
 
-            val page = PDPage(PDRectangle.A4)
+            // =========================
+            // تحميل الخط العربي
+            // =========================
+
+            val font = context.assets.open(
+                "fonts/NotoNaskhArabic-Regular.ttf"
+            ).use { inputStream ->
+                PDType0Font.load(
+                    document,
+                    inputStream,
+                    true
+                )
+            }
+
+            // =========================
+            // إنشاء الصفحة
+            // =========================
+
+            val page = PDPage(
+                PDRectangle.A4
+            )
+
             document.addPage(page)
 
             PDPageContentStream(
@@ -50,34 +71,24 @@ class ProductPdfGenerator(
                 page
             ).use { content ->
 
-                val pageWidth = page.mediaBox.width
-                val pageHeight = page.mediaBox.height
+                val pageWidth =
+                    page.mediaBox.width
+
+                val pageHeight =
+                    page.mediaBox.height
 
                 // =========================
-                // العنوان
+                // عنوان التقرير
                 // =========================
 
-                content.beginText()
-
-                content.setFont(
-                    PDType1Font.HELVETICA_BOLD,
-                    20f
+                drawText(
+                    content = content,
+                    font = font,
+                    text = "إدارة المخزون",
+                    x = 220f,
+                    y = pageHeight - 55f,
+                    size = 20f
                 )
-
-                content.setNonStrokingColor(
-                    Color.BLACK
-                )
-
-                content.newLineAtOffset(
-                    pageWidth / 2 - 60f,
-                    pageHeight - 50f
-                )
-
-                content.showText(
-                    "Inventory"
-                )
-
-                content.endText()
 
                 // =========================
                 // الخط الفاصل
@@ -91,12 +102,12 @@ class ProductPdfGenerator(
 
                 content.moveTo(
                     40f,
-                    pageHeight - 70f
+                    pageHeight - 75f
                 )
 
                 content.lineTo(
                     pageWidth - 40f,
-                    pageHeight - 70f
+                    pageHeight - 75f
                 )
 
                 content.stroke()
@@ -105,11 +116,13 @@ class ProductPdfGenerator(
                 // صورة المنتج
                 // =========================
 
-                val imagePath = product.imagePath
+                val imagePath =
+                    product.imagePath
 
                 if (!imagePath.isNullOrBlank()) {
 
-                    val imageFile = File(imagePath)
+                    val imageFile =
+                        File(imagePath)
 
                     if (imageFile.exists()) {
 
@@ -121,15 +134,16 @@ class ProductPdfGenerator(
                         if (bitmap != null) {
 
                             val pdfImage =
-                                LosslessFactory.createFromImage(
-                                    document,
-                                    bitmap
-                                )
+                                LosslessFactory
+                                    .createFromImage(
+                                        document,
+                                        bitmap
+                                    )
 
                             content.drawImage(
                                 pdfImage,
                                 40f,
-                                pageHeight - 270f,
+                                pageHeight - 280f,
                                 180f,
                                 180f
                             )
@@ -145,34 +159,38 @@ class ProductPdfGenerator(
 
                 drawText(
                     content,
-                    "Product Name: ${product.name}",
+                    font,
+                    "اسم المنتج: ${product.name}",
                     250f,
-                    pageHeight - 120f,
-                    14f
+                    pageHeight - 125f,
+                    15f
                 )
 
                 drawText(
                     content,
-                    "Category: ${product.category}",
+                    font,
+                    "التصنيف: ${product.category}",
                     250f,
-                    pageHeight - 155f,
-                    14f
+                    pageHeight - 165f,
+                    15f
                 )
 
                 drawText(
                     content,
-                    "EXP: ${product.expiryDate}",
+                    font,
+                    "تاريخ الانتهاء: ${product.expiryDate}",
                     250f,
-                    pageHeight - 190f,
-                    14f
+                    pageHeight - 205f,
+                    15f
                 )
 
                 drawText(
                     content,
-                    "Barcode: ${product.barcode}",
+                    font,
+                    "الباركود: ${product.barcode}",
                     250f,
-                    pageHeight - 225f,
-                    14f
+                    pageHeight - 245f,
+                    15f
                 )
             }
 
@@ -182,8 +200,13 @@ class ProductPdfGenerator(
         return pdfFile
     }
 
+    // =========================
+    // كتابة النص
+    // =========================
+
     private fun drawText(
         content: PDPageContentStream,
+        font: PDType0Font,
         text: String,
         x: Float,
         y: Float,
@@ -192,7 +215,7 @@ class ProductPdfGenerator(
         content.beginText()
 
         content.setFont(
-            PDType1Font.HELVETICA,
+            font,
             size
         )
 
