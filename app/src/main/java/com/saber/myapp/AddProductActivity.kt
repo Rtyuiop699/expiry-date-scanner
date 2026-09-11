@@ -9,12 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.saber.myapp.databinding.ActivityAddProductBinding
 import java.io.File
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-
+import java.time.DateTimeException
 
 
 class AddProductActivity : AppCompatActivity() {
@@ -923,275 +925,220 @@ if (
     }
     }
 
-    // === دوال التاريخ OCR ===
     
-   private fun normalizeDate(input: String): String? {
-    return extractDateFromText(input)
-}
+   // =====================================================
+// معالجة تاريخ OCR باستخدام java.time
+// =====================================================
 
-private fun extractDateFromText(text: String): String? {
+private val dateFormatter =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val cleanedText = fixCommonOCRMistakes(
-        text.replace("\n", " ")
-            .replace(",", " ")
-            .trim()
-    )
+private fun normalizeDate(input: String): String? {
 
-    val patterns = listOf(
+    val text = input
+        .replace("\n", " ")
+        .replace(",", " ")
+        .trim()
 
-        // DD/MM/YYYY أو DD-MM-YYYY
-        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
+    if (text.isBlank()) {
+        return null
+    }
 
-        // YYYY/MM/DD أو YYYY-MM-DD
-        Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
+    // ---------------------------------------------
+    // DD/MM/YYYY أو DD-MM-YYYY
+    // ---------------------------------------------
 
-        // DD/MM/YY أو DD-MM-YY
-        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
+    Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b""")
+        .find(text)
+        ?.let {
 
-        // DD MM YYYY
-        Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{4})\b"""),
+            val day = it.groupValues[1].toIntOrNull()
+            val month = it.groupValues[2].toIntOrNull()
+            val year = it.groupValues[3].toIntOrNull()
 
-        // YYYYMMDD
-        Regex("""\b(\d{8})\b"""),
+            if (day != null && month != null && year != null) {
 
-        // DDMMYY
-        Regex("""\b(\d{6})\b"""),
-
-        // Month YYYY مثل SEP 2026
-        Regex(
-            """(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""",
-            RegexOption.IGNORE_CASE
-        ),
-
-        // EXP 11/09/2026
-        Regex(
-            """(?:EXP|BEST BEFORE|صلاحية|ينتهي)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""",
-            RegexOption.IGNORE_CASE
-        ),
-
-        // MM/YYYY فقط
-        // هنا فقط نضع اليوم 01 لأنه غير موجود أصلاً
-        Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
-
-        // السنة فقط
-        Regex("""\b(\d{4})\b""")
-    )
-
-    val foundDates = mutableListOf<Pair<String, String>>()
-
-    for (pattern in patterns) {
-
-        val matches = pattern.findAll(cleanedText)
-
-        for (match in matches) {
-
-            val g = match.groupValues
-
-            val result: String? = when {
-
-                // DD/MM/YYYY
-                g.size == 4 &&
-                        g[1].length <= 2 &&
-                        g[2].length <= 2 &&
-                        g[3].length == 4 -> {
-
-                    val day = g[1].toIntOrNull()
-                    val month = g[2].toIntOrNull()
-                    val year = g[3].toIntOrNull()
-
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
-                }
-
-                // YYYY/MM/DD
-                g.size == 4 &&
-                        g[1].length == 4 -> {
-
-                    val year = g[1].toIntOrNull()
-                    val month = g[2].toIntOrNull()
-                    val day = g[3].toIntOrNull()
-
-                    if (year != null && month != null && day != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
-                }
-
-                // DD/MM/YY
-                g.size == 4 &&
-                        g[3].length == 2 -> {
-
-                    val day = g[1].toIntOrNull()
-                    val month = g[2].toIntOrNull()
-                    val year = g[3].toIntOrNull()
-
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "20%02d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
-                }
-
-                // DD MM YYYY
-                g.size == 4 &&
-                        g[3].length == 4 -> {
-
-                    val day = g[1].toIntOrNull()
-                    val month = g[2].toIntOrNull()
-                    val year = g[3].toIntOrNull()
-
-                    if (day != null && month != null && year != null) {
-                        String.format(
-                            Locale.ENGLISH,
-                            "%04d-%02d-%02d",
-                            year,
-                            month,
-                            day
-                        )
-                    } else {
-                        null
-                    }
-                }
-
-                // YYYYMMDD
-                g.size == 2 &&
-                        g[1].length == 8 -> {
-
-                    val n = g[1]
-
-                    "${n.substring(0, 4)}-" +
-                            "${n.substring(4, 6)}-" +
-                            n.substring(6, 8)
-                }
-
-                // DDMMYY
-                g.size == 2 &&
-                        g[1].length == 6 -> {
-
-                    val n = g[1]
-
-                    val day = n.substring(0, 2)
-                    val month = n.substring(2, 4)
-                    val year = "20" + n.substring(4, 6)
-
-                    if (
-                        month.toIntOrNull() in 1..12 &&
-                        day.toIntOrNull() in 1..31
-                    ) {
-                        "$year-$month-$day"
-                    } else {
-                        null
-                    }
-                }
-
-                // Month YYYY
-                g.size == 3 &&
-                        g[1].matches(Regex("[A-Za-z]+")) -> {
-
-                    val month = monthNameToNumber(g[1])
-                    val year = g[2]
-
-                    if (month != null) {
-                        "$year-$month-01"
-                    } else {
-                        null
-                    }
-                }
-
-                // MM/YYYY
-                // اليوم غير موجود، لذلك فقط هنا نستخدم 01
-                g.size == 3 &&
-                        g[2].length == 4 -> {
-
-                    val month = g[1].toIntOrNull()
-                    val year = g[2].toIntOrNull()
-
-                    if (month != null &&
-                        year != null &&
-                        month in 1..12
-                    ) {
-                        "$year-${month.toString().padStart(2, '0')}-01"
-                    } else {
-                        null
-                    }
-                }
-
-                // السنة فقط
-                g.size == 2 &&
-                        g[1].length == 4 -> {
-
-                    "${g[1]}-01-01"
-                }
-
-                else -> null
-            }
-
-            if (
-                result != null &&
-                isValidDateFromString(result)
-            ) {
-                foundDates.add(
-                    Pair(result, cleanedText)
+                return createDate(
+                    year,
+                    month,
+                    day
                 )
             }
         }
-    }
 
-    return chooseBestDate(foundDates)
+    // ---------------------------------------------
+    // YYYY/MM/DD أو YYYY-MM-DD
+    // ---------------------------------------------
+
+    Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b""")
+        .find(text)
+        ?.let {
+
+            val year = it.groupValues[1].toIntOrNull()
+            val month = it.groupValues[2].toIntOrNull()
+            val day = it.groupValues[3].toIntOrNull()
+
+            if (day != null && month != null && year != null) {
+
+                return createDate(
+                    year,
+                    month,
+                    day
+                )
+            }
+        }
+
+    // ---------------------------------------------
+    // DD/MM/YY
+    // ---------------------------------------------
+
+    Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b""")
+        .find(text)
+        ?.let {
+
+            val day = it.groupValues[1].toIntOrNull()
+            val month = it.groupValues[2].toIntOrNull()
+            val year2 = it.groupValues[3].toIntOrNull()
+
+            if (day != null && month != null && year2 != null) {
+
+                return createDate(
+                    2000 + year2,
+                    month,
+                    day
+                )
+            }
+        }
+
+    // ---------------------------------------------
+    // DD MM YYYY
+    // ---------------------------------------------
+
+    Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{4})\b""")
+        .find(text)
+        ?.let {
+
+            val day = it.groupValues[1].toIntOrNull()
+            val month = it.groupValues[2].toIntOrNull()
+            val year = it.groupValues[3].toIntOrNull()
+
+            if (day != null && month != null && year != null) {
+
+                return createDate(
+                    year,
+                    month,
+                    day
+                )
+            }
+        }
+
+    // ---------------------------------------------
+    // YYYYMMDD
+    // ---------------------------------------------
+
+    Regex("""\b(\d{8})\b""")
+        .find(text)
+        ?.let {
+
+            val value = it.groupValues[1]
+
+            val year = value.substring(0, 4).toIntOrNull()
+            val month = value.substring(4, 6).toIntOrNull()
+            val day = value.substring(6, 8).toIntOrNull()
+
+            if (year != null && month != null && day != null) {
+
+                return createDate(
+                    year,
+                    month,
+                    day
+                )
+            }
+        }
+
+    // ---------------------------------------------
+    // DDMMYY
+    // ---------------------------------------------
+
+    Regex("""\b(\d{6})\b""")
+        .find(text)
+        ?.let {
+
+            val value = it.groupValues[1]
+
+            val day = value.substring(0, 2).toIntOrNull()
+            val month = value.substring(2, 4).toIntOrNull()
+            val year2 = value.substring(4, 6).toIntOrNull()
+
+            if (day != null && month != null && year2 != null) {
+
+                return createDate(
+                    2000 + year2,
+                    month,
+                    day
+                )
+            }
+        }
+
+    // ---------------------------------------------
+    // MM/YYYY
+    // اليوم غير موجود → اليوم الأول
+    // ---------------------------------------------
+
+    Regex("""\b(\d{1,2})[/-](\d{4})\b""")
+        .find(text)
+        ?.let {
+
+            val month = it.groupValues[1].toIntOrNull()
+            val year = it.groupValues[2].toIntOrNull()
+
+            if (month != null && year != null) {
+
+                return createDate(
+                    year,
+                    month,
+                    1
+                )
+            }
+        }
+
+    return null
 }
 
-                
+
+// =====================================================
+// إنشاء التاريخ والتحقق الحقيقي منه بواسطة java.time
+// =====================================================
+
+private fun createDate(
+    year: Int,
+    month: Int,
+    day: Int
+): String? {
+
+    return try {
+
+        val date = LocalDate.of(
+            year,
+            month,
+            day
+        )
+
+        date.format(dateFormatter)
+
+    } catch (e: DateTimeParseException) {
+
+        null
+
+    } catch (e: DateTimeException) {
+
+        null
+    }
+}
+   
     private fun chooseBestDate(dates: List<Pair<String, String>>): String? {
         if (dates.isEmpty()) return null
-        val today = Calendar.getInstance()
-        val parsed = dates.mapNotNull { try { val parts = it.first.split("-"); val cal = Calendar.getInstance().apply { set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt()) }; Pair(cal, it.second) } catch (e: Exception) { null } }
-        val future = parsed.filter { it.first.after(today) }
-        return if (future.isNotEmpty()) { formatCalendar(future.minByOrNull { it.first.timeInMillis }!!.first) } else { formatCalendar(parsed.maxByOrNull { it.first.timeInMillis }!!.first) }
-    }
-
-    private fun formatCalendar(cal: Calendar): String { return String.format(Locale.ENGLISH, "%04d-%02d-%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH)) }
-    private fun fixCommonOCRMistakes(text: String): String { return text.replace("O", "0").replace("I", "1").replace("S", "5") }
-    private fun isValidDateFromString(date: String): Boolean { val parts = date.split("-"); if (parts.size != 3) return false; val year = parts[0].toIntOrNull() ?: return false; val month = parts[1].toIntOrNull() ?: return false; val day = parts[2].toIntOrNull() ?: return false; return year in 2000..2100 && month in 1..12 && day in 1..31 }
-
-    private fun monthNameToNumber(month: String): String? { 
-        return when (month.uppercase(Locale.ENGLISH)) { 
-            "JAN", "JANUARY" -> "01" 
-            "FEB", "FEBRUARY" -> "02" 
-            "MAR", "MARCH" -> "03" 
-            "APR", "APRIL" -> "04" 
-            "MAY" -> "05" 
-            "JUN", "JUNE" -> "06" 
-            "JUL", "JULY" -> "07" 
-            "AUG", "AUGUST" -> "08" 
-            "SEP", "SEPT", "SEPTEMBER" -> "09" 
-            "OCT", "OCTOBER" -> "10" 
-            "NOV", "NOVEMBER" -> "11" 
-            "DEC", "DECEMBER" -> "12" 
-            else -> null 
-        } 
-    }
+    
 
     // الدالة المضافة حديثاً
     private fun fetchProductFromApi(barcode: String) {
