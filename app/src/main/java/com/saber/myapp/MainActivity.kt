@@ -523,73 +523,61 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
     // الدخول إلى وضع التحديد المتعدد
     // =========================================================
-
+  
     private fun enterSelectionMode(
-        searchField: EditText,
-        actionsContainer: LinearLayout,
-        searchAndActionsBar: LinearLayout,
-        searchContainer: View
-    ) {
+    searchField: EditText,
+    actionsContainer: LinearLayout,
+    searchAndActionsBar: LinearLayout,
+    searchContainer: View
+) {
+    if (isSelectionMode) return
+    isSelectionMode = true
 
-        if (isSelectionMode) {
-            return
-        }
+    // 1. إخفاء لوحة المفاتيح وفقدان التركيز
+    searchField.clearFocus()
+    searchField.isCursorVisible = false
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-        isSelectionMode = true
+    closeProductBalloon()
 
-        searchField.clearFocus()
+    // 2. إخفاء النص أولاً لمنع تشوهه أثناء تصغير الحقل
+    searchField.setText("")
+    searchField.visibility = View.GONE
 
-        searchField.isCursorVisible =
-            false
-
-        val imm =
-            getSystemService(
-                Context.INPUT_METHOD_SERVICE
-            ) as? InputMethodManager
-
-        imm?.hideSoftInputFromWindow(
-            searchField.windowToken,
-            0
-        )
-
-        closeProductBalloon()
-
-        TransitionManager.beginDelayedTransition(
-            searchAndActionsBar
-        )
-
-        searchContainer.layoutParams =
-            searchContainer.layoutParams.apply {
-
-                width =
-                    dpToPx(52)
-
-                height =
-                    dpToPx(52)
-
-                if (this is LinearLayout.LayoutParams) {
-
-                    weight = 0f
-                }
-            }
-
-        searchField.setText("")
-
-        searchField.visibility =
-            View.GONE
-
-        setupSelectionActions(
-            actionsContainer
-        )
-
-        actionsContainer.visibility =
-            View.VISIBLE
-
-        listHandler.setSelectionMode(
-            true
-        )
+    // 3. تهيئة الانتقال السلس للأزرار والحاوية
+    val transition = AutoTransition().apply {
+        duration = 250
+        interpolator = FastOutSlowInInterpolator()
     }
+    TransitionManager.beginDelayedTransition(searchAndActionsBar, transition)
 
+    // 4. تحريك عرض الحاوية بشكل تدريجي مخصص لضمان الانسيابية
+    val initialWidth = searchContainer.width
+    val targetWidth = dpToPx(52)
+
+    val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
+        duration = 250
+        interpolator = FastOutSlowInInterpolator()
+        addUpdateListener { valueAnimator ->
+            val animatedValue = valueAnimator.animatedValue as Int
+            val params = searchContainer.layoutParams
+            params.width = animatedValue
+            if (params is LinearLayout.LayoutParams) {
+                params.weight = 0f
+            }
+            searchContainer.layoutParams = params
+        }
+    }
+    anim.start()
+
+    // 5. إظهار الإجراءات المحددة
+    setupSelectionActions(actionsContainer)
+    actionsContainer.visibility = View.VISIBLE
+
+    listHandler.setSelectionMode(true)
+    }
+    
 
     // =========================================================
     // إعداد أزرار وضع التحديد
