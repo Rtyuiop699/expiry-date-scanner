@@ -1135,11 +1135,8 @@ private fun createDate(
         null
     }
 }
-   
-    private fun chooseBestDate(dates: List<Pair<String, String>>): String? {
-        if (dates.isEmpty()) return null
-    
 
+   
     // الدالة المضافة حديثاً
     private fun fetchProductFromApi(barcode: String) {
 
