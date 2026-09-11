@@ -445,7 +445,8 @@ if (
     finish()
     }
 
-     private fun setupToolbar() {
+
+    private fun setupToolbar() {
 
     binding.topAppBar.setNavigationOnClickListener {
         finish()
@@ -461,18 +462,20 @@ if (
             }
 
             R.id.btnPrint -> {
+
                 Toast.makeText(
                     this,
                     "جاري الطباعة...",
                     Toast.LENGTH_SHORT
                 ).show()
+
                 true
             }
 
             R.id.btnPdf -> {
 
                 // =========================
-                // التحقق من البيانات الأساسية
+                // البيانات الأساسية
                 // =========================
 
                 val name =
@@ -493,6 +496,10 @@ if (
                         .toString()
                         .trim()
 
+                // =========================
+                // التحقق من اسم المنتج
+                // =========================
+
                 if (name.isBlank()) {
 
                     Toast.makeText(
@@ -503,6 +510,10 @@ if (
 
                     return@setOnMenuItemClickListener true
                 }
+
+                // =========================
+                // التحقق من التاريخ
+                // =========================
 
                 if (
                     rawDate.isBlank() ||
@@ -518,6 +529,10 @@ if (
                     return@setOnMenuItemClickListener true
                 }
 
+                // =========================
+                // التحقق من التصنيف
+                // =========================
+
                 if (category.isBlank()) {
 
                     Toast.makeText(
@@ -530,13 +545,32 @@ if (
                 }
 
                 // =========================
-                // إنشاء المنتج مؤقتاً للـ PDF
+                // التحقق من صورة المنتج
+                // =========================
+
+                if (currentImagePath.isNullOrBlank()) {
+
+                    Toast.makeText(
+                        this,
+                        "يرجى إضافة صورة المنتج أولاً",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnMenuItemClickListener true
+                }
+
+                // =========================
+                // الباركود
                 // =========================
 
                 val barcode =
                     binding.editTextBarcode.text
                         .toString()
                         .trim()
+
+                // =========================
+                // إنشاء المنتج مؤقتاً للـ PDF
+                // =========================
 
                 val product = Product(
                     id = 0,
@@ -569,7 +603,7 @@ if (
                             .toString()
                             .toDoubleOrNull() ?: 0.0,
 
-                    imagePath = currentImagePath,
+                    imagePath = currentImagePath!!,
 
                     category = category
                 )
@@ -605,18 +639,22 @@ if (
             }
 
             R.id.btnDelete -> {
+
                 Toast.makeText(
                     this,
                     "تم حذف المنتج",
                     Toast.LENGTH_SHORT
                 ).show()
+
                 true
             }
 
             else -> false
         }
     }
-     }   
+    }
+
+                
 
    private fun calculateQuantity() {
 
