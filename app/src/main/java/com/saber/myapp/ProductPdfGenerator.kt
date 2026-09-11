@@ -1,7 +1,6 @@
 package com.saber.myapp
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
@@ -9,6 +8,7 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
 import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
+import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import java.io.File
 
@@ -17,7 +17,6 @@ class ProductPdfGenerator(
 ) {
 
     init {
-        // تهيئة مكتبة PDFBox
         PDFBoxResourceLoader.init(context)
     }
 
@@ -38,7 +37,7 @@ class ProductPdfGenerator(
 
         val pdfFile = File(
             documentsDir,
-            "${safeName}.pdf"
+            "$safeName.pdf"
         )
 
         PDDocument().use { document ->
@@ -59,25 +58,35 @@ class ProductPdfGenerator(
                 // =========================
 
                 content.beginText()
+
                 content.setFont(
-                    org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD,
+                    PDType1Font.HELVETICA_BOLD,
                     20f
                 )
-                content.setNonStrokingColor(Color.BLACK)
+
+                content.setNonStrokingColor(
+                    Color.BLACK
+                )
 
                 content.newLineAtOffset(
                     pageWidth / 2 - 60f,
                     pageHeight - 50f
                 )
 
-                content.showText("Inventory")
+                content.showText(
+                    "Inventory"
+                )
+
                 content.endText()
 
                 // =========================
-                // خط فاصل
+                // الخط الفاصل
                 // =========================
 
-                content.setStrokingColor(Color.DKGRAY)
+                content.setStrokingColor(
+                    Color.DKGRAY
+                )
+
                 content.setLineWidth(1f)
 
                 content.moveTo(
@@ -96,7 +105,9 @@ class ProductPdfGenerator(
                 // صورة المنتج
                 // =========================
 
-                product.imagePath?.let { imagePath ->
+                val imagePath = product.imagePath
+
+                if (!imagePath.isNullOrBlank()) {
 
                     val imageFile = File(imagePath)
 
@@ -109,14 +120,14 @@ class ProductPdfGenerator(
 
                         if (bitmap != null) {
 
-                            val pdImage =
+                            val pdfImage =
                                 LosslessFactory.createFromImage(
                                     document,
                                     bitmap
                                 )
 
                             content.drawImage(
-                                pdImage,
+                                pdfImage,
                                 40f,
                                 pageHeight - 270f,
                                 180f,
@@ -181,11 +192,13 @@ class ProductPdfGenerator(
         content.beginText()
 
         content.setFont(
-            org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA,
+            PDType1Font.HELVETICA,
             size
         )
 
-        content.setNonStrokingColor(Color.BLACK)
+        content.setNonStrokingColor(
+            Color.BLACK
+        )
 
         content.newLineAtOffset(
             x,
