@@ -3,8 +3,6 @@ package com.saber.myapp
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.icu.text.ArabicShaping
-import android.icu.text.Bidi
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
@@ -83,14 +81,13 @@ class ProductPdfGenerator(
                 // عنوان التقرير
                 // =========================
 
-                drawArabicText(
-                    content = content,
-                    font = font,
-                    text = "إدارة المخزون",
-                    x = pageWidth - 40f,
-                    y = pageHeight - 55f,
-                    size = 20f,
-                    alignRight = true
+                drawText(
+                    content,
+                    font,
+                    "إدارة المخزون",
+                    220f,
+                    pageHeight - 55f,
+                    20f
                 )
 
                 // =========================
@@ -159,44 +156,40 @@ class ProductPdfGenerator(
                 // بيانات المنتج
                 // =========================
 
-                drawArabicText(
+                drawText(
                     content,
                     font,
                     "اسم المنتج: ${product.name}",
-                    pageWidth - 40f,
+                    250f,
                     pageHeight - 125f,
-                    15f,
-                    true
+                    15f
                 )
 
-                drawArabicText(
+                drawText(
                     content,
                     font,
                     "التصنيف: ${product.category}",
-                    pageWidth - 40f,
+                    250f,
                     pageHeight - 165f,
-                    15f,
-                    true
+                    15f
                 )
 
-                drawArabicText(
+                drawText(
                     content,
                     font,
                     "تاريخ الانتهاء: ${product.expiryDate}",
-                    pageWidth - 40f,
+                    250f,
                     pageHeight - 205f,
-                    15f,
-                    true
+                    15f
                 )
 
-                drawArabicText(
+                drawText(
                     content,
                     font,
                     "الباركود: ${product.barcode}",
-                    pageWidth - 40f,
+                    250f,
                     pageHeight - 245f,
-                    15f,
-                    true
+                    15f
                 )
             }
 
@@ -207,47 +200,17 @@ class ProductPdfGenerator(
     }
 
     // =========================
-    // معالجة النص العربي
+    // كتابة النص
     // =========================
 
-    private fun shapeArabicText(
-        text: String
-    ): String {
-
-        val shaper = ArabicShaping(
-            ArabicShaping.LETTERS_SHAPE
-        )
-
-        val shapedText =
-            shaper.shape(text)
-
-        val bidi = Bidi(
-            shapedText,
-            Bidi.DIRECTION_DEFAULT_RIGHT_TO_LEFT
-        )
-
-        return bidi.writeReordered(
-            Bidi.DO_MIRRORING
-        )
-    }
-
-    // =========================
-    // كتابة النص العربي في PDF
-    // =========================
-
-    private fun drawArabicText(
+    private fun drawText(
         content: PDPageContentStream,
         font: PDType0Font,
         text: String,
         x: Float,
         y: Float,
-        size: Float,
-        alignRight: Boolean
+        size: Float
     ) {
-
-        val processedText =
-            shapeArabicText(text)
-
         content.beginText()
 
         content.setFont(
@@ -259,25 +222,13 @@ class ProductPdfGenerator(
             Color.BLACK
         )
 
-        val textWidth =
-            font.getStringWidth(
-                processedText
-            ) / 1000f * size
-
-        val finalX =
-            if (alignRight) {
-                x - textWidth
-            } else {
-                x
-            }
-
         content.newLineAtOffset(
-            finalX,
+            x,
             y
         )
 
         content.showText(
-            processedText
+            text
         )
 
         content.endText()
