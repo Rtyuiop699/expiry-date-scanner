@@ -3,6 +3,8 @@ package com.saber.myapp
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.icu.text.ArabicShaping
+import android.icu.text.Bidi
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
@@ -81,13 +83,14 @@ class ProductPdfGenerator(
                 // عنوان التقرير
                 // =========================
 
-                drawText(
+                drawArabicText(
                     content = content,
                     font = font,
                     text = "إدارة المخزون",
-                    x = 220f,
+                    x = pageWidth - 40f,
                     y = pageHeight - 55f,
-                    size = 20f
+                    size = 20f,
+                    alignRight = true
                 )
 
                 // =========================
@@ -134,11 +137,10 @@ class ProductPdfGenerator(
                         if (bitmap != null) {
 
                             val pdfImage =
-                                LosslessFactory
-                                    .createFromImage(
-                                        document,
-                                        bitmap
-                                    )
+                                LosslessFactory.createFromImage(
+                                    document,
+                                    bitmap
+                                )
 
                             content.drawImage(
                                 pdfImage,
@@ -157,40 +159,44 @@ class ProductPdfGenerator(
                 // بيانات المنتج
                 // =========================
 
-                drawText(
+                drawArabicText(
                     content,
                     font,
                     "اسم المنتج: ${product.name}",
-                    250f,
+                    pageWidth - 40f,
                     pageHeight - 125f,
-                    15f
+                    15f,
+                    true
                 )
 
-                drawText(
+                drawArabicText(
                     content,
                     font,
                     "التصنيف: ${product.category}",
-                    250f,
+                    pageWidth - 40f,
                     pageHeight - 165f,
-                    15f
+                    15f,
+                    true
                 )
 
-                drawText(
+                drawArabicText(
                     content,
                     font,
                     "تاريخ الانتهاء: ${product.expiryDate}",
-                    250f,
+                    pageWidth - 40f,
                     pageHeight - 205f,
-                    15f
+                    15f,
+                    true
                 )
 
-                drawText(
+                drawArabicText(
                     content,
                     font,
                     "الباركود: ${product.barcode}",
-                    250f,
+                    pageWidth - 40f,
                     pageHeight - 245f,
-                    15f
+                    15f,
+                    true
                 )
             }
 
@@ -201,17 +207,47 @@ class ProductPdfGenerator(
     }
 
     // =========================
-    // كتابة النص
+    // معالجة النص العربي
     // =========================
 
-    private fun drawText(
+    private fun shapeArabicText(
+        text: String
+    ): String {
+
+        val shaper = ArabicShaping(
+            ArabicShaping.LETTERS_SHAPE
+        )
+
+        val shapedText =
+            shaper.shape(text)
+
+        val bidi = Bidi(
+            shapedText,
+            Bidi.DIRECTION_DEFAULT_RIGHT_TO_LEFT
+        )
+
+        return bidi.writeReordered(
+            Bidi.DO_MIRRORING
+        )
+    }
+
+    // =========================
+    // كتابة النص العربي في PDF
+    // =========================
+
+    private fun drawArabicText(
         content: PDPageContentStream,
         font: PDType0Font,
         text: String,
         x: Float,
         y: Float,
-        size: Float
+        size: Float,
+        alignRight: Boolean
     ) {
+
+        val processedText =
+            shapeArabicText(text)
+
         content.beginText()
 
         content.setFont(
@@ -223,13 +259,25 @@ class ProductPdfGenerator(
             Color.BLACK
         )
 
+        val textWidth =
+            font.getStringWidth(
+                processedText
+            ) / 1000f * size
+
+        val finalX =
+            if (alignRight) {
+                x - textWidth
+            } else {
+                x
+            }
+
         content.newLineAtOffset(
-            x,
+            finalX,
             y
         )
 
         content.showText(
-            text
+            processedText
         )
 
         content.endText()
