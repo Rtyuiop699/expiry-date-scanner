@@ -2,8 +2,6 @@ package com.saber.myapp
 
 import android.animation.ValueAnimator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import androidx.transition.AutoTransition
-import androidx.transition.TransitionManager
 
 import android.content.Context
 import android.content.Intent
@@ -528,7 +526,6 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
     // الدخول إلى وضع التحديد المتعدد
     // =========================================================
-  
     private fun enterSelectionMode(
     searchField: EditText,
     actionsContainer: LinearLayout,
@@ -546,18 +543,11 @@ class MainActivity : AppCompatActivity() {
 
     closeProductBalloon()
 
-    // 2. إخفاء النص أولاً لمنع تشوهه أثناء تصغير الحقل
+    // 2. إخفاء النص وتفريغه
     searchField.setText("")
     searchField.visibility = View.GONE
 
-    // 3. تهيئة الانتقال السلس للأزرار والحاوية
-    val transition = AutoTransition().apply {
-        duration = 250
-        interpolator = FastOutSlowInInterpolator()
-    }
-    TransitionManager.beginDelayedTransition(searchAndActionsBar, transition)
-
-    // 4. تحريك عرض الحاوية بشكل تدريجي مخصص لضمان الانسيابية
+    // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
     val initialWidth = searchContainer.width
     val targetWidth = dpToPx(52)
 
@@ -576,7 +566,7 @@ class MainActivity : AppCompatActivity() {
     }
     anim.start()
 
-    // 5. إظهار الإجراءات المحددة
+    // 4. إظهار الإجراءات المحددة
     setupSelectionActions(actionsContainer)
     actionsContainer.visibility = View.VISIBLE
 
