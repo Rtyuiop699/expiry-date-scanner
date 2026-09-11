@@ -2,7 +2,6 @@ package com.saber.myapp
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
@@ -22,6 +21,10 @@ class ProductPdfGenerator(
 
     fun createPdf(product: Product): File {
 
+        // =========================
+        // مجلد حفظ ملفات PDF
+        // =========================
+
         val documentsDir = File(
             context.getExternalFilesDir(null),
             "Documents/إدارة المخزون"
@@ -31,14 +34,27 @@ class ProductPdfGenerator(
             documentsDir.mkdirs()
         }
 
+        // =========================
+        // اسم الملف
+        // =========================
+
         val safeName = product.name
-            .replace(Regex("[\\\\/:*?\"<>|]"), "_")
-            .ifBlank { "product" }
+            .replace(
+                Regex("[\\\\/:*?\"<>|]"),
+                "_"
+            )
+            .ifBlank {
+                "product"
+            }
 
         val pdfFile = File(
             documentsDir,
             "$safeName.pdf"
         )
+
+        // =========================
+        // إنشاء ملف PDF
+        // =========================
 
         PDDocument().use { document ->
 
@@ -46,25 +62,34 @@ class ProductPdfGenerator(
             // تحميل الخط العربي
             // =========================
 
-            val font = context.assets.open(
-                "fonts/NotoNaskhArabic-Regular.ttf"
-            ).use { inputStream ->
-                PDType0Font.load(
-                    document,
-                    inputStream,
-                    true
+            val font =
+                context.assets
+                    .open(
+                        "fonts/NotoNaskhArabic-Regular.ttf"
+                    )
+                    .use { inputStream ->
+
+                        PDType0Font.load(
+                            document,
+                            inputStream,
+                            true
+                        )
+                    }
+
+            // =========================
+            // إنشاء صفحة A4
+            // =========================
+
+            val page =
+                PDPage(
+                    PDRectangle.A4
                 )
-            }
-
-            // =========================
-            // إنشاء الصفحة
-            // =========================
-
-            val page = PDPage(
-                PDRectangle.A4
-            )
 
             document.addPage(page)
+
+            // =========================
+            // الكتابة داخل الصفحة
+            // =========================
 
             PDPageContentStream(
                 document,
@@ -95,7 +120,9 @@ class ProductPdfGenerator(
                 // =========================
 
                 content.setStrokingColor(
-                    Color.DKGRAY
+                    64,
+                    64,
+                    64
                 )
 
                 content.setLineWidth(1f)
@@ -193,15 +220,21 @@ class ProductPdfGenerator(
                 )
             }
 
-            document.save(pdfFile)
+            // =========================
+            // حفظ الملف
+            // =========================
+
+            document.save(
+                pdfFile
+            )
         }
 
         return pdfFile
     }
 
-    // =========================
+    // =====================================================
     // كتابة النص
-    // =========================
+    // =====================================================
 
     private fun drawText(
         content: PDPageContentStream,
@@ -211,6 +244,7 @@ class ProductPdfGenerator(
         y: Float,
         size: Float
     ) {
+
         content.beginText()
 
         content.setFont(
@@ -218,8 +252,12 @@ class ProductPdfGenerator(
             size
         )
 
+        // PDFBox يريد RGB منفصلة
+        // وليس قيمة Android ARGB
         content.setNonStrokingColor(
-            Color.BLACK
+            0,
+            0,
+            0
         )
 
         content.newLineAtOffset(
