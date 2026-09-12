@@ -195,38 +195,118 @@ class MainActivity : AppCompatActivity() {
         // =====================================================
         // الضغط على البحث
         // =====================================================
-
+  
         searchField.setOnFocusChangeListener { _, hasFocus ->
 
-            if (hasFocus && !isSelectionMode) {
+    if (hasFocus && !isSelectionMode) {
 
-                TransitionManager.beginDelayedTransition(
-                    searchAndActionsBar
-                )
+        val searchIcon =
+            findViewById<ImageView>(R.id.searchIcon)
 
+        val parent =
+            searchContainer.parent as? LinearLayout
+                ?: return@setOnFocusChangeListener
+
+        val currentWidth =
+            searchContainer.width
+
+        val actionsWidth =
+            actionsContainer.width
+
+        val margin =
+            (actionsContainer.layoutParams as? LinearLayout.LayoutParams)
+                ?.marginStart ?: 0
+
+        // إخفاء محتوى البحث أثناء الحركة حتى لا يظهر اهتزاز
+        searchIcon.alpha = 0f
+        searchField.alpha = 0f
+
+        // نوقف الوزن مؤقتاً حتى نتحكم بالعرض يدوياً
+        val searchParams =
+            searchContainer.layoutParams as LinearLayout.LayoutParams
+
+        searchParams.weight = 0f
+        searchContainer.layoutParams = searchParams
+
+        // إخفاء الأزرار بصرياً مع إبقاء مكانها أثناء الحركة
+        actionsContainer.alpha = 0f
+
+        val targetWidth =
+            currentWidth + actionsWidth + margin
+
+        ValueAnimator.ofInt(
+            currentWidth,
+            targetWidth
+        ).apply {
+
+            duration = 250
+
+            interpolator =
+                FastOutSlowInInterpolator()
+
+            addUpdateListener { animator ->
+
+                val width =
+                    animator.animatedValue as Int
+
+                val params =
+                    searchContainer.layoutParams
+
+                params.width = width
+                params.weight = 0f
+
+                searchContainer.layoutParams =
+                    params
+            }
+
+            doOnEnd {
+
+                // بعد انتهاء التمدد نزيل الأزرار فعلياً
                 actionsContainer.visibility =
                     View.GONE
 
-                searchField.visibility =
-                    View.VISIBLE
+                actionsContainer.alpha = 1f
+
+                // إعادة البحث للوضع المرن الطبيعي
+                val finalParams =
+                    searchContainer.layoutParams as LinearLayout.LayoutParams
+
+                finalParams.width = 0
+                finalParams.weight = 1f
+
+                searchContainer.layoutParams =
+                    finalParams
+
+                // إظهار محتوى البحث بعد استقرار الحجم
+                searchIcon.alpha = 1f
+                searchField.alpha = 1f
 
                 searchField.isCursorVisible =
                     true
 
                 searchField.requestFocus()
 
-                val imm =
-                    getSystemService(
-                        Context.INPUT_METHOD_SERVICE
-                    ) as? InputMethodManager
+                // تأخير لوحة المفاتيح قليلاً حتى لا تتزامن
+                // مع حركة تمدد الحقل
+                searchField.postDelayed({
 
-                imm?.showSoftInput(
-                    searchField,
-                    InputMethodManager.SHOW_IMPLICIT
-                )
+                    val imm =
+                        getSystemService(
+                            Context.INPUT_METHOD_SERVICE
+                        ) as? InputMethodManager
+
+                    imm?.showSoftInput(
+                        searchField,
+                        InputMethodManager.SHOW_IMPLICIT
+                    )
+
+                }, 100)
             }
-        }
 
+            start()
+        }
+    }
+        }
 
         // =====================================================
         // إعداد الماسح
@@ -651,86 +731,220 @@ class MainActivity : AppCompatActivity() {
     // الخروج من وضع التحديد المتعدد
     // =========================================================
 
-    private fun exitSelectionMode() {
+    // =========================================================
+// الخروج من وضع التحديد المتعدد
+// =========================================================
 
-        if (!isSelectionMode) {
-            return
-        }
+private fun exitSelectionMode() {
 
-        isSelectionMode = false
+    if (!isSelectionMode) {
+        return
+    }
 
-        listHandler.clearSelection()
+    isSelectionMode = false
 
-        listHandler.setSelectionMode(
-            false
+    listHandler.clearSelection()
+
+    listHandler.setSelectionMode(
+        false
+    )
+
+    val searchField =
+        findViewById<EditText>(
+            R.id.searchField
         )
 
-        val searchField =
-            findViewById<EditText>(
-                R.id.searchField
-            )
+    val actionsContainer =
+        findViewById<LinearLayout>(
+            R.id.actionsContainer
+        )
 
-        val actionsContainer =
-            findViewById<LinearLayout>(
-                R.id.actionsContainer
-            )
+    val searchContainer =
+        findViewById<View>(
+            R.id.searchContainer
+        )
 
-        val searchAndActionsBar =
-            findViewById<LinearLayout>(
-                R.id.searchAndActionsBar
-            )
-
-        val searchContainer =
-            findViewById<View>(
-                R.id.searchContainer
-            )
-
-        val btnMultiSelect =
-            findViewById<ImageView>(
-                R.id.btnMultiSelect
-            )
-
-
-        searchField.clearFocus()
-
-        searchField.isCursorVisible =
-            true
-
-
-        val imm =
-            getSystemService(
-                Context.INPUT_METHOD_SERVICE
-            ) as? InputMethodManager
-
-        imm?.hideSoftInputFromWindow(
-            searchField.windowToken,
-            0
+    val btnMultiSelect =
+        findViewById<ImageView>(
+            R.id.btnMultiSelect
         )
 
 
-        TransitionManager.beginDelayedTransition(
-            searchAndActionsBar
+    // =====================================================
+    // إخفاء لوحة المفاتيح وإلغاء التركيز
+    // =====================================================
+
+    searchField.clearFocus()
+
+    searchField.isCursorVisible =
+        false
+
+    val imm =
+        getSystemService(
+            Context.INPUT_METHOD_SERVICE
+        ) as? InputMethodManager
+
+    imm?.hideSoftInputFromWindow(
+        searchField.windowToken,
+        0
+    )
+
+
+    // =====================================================
+    // إخفاء أزرار العمليات
+    // =====================================================
+
+    actionsContainer
+        .findViewById<ImageView>(
+            R.id.btnDeleteSelected
         )
+        ?.visibility = View.GONE
+
+    actionsContainer
+        .findViewById<ImageView>(
+            R.id.btnPrintSelected
+        )
+        ?.visibility = View.GONE
+
+    actionsContainer
+        .findViewById<ImageView>(
+            R.id.btnPdfSelected
+        )
+        ?.visibility = View.GONE
 
 
-        // =====================================================
-        // إعادة البحث إلى الحجم الطبيعي
-        // =====================================================
+    // =====================================================
+    // إظهار زر التحديد
+    // =====================================================
+
+    btnMultiSelect.visibility =
+        View.VISIBLE
+
+    actionsContainer.visibility =
+        View.VISIBLE
+
+
+    // =====================================================
+    // العرض الحالي لحقل البحث
+    // =====================================================
+
+    val initialWidth =
+        searchContainer.width
+
+
+    // =====================================================
+    // حساب العرض الطبيعي لحقل البحث
+    // =====================================================
+
+    val parent =
+        searchContainer.parent as? View
+
+    if (parent == null) {
+        return
+    }
+
+
+    val parentWidth =
+        parent.width
+
+    val searchParams =
+        searchContainer.layoutParams
+
+    val actionsParams =
+        actionsContainer.layoutParams
+
+
+    val targetWidth =
+        parentWidth -
+        actionsContainer.width -
+        actionsParams.marginStart -
+        searchParams.marginStart -
+        searchParams.marginEnd
+
+
+    // =====================================================
+    // منع الوزن من التأثير أثناء الحركة
+    // =====================================================
+
+    if (searchParams is LinearLayout.LayoutParams) {
+
+        searchParams.weight = 0f
 
         searchContainer.layoutParams =
-            searchContainer.layoutParams.apply {
+            searchParams
+    }
 
-                width = 0
-                height = dpToPx(52)
 
-                if (this is LinearLayout.LayoutParams) {
-                    weight = 1f
+    // =====================================================
+    // إظهار حقل البحث قبل بدء الحركة
+    // =====================================================
+
+    searchField.visibility =
+        View.VISIBLE
+
+
+    // =====================================================
+    // تحريك حقل البحث إلى حجمه الطبيعي
+    // =====================================================
+
+    ValueAnimator
+        .ofInt(
+            initialWidth,
+            targetWidth
+        )
+        .apply {
+
+            duration = 250
+
+            interpolator =
+                FastOutSlowInInterpolator()
+
+            addUpdateListener { animator ->
+
+                val animatedWidth =
+                    animator.animatedValue as Int
+
+                val params =
+                    searchContainer.layoutParams
+
+                params.width =
+                    animatedWidth
+
+                if (params is LinearLayout.LayoutParams) {
+                    params.weight = 0f
                 }
+
+                searchContainer.layoutParams =
+                    params
             }
 
 
-        searchField.visibility =
-            View.VISIBLE
+            // =================================================
+            // بعد انتهاء الحركة
+            // =================================================
+
+            doOnEnd {
+
+                val finalParams =
+                    searchContainer.layoutParams
+
+                if (finalParams is LinearLayout.LayoutParams) {
+
+                    finalParams.width = 0
+
+                    finalParams.weight = 1f
+
+                    searchContainer.layoutParams =
+                        finalParams
+                }
+
+                searchField.isCursorVisible =
+                    true
+            }
+
+            start()
+        }
+}
 
 
         // =====================================================
