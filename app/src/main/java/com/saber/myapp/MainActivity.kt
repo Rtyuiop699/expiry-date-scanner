@@ -21,8 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
-import androidx.transition.TransitionManager
-
+import androidx.core.animation.doOnEnd
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,11 +43,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listHandler: ProductListHandler
     private lateinit var databaseHelper: DatabaseHelper
 
-    private val productList =
-        mutableListOf<Product>()
-
+    private val productList = mutableListOf<Product>()
     private var currentCategory = "الكل"
-
     private var currentSearchText = ""
 
     // =========================================================
@@ -78,11 +74,8 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-
             if (result.resultCode == RESULT_OK) {
-
                 loadProductsFromDatabase()
-
                 Toast.makeText(
                     this,
                     "تم حفظ المنتج بنجاح",
@@ -96,93 +89,49 @@ class MainActivity : AppCompatActivity() {
     // onCreate
     // =========================================================
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(
-            R.layout.activity_main
-        )
+        setContentView(R.layout.activity_main)
 
         // =====================================================
         // قاعدة البيانات
         // =====================================================
-
-        databaseHelper =
-            DatabaseHelper(this)
-
+        databaseHelper = DatabaseHelper(this)
 
         // =====================================================
         // إعداد قائمة المنتجات
         // =====================================================
-
-        listHandler =
-            ProductListHandler(
-                findViewById(R.id.recyclerView),
-
-                onProductClicked = { product ->
-
-                    if (!isSelectionMode) {
-
-                        Toast.makeText(
-                            this,
-                            "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
-
-                onProductLongClicked = { view, product ->
-
-                    if (!isSelectionMode) {
-
-                        showProductBalloon(
-                            view,
-                            product
-                        )
-                    }
+        listHandler = ProductListHandler(
+            findViewById(R.id.recyclerView),
+            onProductClicked = { product ->
+                if (!isSelectionMode) {
+                    Toast.makeText(
+                        this,
+                        "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            )
-
+            },
+            onProductLongClicked = { view, product ->
+                if (!isSelectionMode) {
+                    showProductBalloon(view, product)
+                }
+            }
+        )
 
         // =====================================================
         // عناصر البحث والأزرار
         // =====================================================
-
-        val searchField =
-            findViewById<EditText>(
-                R.id.searchField
-            )
-
-        val actionsContainer =
-            findViewById<LinearLayout>(
-                R.id.actionsContainer
-            )
-
-        val searchAndActionsBar =
-            findViewById<LinearLayout>(
-                R.id.searchAndActionsBar
-            )
-
-        val searchContainer =
-            findViewById<View>(
-                R.id.searchContainer
-            )
-
-        val btnMultiSelect =
-            findViewById<ImageView>(
-                R.id.btnMultiSelect
-            )
-
+        val searchField = findViewById<EditText>(R.id.searchField)
+        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
+        val searchContainer = findViewById<View>(R.id.searchContainer)
+        val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
 
         // =====================================================
         // زر التحديد المتعدد
         // =====================================================
-
         btnMultiSelect?.setOnClickListener {
-
             enterSelectionMode(
                 searchField,
                 actionsContainer,
@@ -191,201 +140,112 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
         // =====================================================
         // الضغط على البحث
         // =====================================================
-  
         searchField.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && !isSelectionMode) {
+                val searchIcon = findViewById<ImageView>(R.id.searchIcon)
+                val currentWidth = searchContainer.width
+                val actionsWidth = actionsContainer.width
+                val margin = (actionsContainer.layoutParams as? LinearLayout.LayoutParams)?.marginStart ?: 0
 
-    if (hasFocus && !isSelectionMode) {
+                // إخفاء محتوى البحث أثناء الحركة حتى لا يظهر اهتزاز
+                searchIcon.alpha = 0f
+                searchField.alpha = 0f
 
-        val searchIcon =
-            findViewById<ImageView>(R.id.searchIcon)
+                // نوقف الوزن مؤقتاً حتى نتحكم بالعرض يدوياً
+                val searchParams = searchContainer.layoutParams as LinearLayout.LayoutParams
+                searchParams.weight = 0f
+                searchContainer.layoutParams = searchParams
 
-        val parent =
-            searchContainer.parent as? LinearLayout
-                ?: return@setOnFocusChangeListener
+                // إخفاء الأزرار بصرياً مع إبقاء مكانها أثناء الحركة
+                actionsContainer.alpha = 0f
 
-        val currentWidth =
-            searchContainer.width
+                val targetWidth = currentWidth + actionsWidth + margin
 
-        val actionsWidth =
-            actionsContainer.width
+                ValueAnimator.ofInt(currentWidth, targetWidth).apply {
+                    duration = 250
+                    interpolator = FastOutSlowInInterpolator()
+                    addUpdateListener { animator ->
+                        val width = animator.animatedValue as Int
+                        val params = searchContainer.layoutParams
+                        params.width = width
+                        if (params is LinearLayout.LayoutParams) params.weight = 0f
+                        searchContainer.layoutParams = params
+                    }
 
-        val margin =
-            (actionsContainer.layoutParams as? LinearLayout.LayoutParams)
-                ?.marginStart ?: 0
+                    doOnEnd {
+                        // بعد انتهاء التمدد نزيل الأزرار فعلياً
+                        actionsContainer.visibility = View.GONE
+                        actionsContainer.alpha = 1f
 
-        // إخفاء محتوى البحث أثناء الحركة حتى لا يظهر اهتزاز
-        searchIcon.alpha = 0f
-        searchField.alpha = 0f
+                        // إعادة البحث للوضع المرن الطبيعي
+                        val finalParams = searchContainer.layoutParams as LinearLayout.LayoutParams
+                        finalParams.width = 0
+                        finalParams.weight = 1f
+                        searchContainer.layoutParams = finalParams
 
-        // نوقف الوزن مؤقتاً حتى نتحكم بالعرض يدوياً
-        val searchParams =
-            searchContainer.layoutParams as LinearLayout.LayoutParams
+                        // إظهار محتوى البحث بعد استقرار الحجم
+                        searchIcon.alpha = 1f
+                        searchField.alpha = 1f
 
-        searchParams.weight = 0f
-        searchContainer.layoutParams = searchParams
+                        searchField.isCursorVisible = true
+                        searchField.requestFocus()
 
-        // إخفاء الأزرار بصرياً مع إبقاء مكانها أثناء الحركة
-        actionsContainer.alpha = 0f
-
-        val targetWidth =
-            currentWidth + actionsWidth + margin
-
-        ValueAnimator.ofInt(
-            currentWidth,
-            targetWidth
-        ).apply {
-
-            duration = 250
-
-            interpolator =
-                FastOutSlowInInterpolator()
-
-            addUpdateListener { animator ->
-
-                val width =
-                    animator.animatedValue as Int
-
-                val params =
-                    searchContainer.layoutParams
-
-                params.width = width
-                params.weight = 0f
-
-                searchContainer.layoutParams =
-                    params
+                        searchField.postDelayed({
+                            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                            imm?.showSoftInput(searchField, InputMethodManager.SHOW_IMPLICIT)
+                        }, 100)
+                    }
+                    start()
+                }
             }
-
-            doOnEnd {
-
-                // بعد انتهاء التمدد نزيل الأزرار فعلياً
-                actionsContainer.visibility =
-                    View.GONE
-
-                actionsContainer.alpha = 1f
-
-                // إعادة البحث للوضع المرن الطبيعي
-                val finalParams =
-                    searchContainer.layoutParams as LinearLayout.LayoutParams
-
-                finalParams.width = 0
-                finalParams.weight = 1f
-
-                searchContainer.layoutParams =
-                    finalParams
-
-                // إظهار محتوى البحث بعد استقرار الحجم
-                searchIcon.alpha = 1f
-                searchField.alpha = 1f
-
-                searchField.isCursorVisible =
-                    true
-
-                searchField.requestFocus()
-
-                // تأخير لوحة المفاتيح قليلاً حتى لا تتزامن
-                // مع حركة تمدد الحقل
-                searchField.postDelayed({
-
-                    val imm =
-                        getSystemService(
-                            Context.INPUT_METHOD_SERVICE
-                        ) as? InputMethodManager
-
-                    imm?.showSoftInput(
-                        searchField,
-                        InputMethodManager.SHOW_IMPLICIT
-                    )
-
-                }, 100)
-            }
-
-            start()
         }
-    }
-        
 
         // =====================================================
         // إعداد الماسح
         // =====================================================
-
-        scannerHelper =
-            BarcodeScannerHelper(
-                activity = this,
-
-                onScanResult = { barcode ->
-
-                    handleBarcodeResult(
-                        barcode
-                    )
-                },
-
-                onScanCancelled = {
-
-                    Toast.makeText(
-                        this,
-                        "تم إلغاء المسح",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
-
+        scannerHelper = BarcodeScannerHelper(
+            activity = this,
+            onScanResult = { barcode ->
+                handleBarcodeResult(barcode)
+            },
+            onScanCancelled = {
+                Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         // =====================================================
         // إدارة تصريح الكاميرا
         // =====================================================
-
-        permissionManager =
-            PermissionManager(
-                activity = this,
-
-                onPermissionGranted = {
-
-                    scannerHelper.startScanner()
-                },
-
-                onPermissionDenied = {
-
-                    Toast.makeText(
-                        this,
-                        "عذراً، يجب الموافقة على تصريح الكاميرا",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
-
+        permissionManager = PermissionManager(
+            activity = this,
+            onPermissionGranted = {
+                scannerHelper.startScanner()
+            },
+            onPermissionDenied = {
+                Toast.makeText(this, "عذراً، يجب الموافقة على تصريح الكاميرا", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         // =====================================================
         // إعداد الواجهة
         // =====================================================
-
         setupToolbar()
-
         setupChips()
-
         setupSearch()
-
 
         // =====================================================
         // زر الإضافة / مسح الباركود
         // =====================================================
-
-        findViewById<FloatingActionButton>(
-            R.id.fab
-        )?.setOnClickListener {
-
-            permissionManager
-                .checkAndRequestCameraPermission()
+        findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
+            permissionManager.checkAndRequestCameraPermission()
         }
-
 
         // =====================================================
         // تحميل المنتجات
         // =====================================================
-
         loadProductsFromDatabase()
     }
 
@@ -398,207 +258,80 @@ class MainActivity : AppCompatActivity() {
         anchorView: View,
         product: Product
     ) {
-
         currentBalloon?.dismiss()
         currentBalloon = null
 
         selectedProduct = product
 
-        val location =
-            IntArray(2)
+        val location = IntArray(2)
+        anchorView.getLocationOnScreen(location)
 
-        anchorView.getLocationOnScreen(
-            location
-        )
+        val anchorTop = location[1]
+        val anchorBottom = anchorTop + anchorView.height
+        val screenHeight = resources.displayMetrics.heightPixels
+        val spaceAbove = anchorTop
+        val spaceBelow = screenHeight - anchorBottom
 
-        val anchorTop =
-            location[1]
+        val showBelow = spaceBelow >= spaceAbove
+        val arrowOrientation = if (showBelow) ArrowOrientation.TOP else ArrowOrientation.BOTTOM
 
-        val anchorBottom =
-            anchorTop + anchorView.height
+        val balloon = Balloon.Builder(this)
+            .setLayout(R.layout.layout_popup_menu)
+            .setArrowSize(10)
+            .setArrowOrientation(arrowOrientation)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+            .setCornerRadius(16f)
+            .setBackgroundColor(Color.parseColor("#F1F3F4"))
+            .setElevation(8)
+            .setDismissWhenClicked(false)
+            .setDismissWhenTouchOutside(true)
+            .setBalloonAnimation(BalloonAnimation.FADE)
+            .build()
 
-        val screenHeight =
-            resources.displayMetrics.heightPixels
+        currentBalloon = balloon
+        val menuView = balloon.getContentView()
 
-        val spaceAbove =
-            anchorTop
-
-        val spaceBelow =
-            screenHeight - anchorBottom
-
-        val showBelow =
-            spaceBelow >= spaceAbove
-
-        val arrowOrientation =
-            if (showBelow) {
-
-                ArrowOrientation.TOP
-
-            } else {
-
-                ArrowOrientation.BOTTOM
-            }
-
-
-        val balloon =
-            Balloon.Builder(this)
-
-                .setLayout(
-                    R.layout.layout_popup_menu
-                )
-
-                .setArrowSize(10)
-
-                .setArrowOrientation(
-                    arrowOrientation
-                )
-
-                .setArrowPositionRules(
-                    ArrowPositionRules.ALIGN_ANCHOR
-                )
-
-                .setCornerRadius(16f)
-
-                .setBackgroundColor(
-                    Color.parseColor("#F1F3F4")
-                )
-
-                .setElevation(8)
-
-                .setDismissWhenClicked(false)
-
-                .setDismissWhenTouchOutside(true)
-
-                .setBalloonAnimation(
-                    BalloonAnimation.FADE
-                )
-
-                .build()
-
-
-        currentBalloon =
-            balloon
-
-        val menuView =
-            balloon.getContentView()
-
-
-        // =====================================================
         // زر التعديل
-        // =====================================================
-
-        menuView
-            .findViewById<android.widget.ImageButton>(
-                R.id.btnActionEdit
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    val intent =
-                        Intent(
-                            this,
-                            AddProductActivity::class.java
-                        ).apply {
-
-                            putExtra(
-                                "BARCODE_EXTRA",
-                                selected.barcode
-                            )
-                        }
-
-                    addProductLauncher.launch(intent)
+        menuView.findViewById<android.widget.ImageButton>(R.id.btnActionEdit)?.setOnClickListener {
+            selectedProduct?.let { selected ->
+                val intent = Intent(this, AddProductActivity::class.java).apply {
+                    putExtra("BARCODE_EXTRA", selected.barcode)
                 }
-
-                closeProductBalloon()
+                addProductLauncher.launch(intent)
             }
+            closeProductBalloon()
+        }
 
-
-        // =====================================================
         // زر PDF
-        // =====================================================
-
-        menuView
-            .findViewById<android.widget.ImageButton>(
-                R.id.btnActionPdf
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    Toast.makeText(
-                        this,
-                        "تصدير PDF للمنتج: ${selected.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                closeProductBalloon()
+        menuView.findViewById<android.widget.ImageButton>(R.id.btnActionPdf)?.setOnClickListener {
+            selectedProduct?.let { selected ->
+                Toast.makeText(this, "تصدير PDF للمنتج: ${selected.name}", Toast.LENGTH_SHORT).show()
             }
+            closeProductBalloon()
+        }
 
-
-        // =====================================================
         // زر الطباعة
-        // =====================================================
-
-        menuView
-            .findViewById<android.widget.ImageButton>(
-                R.id.btnActionPrint
-            )
-            ?.setOnClickListener {
-
-                selectedProduct?.let { selected ->
-
-                    Toast.makeText(
-                        this,
-                        "طباعة: ${selected.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                closeProductBalloon()
+        menuView.findViewById<android.widget.ImageButton>(R.id.btnActionPrint)?.setOnClickListener {
+            selectedProduct?.let { selected ->
+                Toast.makeText(this, "طباعة: ${selected.name}", Toast.LENGTH_SHORT).show()
             }
+            closeProductBalloon()
+        }
 
-
-        // =====================================================
         // زر الحذف
-        // =====================================================
-
-        menuView
-            .findViewById<android.widget.ImageButton>(
-                R.id.btnActionDelete
-            )
-            ?.setOnClickListener {
-
-                val selected =
-                    selectedProduct
-
-                closeProductBalloon()
-
-                if (selected != null) {
-
-                    showDeleteConfirmationDialog(
-                        selected
-                    )
-                }
+        menuView.findViewById<android.widget.ImageButton>(R.id.btnActionDelete)?.setOnClickListener {
+            val selected = selectedProduct
+            closeProductBalloon()
+            if (selected != null) {
+                showDeleteConfirmationDialog(selected)
             }
+        }
 
-
-        // =====================================================
         // إظهار Balloon
-        // =====================================================
-
         if (showBelow) {
-
-            balloon.showAlignBottom(
-                anchorView
-            )
-
+            balloon.showAlignBottom(anchorView)
         } else {
-
-            balloon.showAlignTop(
-                anchorView
-            )
+            balloon.showAlignTop(anchorView)
         }
     }
 
@@ -606,124 +339,74 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
     // الدخول إلى وضع التحديد المتعدد
     // =========================================================
+
     private fun enterSelectionMode(
-    searchField: EditText,
-    actionsContainer: LinearLayout,
-    searchAndActionsBar: LinearLayout,
-    searchContainer: View
-) {
-    if (isSelectionMode) return
-    isSelectionMode = true
+        searchField: EditText,
+        actionsContainer: LinearLayout,
+        searchAndActionsBar: LinearLayout,
+        searchContainer: View
+    ) {
+        if (isSelectionMode) return
+        isSelectionMode = true
 
-    // 1. إخفاء لوحة المفاتيح وفقدان التركيز
-    searchField.clearFocus()
-    searchField.isCursorVisible = false
-    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+        // 1. إخفاء لوحة المفاتيح وفقدان التركيز
+        searchField.clearFocus()
+        searchField.isCursorVisible = false
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-    closeProductBalloon()
+        closeProductBalloon()
 
-    // 2. إخفاء النص وتفريغه
-    searchField.setText("")
-    searchField.visibility = View.GONE
+        // 2. إخفاء النص وتفريغه
+        searchField.setText("")
+        searchField.visibility = View.GONE
 
-    // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
-    val initialWidth = searchContainer.width
-    val targetWidth = dpToPx(52)
+        // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
+        val initialWidth = searchContainer.width
+        val targetWidth = dpToPx(52)
 
-    val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
-        duration = 250
-        interpolator = FastOutSlowInInterpolator()
-        addUpdateListener { valueAnimator ->
-            val animatedValue = valueAnimator.animatedValue as Int
-            val params = searchContainer.layoutParams
-            params.width = animatedValue
-            if (params is LinearLayout.LayoutParams) {
-                params.weight = 0f
+        val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
+            duration = 250
+            interpolator = FastOutSlowInInterpolator()
+            addUpdateListener { valueAnimator ->
+                val animatedValue = valueAnimator.animatedValue as Int
+                val params = searchContainer.layoutParams
+                params.width = animatedValue
+                if (params is LinearLayout.LayoutParams) {
+                    params.weight = 0f
+                }
+                searchContainer.layoutParams = params
             }
-            searchContainer.layoutParams = params
         }
-    }
-    anim.start()
+        anim.start()
 
-    // 4. إظهار الإجراءات المحددة
-    setupSelectionActions(actionsContainer)
-    actionsContainer.visibility = View.VISIBLE
+        // 4. إظهار الإجراءات المحددة
+        setupSelectionActions(actionsContainer)
+        actionsContainer.visibility = View.VISIBLE
 
-    listHandler.setSelectionMode(true)
+        listHandler.setSelectionMode(true)
     }
-    
+
 
     // =========================================================
     // إعداد أزرار وضع التحديد
     // =========================================================
 
-    private fun setupSelectionActions(
-        actionsContainer: LinearLayout
-    ) {
-                // =====================================================
-        // زر الحذف
-        // =====================================================
+    private fun setupSelectionActions(actionsContainer: LinearLayout) {
+        actionsContainer.findViewById<ImageView>(R.id.btnDeleteSelected)?.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { deleteSelectedProducts() }
+        }
 
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnDeleteSelected
-            )
-            ?.setOnClickListener {
+        actionsContainer.findViewById<ImageView>(R.id.btnPrintSelected)?.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { printSelectedProducts() }
+        }
 
-                deleteSelectedProducts()
-            }
-
-
-        // =====================================================
-        // زر الطباعة
-        // =====================================================
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPrintSelected
-            )
-            ?.setOnClickListener {
-
-                printSelectedProducts()
-            }
-
-
-        // =====================================================
-        // زر PDF
-        // =====================================================
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPdfSelected
-            )
-            ?.setOnClickListener {
-
-                exportSelectedProductsToPdf()
-            }
-
-
-        // =====================================================
-        // إظهار الأزرار
-        // =====================================================
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnDeleteSelected
-            )
-            ?.visibility = View.VISIBLE
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPrintSelected
-            )
-            ?.visibility = View.VISIBLE
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPdfSelected
-            )
-            ?.visibility = View.VISIBLE
+        actionsContainer.findViewById<ImageView>(R.id.btnPdfSelected)?.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { exportSelectedProductsToPdf() }
+        }
     }
 
 
@@ -731,254 +414,71 @@ class MainActivity : AppCompatActivity() {
     // الخروج من وضع التحديد المتعدد
     // =========================================================
 
-    // =========================================================
-// الخروج من وضع التحديد المتعدد
-// =========================================================
+    private fun exitSelectionMode() {
+        if (!isSelectionMode) return
 
-private fun exitSelectionMode() {
+        isSelectionMode = false
 
-    if (!isSelectionMode) {
-        return
-    }
+        listHandler.clearSelection()
+        listHandler.setSelectionMode(false)
 
-    isSelectionMode = false
+        val searchField = findViewById<EditText>(R.id.searchField)
+        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+        val searchContainer = findViewById<View>(R.id.searchContainer)
+        val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
 
-    listHandler.clearSelection()
+        searchField.clearFocus()
+        searchField.isCursorVisible = false
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-    listHandler.setSelectionMode(
-        false
-    )
+        actionsContainer.findViewById<ImageView>(R.id.btnDeleteSelected)?.visibility = View.GONE
+        actionsContainer.findViewById<ImageView>(R.id.btnPrintSelected)?.visibility = View.GONE
+        actionsContainer.findViewById<ImageView>(R.id.btnPdfSelected)?.visibility = View.GONE
 
-    val searchField =
-        findViewById<EditText>(
-            R.id.searchField
-        )
+        btnMultiSelect.visibility = View.VISIBLE
+        actionsContainer.visibility = View.VISIBLE
 
-    val actionsContainer =
-        findViewById<LinearLayout>(
-            R.id.actionsContainer
-        )
+        val initialWidth = searchContainer.width
+        val parent = searchContainer.parent as? View ?: return
+        val parentWidth = parent.width
 
-    val searchContainer =
-        findViewById<View>(
-            R.id.searchContainer
-        )
+        val searchParams = searchContainer.layoutParams
+        val actionsParams = actionsContainer.layoutParams
 
-    val btnMultiSelect =
-        findViewById<ImageView>(
-            R.id.btnMultiSelect
-        )
+        val targetWidth = parentWidth - actionsContainer.width - actionsParams.marginStart - searchParams.marginStart - searchParams.marginEnd
 
+        if (searchParams is LinearLayout.LayoutParams) {
+            searchParams.weight = 0f
+            searchContainer.layoutParams = searchParams
+        }
 
-    // =====================================================
-    // إخفاء لوحة المفاتيح وإلغاء التركيز
-    // =====================================================
+        searchField.visibility = View.VISIBLE
 
-    searchField.clearFocus()
-
-    searchField.isCursorVisible =
-        false
-
-    val imm =
-        getSystemService(
-            Context.INPUT_METHOD_SERVICE
-        ) as? InputMethodManager
-
-    imm?.hideSoftInputFromWindow(
-        searchField.windowToken,
-        0
-    )
-
-
-    // =====================================================
-    // إخفاء أزرار العمليات
-    // =====================================================
-
-    actionsContainer
-        .findViewById<ImageView>(
-            R.id.btnDeleteSelected
-        )
-        ?.visibility = View.GONE
-
-    actionsContainer
-        .findViewById<ImageView>(
-            R.id.btnPrintSelected
-        )
-        ?.visibility = View.GONE
-
-    actionsContainer
-        .findViewById<ImageView>(
-            R.id.btnPdfSelected
-        )
-        ?.visibility = View.GONE
-
-
-    // =====================================================
-    // إظهار زر التحديد
-    // =====================================================
-
-    btnMultiSelect.visibility =
-        View.VISIBLE
-
-    actionsContainer.visibility =
-        View.VISIBLE
-
-
-    // =====================================================
-    // العرض الحالي لحقل البحث
-    // =====================================================
-
-    val initialWidth =
-        searchContainer.width
-
-
-    // =====================================================
-    // حساب العرض الطبيعي لحقل البحث
-    // =====================================================
-
-    val parent =
-        searchContainer.parent as? View
-
-    if (parent == null) {
-        return
-    }
-
-
-    val parentWidth =
-        parent.width
-
-    val searchParams =
-        searchContainer.layoutParams
-
-    val actionsParams =
-        actionsContainer.layoutParams
-
-
-    val targetWidth =
-        parentWidth -
-        actionsContainer.width -
-        actionsParams.marginStart -
-        searchParams.marginStart -
-        searchParams.marginEnd
-
-
-    // =====================================================
-    // منع الوزن من التأثير أثناء الحركة
-    // =====================================================
-
-    if (searchParams is LinearLayout.LayoutParams) {
-
-        searchParams.weight = 0f
-
-        searchContainer.layoutParams =
-            searchParams
-    }
-
-
-    // =====================================================
-    // إظهار حقل البحث قبل بدء الحركة
-    // =====================================================
-
-    searchField.visibility =
-        View.VISIBLE
-
-
-    // =====================================================
-    // تحريك حقل البحث إلى حجمه الطبيعي
-    // =====================================================
-
-    ValueAnimator
-        .ofInt(
-            initialWidth,
-            targetWidth
-        )
-        .apply {
-
+        ValueAnimator.ofInt(initialWidth, targetWidth).apply {
             duration = 250
-
-            interpolator =
-                FastOutSlowInInterpolator()
-
+            interpolator = FastOutSlowInInterpolator()
             addUpdateListener { animator ->
-
-                val animatedWidth =
-                    animator.animatedValue as Int
-
-                val params =
-                    searchContainer.layoutParams
-
-                params.width =
-                    animatedWidth
-
+                val animatedWidth = animator.animatedValue as Int
+                val params = searchContainer.layoutParams
+                params.width = animatedWidth
                 if (params is LinearLayout.LayoutParams) {
                     params.weight = 0f
                 }
-
-                searchContainer.layoutParams =
-                    params
+                searchContainer.layoutParams = params
             }
-
-
-            // =================================================
-            // بعد انتهاء الحركة
-            // =================================================
 
             doOnEnd {
-
-                val finalParams =
-                    searchContainer.layoutParams
-
+                val finalParams = searchContainer.layoutParams
                 if (finalParams is LinearLayout.LayoutParams) {
-
                     finalParams.width = 0
-
                     finalParams.weight = 1f
-
-                    searchContainer.layoutParams =
-                        finalParams
+                    searchContainer.layoutParams = finalParams
                 }
-
-                searchField.isCursorVisible =
-                    true
+                searchField.isCursorVisible = true
             }
-
             start()
         }
-}
-
-
-        // =====================================================
-        // إخفاء أزرار العمليات
-        // =====================================================
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnDeleteSelected
-            )
-            ?.visibility = View.GONE
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPrintSelected
-            )
-            ?.visibility = View.GONE
-
-        actionsContainer
-            .findViewById<ImageView>(
-                R.id.btnPdfSelected
-            )
-            ?.visibility = View.GONE
-
-
-        // =====================================================
-        // إظهار زر التحديد
-        // =====================================================
-
-        btnMultiSelect.visibility =
-            View.VISIBLE
-
-        actionsContainer.visibility =
-            View.VISIBLE
     }
 
 
@@ -987,57 +487,25 @@ private fun exitSelectionMode() {
     // =========================================================
 
     private fun deleteSelectedProducts() {
-
-        val selectedProducts =
-            listHandler.getSelectedProducts()
+        val selectedProducts = listHandler.getSelectedProducts()
 
         if (selectedProducts.isEmpty()) {
-
-            Toast.makeText(
-                this,
-                "لم يتم تحديد أي منتج",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
             return
         }
 
-
         AlertDialog.Builder(this)
-
             .setTitle("حذف المنتجات")
-
-            .setMessage(
-                "هل تريد حذف ${selectedProducts.size} منتج؟"
-            )
-
-            .setNegativeButton(
-                "إلغاء",
-                null
-            )
-
-            .setPositiveButton(
-                "حذف"
-            ) { _, _ ->
-
+            .setMessage("هل تريد حذف ${selectedProducts.size} منتج؟")
+            .setNegativeButton("إلغاء", null)
+            .setPositiveButton("حذف") { _, _ ->
                 for (product in selectedProducts) {
-
-                    databaseHelper.deleteProduct(
-                        product.barcode
-                    )
+                    databaseHelper.deleteProduct(product.barcode)
                 }
-
                 exitSelectionMode()
-
                 loadProductsFromDatabase()
-
-                Toast.makeText(
-                    this,
-                    "تم حذف المنتجات المحددة",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "تم حذف المنتجات المحددة", Toast.LENGTH_SHORT).show()
             }
-
             .show()
     }
 
@@ -1047,27 +515,12 @@ private fun exitSelectionMode() {
     // =========================================================
 
     private fun printSelectedProducts() {
-
-        val selectedProducts =
-            listHandler.getSelectedProducts()
-
+        val selectedProducts = listHandler.getSelectedProducts()
         if (selectedProducts.isEmpty()) {
-
-            Toast.makeText(
-                this,
-                "لم يتم تحديد أي منتج",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
             return
         }
-
-
-        Toast.makeText(
-            this,
-            "طباعة ${selectedProducts.size} منتج",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "طباعة ${selectedProducts.size} منتج", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -1076,74 +529,35 @@ private fun exitSelectionMode() {
     // =========================================================
 
     private fun exportSelectedProductsToPdf() {
-
-        val selectedProducts =
-            listHandler.getSelectedProducts()
-
+        val selectedProducts = listHandler.getSelectedProducts()
         if (selectedProducts.isEmpty()) {
-
-            Toast.makeText(
-                this,
-                "لم يتم تحديد أي منتج",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
             return
         }
-
-
-        Toast.makeText(
-            this,
-            "تصدير ${selectedProducts.size} منتج إلى PDF",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "تصدير ${selectedProducts.size} منتج إلى PDF", Toast.LENGTH_SHORT).show()
     }
-        // =========================================================
+
+
+    // =========================================================
     // التعامل مع نتيجة الباركود
     // =========================================================
 
-    private fun handleBarcodeResult(
-        barcode: String
-    ) {
+    private fun handleBarcodeResult(barcode: String) {
+        if (barcode.isBlank()) return
 
-        if (barcode.isBlank()) {
-            return
+        val intent = Intent(this, AddProductActivity::class.java).apply {
+            putExtra("BARCODE_EXTRA", barcode)
         }
-
-        val intent =
-            Intent(
-                this,
-                AddProductActivity::class.java
-            ).apply {
-
-                putExtra(
-                    "BARCODE_EXTRA",
-                    barcode
-                )
-            }
-
-        addProductLauncher.launch(
-            intent
-        )
+        addProductLauncher.launch(intent)
     }
-
-
+    
     // =========================================================
     // إعداد شريط الأدوات
     // =========================================================
 
     private fun setupToolbar() {
-
-        findViewById<ImageView>(
-            R.id.btnSettings
-        )?.setOnClickListener {
-
-            startActivity(
-                Intent(
-                    this,
-                    SettingsActivity::class.java
-                )
-            )
+        findViewById<ImageView>(R.id.btnSettings)?.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 
@@ -1153,93 +567,42 @@ private fun exitSelectionMode() {
     // =========================================================
 
     private fun setupChips() {
-
-        val chipGroup =
-            findViewById<ChipGroup>(
-                R.id.chipGroupCategories
-            )
-
+        val chipGroup = findViewById<ChipGroup>(R.id.chipGroupCategories)
         chipGroup.removeAllViews()
 
-        val categories =
-            databaseHelper.getAllCategories()
-
-        addCategoryChip(
-            chipGroup,
-            "الكل"
-        )
+        val categories = databaseHelper.getAllCategories()
+        addCategoryChip(chipGroup, "الكل")
 
         for (category in categories) {
-
-            if (
-                category.isNotBlank() &&
-                category != "الكل"
-            ) {
-
-                addCategoryChip(
-                    chipGroup,
-                    category
-                )
+            if (category.isNotBlank() && category != "الكل") {
+                addCategoryChip(chipGroup, category)
             }
         }
     }
-
-
     // =========================================================
     // إضافة Chip للتصنيف
     // =========================================================
 
-    private fun addCategoryChip(
-        chipGroup: ChipGroup,
-        category: String
-    ) {
+    private fun addCategoryChip(chipGroup: ChipGroup, category: String) {
+        val chip = Chip(this).apply {
+            text = category
+            isCheckable = true
+            isChecked = category == currentCategory
+            setTextColor(Color.BLACK)
 
-        val chip =
-            Chip(this).apply {
+            chipStrokeWidth = 0f
+            chipStrokeColor = ColorStateList.valueOf(Color.TRANSPARENT)
+            chipBackgroundColor = ColorStateList.valueOf(
+                Color.parseColor(if (isChecked) "#E8F5E9" else "#F1F3F4")
+            )
 
-                text = category
-
-                isCheckable = true
-
-                isChecked =
-                    category == currentCategory
-
-                setTextColor(Color.BLACK)
-
-chipStrokeWidth = 0f
-
-chipStrokeColor =
-    ColorStateList.valueOf(
-        Color.TRANSPARENT
-    )
-
-chipBackgroundColor =
-    ColorStateList.valueOf(
-        Color.parseColor(
-            if (isChecked) {
-                "#E8F5E9"
-            } else {
-                "#F1F3F4"
+            setOnClickListener {
+                currentCategory = category
+                updateCategoryChipColors(chipGroup)
+                applyFilters()
             }
-        )
-    )
-
-                setOnClickListener {
-
-                    currentCategory =
-                        category
-
-                    updateCategoryChipColors(
-                        chipGroup
-                    )
-
-                    applyFilters()
-                }
-            }
-
-        chipGroup.addView(
-            chip
-        )
+        }
+        chipGroup.addView(chip)
     }
 
 
@@ -1247,75 +610,34 @@ chipBackgroundColor =
     // تحديث ألوان التصنيفات
     // =========================================================
 
-    private fun updateCategoryChipColors(
-        chipGroup: ChipGroup
-    ) {
-
+    private fun updateCategoryChipColors(chipGroup: ChipGroup) {
         for (i in 0 until chipGroup.childCount) {
-
-            val child =
-                chipGroup.getChildAt(i)
+            val child = chipGroup.getChildAt(i)
             if (child is Chip) {
-
-    child.chipBackgroundColor =
-        ColorStateList.valueOf(
-            Color.parseColor(
-                if (child.isChecked) {
-                    "#E8F5E9"
-                } else {
-                    "#F1F3F4"
-                }
-            )
-        )
+                child.chipBackgroundColor = ColorStateList.valueOf(
+                    Color.parseColor(if (child.isChecked) "#E8F5E9" else "#F1F3F4")
+                )
             }
-            
         }
     }
-
 
     // =========================================================
     // إعداد البحث
     // =========================================================
 
     private fun setupSearch() {
+        val searchField = findViewById<EditText>(R.id.searchField)
 
-        val searchField =
-            findViewById<EditText>(
-                R.id.searchField
-            )
+        searchField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-        searchField.addTextChangedListener(
-            object : TextWatcher {
-
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int
-                ) {
-
-                    currentSearchText =
-                        s?.toString()
-                            ?.trim()
-                            ?: ""
-
-                    applyFilters()
-                }
-
-                override fun afterTextChanged(
-                    s: Editable?
-                ) {
-                }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchText = s?.toString()?.trim() ?: ""
+                applyFilters()
             }
-        )
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
 
@@ -1324,39 +646,19 @@ chipBackgroundColor =
     // =========================================================
 
     private fun applyFilters() {
+        val searchText = currentSearchText.lowercase().trim()
 
-        val searchText =
-            currentSearchText
-                .lowercase()
-                .trim()
+        val filtered = productList.filter { product ->
+            val matchesCategory = currentCategory == "الكل" || product.category == currentCategory
+            val matchesSearch = searchText.isEmpty() ||
+                    product.name.lowercase().contains(searchText) ||
+                    product.barcode.lowercase().contains(searchText)
 
-        val filtered =
-            productList.filter { product ->
+            matchesCategory && matchesSearch
+        }
 
-                val matchesCategory =
-                    currentCategory == "الكل" ||
-                    product.category == currentCategory
-
-                val matchesSearch =
-                    searchText.isEmpty() ||
-                    product.name
-                        .lowercase()
-                        .contains(searchText) ||
-                    product.barcode
-                        .lowercase()
-                        .contains(searchText)
-
-                matchesCategory &&
-                        matchesSearch
-            }
-
-        listHandler.setup(
-            filtered.toMutableList()
-        )
-
-        listHandler.setSelectionMode(
-            isSelectionMode
-        )
+        listHandler.setup(filtered.toMutableList())
+        listHandler.setSelectionMode(isSelectionMode)
     }
 
 
@@ -1365,29 +667,17 @@ chipBackgroundColor =
     // =========================================================
 
     private fun loadProductsFromDatabase() {
-
         productList.clear()
-
-        productList.addAll(
-            databaseHelper.getAllProducts()
-        )
-
+        productList.addAll(databaseHelper.getAllProducts())
         setupChips()
-
         applyFilters()
-    }
-
-
-    // =========================================================
+        // =========================================================
     // إغلاق Balloon
     // =========================================================
 
     private fun closeProductBalloon() {
-
         currentBalloon?.dismiss()
-
         currentBalloon = null
-
         selectedProduct = null
     }
 
@@ -1396,125 +686,56 @@ chipBackgroundColor =
     // تحويل dp إلى px
     // =========================================================
 
-    private fun dpToPx(
-        dp: Int
-    ): Int {
-
-        return (
-            dp *
-                resources.displayMetrics.density
-            ).toInt()
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
-        // =========================================================
+
+
+    // =========================================================
     // نافذة تأكيد حذف منتج واحد
     // =========================================================
 
-    private fun showDeleteConfirmationDialog(
-        product: Product
-    ) {
-
+    private fun showDeleteConfirmationDialog(product: Product) {
         AlertDialog.Builder(this)
-
             .setTitle("حذف المنتج")
-
-            .setMessage(
-                "هل تريد حذف المنتج:\n\n${product.name}؟"
-            )
-
-            .setNegativeButton(
-                "إلغاء",
-                null
-            )
-
-            .setPositiveButton(
-                "حذف"
-            ) { _, _ ->
-
-                databaseHelper.deleteProduct(
-                    product.barcode
-                )
-
+            .setMessage("هل تريد حذف المنتج:\n\n${product.name}؟")
+            .setNegativeButton("إلغاء", null)
+            .setPositiveButton("حذف") { _, _ ->
+                databaseHelper.deleteProduct(product.barcode)
                 loadProductsFromDatabase()
-
-                Toast.makeText(
-                    this,
-                    "تم حذف المنتج",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
             }
-
             .show()
     }
-
-
+    
     // =========================================================
     // التعامل مع زر الرجوع
     // =========================================================
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-
-        // =====================================================
-        // إذا كان وضع التحديد المتعدد فعالاً
-        // =====================================================
-
         if (isSelectionMode) {
-
             exitSelectionMode()
-
             return
         }
 
-
-        // =====================================================
-        // إذا كان البحث نشطاً
-        // =====================================================
-
-        val searchField =
-            findViewById<EditText>(
-                R.id.searchField
-            )
+        val searchField = findViewById<EditText>(R.id.searchField)
 
         if (searchField.hasFocus()) {
-
             searchField.clearFocus()
+            searchField.isCursorVisible = false
 
-            searchField.isCursorVisible =
-                false
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-            val imm =
-                getSystemService(
-                    Context.INPUT_METHOD_SERVICE
-                ) as? InputMethodManager
+            val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+            actionsContainer.visibility = View.VISIBLE
 
-            imm?.hideSoftInputFromWindow(
-                searchField.windowToken,
-                0
-            )
-
-            val actionsContainer =
-                findViewById<LinearLayout>(
-                    R.id.actionsContainer
-                )
-
-            actionsContainer.visibility =
-                View.VISIBLE
-
-            val btnMultiSelect =
-                findViewById<ImageView>(
-                    R.id.btnMultiSelect
-                )
-
-            btnMultiSelect.visibility =
-                View.VISIBLE
+            val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+            btnMultiSelect.visibility = View.VISIBLE
 
             return
         }
-
-
-        // =====================================================
-        // السلوك الطبيعي لزر الرجوع
-        // =====================================================
 
         super.onBackPressed()
     }
@@ -1525,9 +746,8 @@ chipBackgroundColor =
     // =========================================================
 
     override fun onDestroy() {
-
         closeProductBalloon()
-
         super.onDestroy()
     }
-}
+    }
+    
