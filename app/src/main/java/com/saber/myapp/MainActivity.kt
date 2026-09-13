@@ -341,52 +341,58 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
 
     private fun enterSelectionMode(
-        searchField: EditText,
-        actionsContainer: LinearLayout,
-        searchAndActionsBar: LinearLayout,
-        searchContainer: View
-    ) {
-        if (isSelectionMode) return
-        isSelectionMode = true
+    searchField: EditText,
+    actionsContainer: LinearLayout,
+    searchAndActionsBar: LinearLayout,
+    searchContainer: View
+) {
+    if (isSelectionMode) return
+    isSelectionMode = true
 
-        // 1. إخفاء لوحة المفاتيح وفقدان التركيز
-        searchField.clearFocus()
-        searchField.isCursorVisible = false
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+    // 1. إخفاء لوحة المفاتيح وفقدان التركيز
+    searchField.clearFocus()
+    searchField.isCursorVisible = false
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-        closeProductBalloon()
+    closeProductBalloon()
 
-        // 2. إخفاء النص وتفريغه
-        searchField.setText("")
-        searchField.visibility = View.GONE
+    // 2. إخفاء النص وتفريغه
+    searchField.setText("")
+    searchField.visibility = View.GONE
 
-        // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
-        val initialWidth = searchContainer.width
-        val targetWidth = dpToPx(52)
+    // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
+    val initialWidth = searchContainer.width
+    val targetWidth = dpToPx(52)
 
-        val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
-            duration = 250
-            interpolator = FastOutSlowInInterpolator()
-            addUpdateListener { valueAnimator ->
-                val animatedValue = valueAnimator.animatedValue as Int
-                val params = searchContainer.layoutParams
-                params.width = animatedValue
-                if (params is LinearLayout.LayoutParams) {
-                    params.weight = 0f
-                }
-                searchContainer.layoutParams = params
+    val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
+        duration = 250
+        interpolator = FastOutSlowInInterpolator()
+        addUpdateListener { valueAnimator ->
+            val animatedValue = valueAnimator.animatedValue as Int
+            val params = searchContainer.layoutParams
+            params.width = animatedValue
+            if (params is LinearLayout.LayoutParams) {
+                params.weight = 0f
             }
+            searchContainer.layoutParams = params
         }
-        anim.start()
-
-        // 4. إظهار الإجراءات المحددة
-        setupSelectionActions(actionsContainer)
-        actionsContainer.visibility = View.VISIBLE
-
-        listHandler.setSelectionMode(true)
     }
+    anim.start()
 
+    // 4. إظهار الإجراءات المحددة
+    setupSelectionActions(actionsContainer)
+    actionsContainer.visibility = View.VISIBLE
+
+    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء (ic_cancel_circle)
+    // ملاحظة: قم بتغيير R.id.btnSelectAll أو R.id.btnSelect إلى الـ ID الذي تمنحه لزر التحديد بداخل دالة setupSelectionActions
+    val selectButton = actionsContainer.findViewById<ImageView>(R.id.btnSelectAll) // أو ImageButton حسب نوع العرض
+    selectButton?.setImageResource(R.drawable.ic_cancel_circle)
+
+    listHandler.setSelectionMode(true)
+    }
+    
+    
 
     // =========================================================
     // إعداد أزرار وضع التحديد
@@ -426,7 +432,8 @@ class MainActivity : AppCompatActivity() {
         val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
         val searchContainer = findViewById<View>(R.id.searchContainer)
         val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
-
+        btnMultiSelect.setImageResource(R.drawable.ic_square_checkbox)
+        
         searchField.clearFocus()
         searchField.isCursorVisible = false
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
