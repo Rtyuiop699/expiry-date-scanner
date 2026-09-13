@@ -387,8 +387,11 @@ class MainActivity : AppCompatActivity() {
     // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء (ic_cancel_circle)
     // ملاحظة: قم بتغيير R.id.btnSelectAll أو R.id.btnSelect إلى الـ ID الذي تمنحه لزر التحديد بداخل دالة setupSelectionActions
         // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء (ic_cancel_circle)
-    val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+          val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
     btnMultiSelect?.setImageResource(R.drawable.ic_cancel_circle)
+    btnMultiSelect?.setOnClickListener {
+        exitSelectionMode()
+    }
 
     listHandler.setSelectionMode(true)
     }
@@ -435,6 +438,9 @@ class MainActivity : AppCompatActivity() {
         val searchContainer = findViewById<View>(R.id.searchContainer)
         val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
         btnMultiSelect.setImageResource(R.drawable.ic_check_box)
+        btnMultiSelect.setOnClickListener {
+        enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
+        }
         
         searchField.clearFocus()
         searchField.isCursorVisible = false
