@@ -334,13 +334,12 @@ class MainActivity : AppCompatActivity() {
             balloon.showAlignTop(anchorView)
         }
     }
+    
+// =========================================================
+// الدخول إلى وضع التحديد المتعدد
+// =========================================================
 
-
-    // =========================================================
-    // الدخول إلى وضع التحديد المتعدد
-    // =========================================================
-
-    private fun enterSelectionMode(
+private fun enterSelectionMode(
     searchField: EditText,
     actionsContainer: LinearLayout,
     searchAndActionsBar: LinearLayout,
@@ -384,19 +383,16 @@ class MainActivity : AppCompatActivity() {
     setupSelectionActions(actionsContainer)
     actionsContainer.visibility = View.VISIBLE
 
-    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء (ic_cancel_circle)
-    // ملاحظة: قم بتغيير R.id.btnSelectAll أو R.id.btnSelect إلى الـ ID الذي تمنحه لزر التحديد بداخل دالة setupSelectionActions
-        // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء (ic_cancel_circle)
-          val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء وربطه بحدث الخروج من وضع التحديد
+    val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
     btnMultiSelect?.setImageResource(R.drawable.ic_cancel_circle)
     btnMultiSelect?.setOnClickListener {
         exitSelectionMode()
     }
 
     listHandler.setSelectionMode(true)
-    }
-    
-    
+}
+
     
 
     // =========================================================
@@ -421,7 +417,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // =========================================================
+
+        // =========================================================
     // الخروج من وضع التحديد المتعدد
     // =========================================================
 
@@ -436,12 +433,14 @@ class MainActivity : AppCompatActivity() {
         val searchField = findViewById<EditText>(R.id.searchField)
         val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
         val searchContainer = findViewById<View>(R.id.searchContainer)
+        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
         val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+
         btnMultiSelect.setImageResource(R.drawable.ic_check_box)
         btnMultiSelect.setOnClickListener {
-        enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
+            enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
         }
-        
+
         searchField.clearFocus()
         searchField.isCursorVisible = false
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -462,17 +461,17 @@ class MainActivity : AppCompatActivity() {
         val actionsParams = actionsContainer.layoutParams
 
         val actionsMargins =
-    actionsParams as? android.view.ViewGroup.MarginLayoutParams
+            actionsParams as? android.view.ViewGroup.MarginLayoutParams
 
-val searchMargins =
-    searchParams as? android.view.ViewGroup.MarginLayoutParams
+        val searchMargins =
+            searchParams as? android.view.ViewGroup.MarginLayoutParams
 
-val targetWidth =
-    parentWidth -
-    actionsContainer.width -
-    (actionsMargins?.marginStart ?: 0) -
-    (searchMargins?.marginStart ?: 0) -
-    (searchMargins?.marginEnd ?: 0)
+        val targetWidth =
+            parentWidth -
+            actionsContainer.width -
+            (actionsMargins?.marginStart ?: 0) -
+            (searchMargins?.marginStart ?: 0) -
+            (searchMargins?.marginEnd ?: 0)
 
         if (searchParams is LinearLayout.LayoutParams) {
             searchParams.weight = 0f
@@ -506,7 +505,8 @@ val targetWidth =
             start()
         }
     }
-
+    
+                
 
     // =========================================================
     // حذف المنتجات المحددة
