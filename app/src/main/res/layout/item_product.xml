@@ -74,17 +74,17 @@
             </LinearLayout>
 
             <!-- الأيام المتبقية -->
-
-            <TextView
-                android:id="@+id/textViewRemaining"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="متبقي 5 أيام"
-                android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:gravity="left" />
-
+          <TextView
+    android:id="@+id/textViewRemaining"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:text="متبقي 5 أيام"
+    android:textSize="14sp"
+    android:textColor="@android:color/black"
+    android:gravity="left"
+    android:translationX="25dp" />
+            
             <!-- الباركود -->
 
             <TextView
