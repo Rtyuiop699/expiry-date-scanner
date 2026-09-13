@@ -446,7 +446,15 @@ class MainActivity : AppCompatActivity() {
         val searchParams = searchContainer.layoutParams
         val actionsParams = actionsContainer.layoutParams
 
-        val targetWidth = parentWidth - actionsContainer.width - actionsParams.marginStart - searchParams.marginStart - searchParams.marginEnd
+        val actionsMargins = actionsParams as? ViewGroup.MarginLayoutParams
+val searchMargins = searchParams as? ViewGroup.MarginLayoutParams
+
+val targetWidth =
+    parentWidth -
+    actionsContainer.width -
+    (actionsMargins?.marginStart ?: 0) -
+    (searchMargins?.marginStart ?: 0) -
+    (searchMargins?.marginEnd ?: 0)
 
         if (searchParams is LinearLayout.LayoutParams) {
             searchParams.weight = 0f
