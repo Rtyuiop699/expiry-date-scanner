@@ -379,11 +379,12 @@ private fun enterSelectionMode(
     }
     anim.start()
 
-    // 4. إظهار الإجراءات المحددة
+    // 4. إظهار الإجراءات المحددة وإجبار الأيقونات على المحاذاة لأقصى اليسار
     setupSelectionActions(actionsContainer)
+    actionsContainer.gravity = Gravity.START or Gravity.CENTER_VERTICAL
     actionsContainer.visibility = View.VISIBLE
 
-    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء وربطه بحدث الخروج من وضع التحديد
+    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء وربطه بحدث الخروج
     val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
     btnMultiSelect?.setImageResource(R.drawable.ic_cancel_circle)
     btnMultiSelect?.setOnClickListener {
