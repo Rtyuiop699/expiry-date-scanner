@@ -671,6 +671,7 @@ class MainActivity : AppCompatActivity() {
         productList.addAll(databaseHelper.getAllProducts())
         setupChips()
         applyFilters()
+    }
         // =========================================================
     // إغلاق Balloon
     // =========================================================
