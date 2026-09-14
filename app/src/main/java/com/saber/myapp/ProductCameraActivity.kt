@@ -2,13 +2,14 @@ package com.saber.myapp
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Bitmap
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -28,9 +29,12 @@ import java.util.concurrent.Executors
 class ProductCameraActivity : AppCompatActivity() {
 
     private lateinit var previewView: PreviewView
-    private lateinit var btnCapture: Button
-    private lateinit var btnCancel: Button
+    private lateinit var btnCapture: ImageButton
+    private lateinit var btnFlash: ImageButton
+    
     private var imageCapture: ImageCapture? = null
+    private var camera: Camera? = null
+    private var isFlashOn = false
     private lateinit var cameraExecutor: ExecutorService
 
     companion object {
@@ -44,15 +48,14 @@ class ProductCameraActivity : AppCompatActivity() {
 
         previewView = findViewById(R.id.previewView)
         btnCapture = findViewById(R.id.btnCapture)
-        btnCancel = findViewById(R.id.btnCancel)
+        btnFlash = findViewById(R.id.btnFlash)
 
         btnCapture.setOnClickListener {
             takePhoto()
         }
 
-        btnCancel.setOnClickListener {
-            setResult(RESULT_CANCELED)
-            finish()
+        btnFlash.setOnClickListener {
+            toggleFlash()
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -98,7 +101,7 @@ class ProductCameraActivity : AppCompatActivity() {
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
+                camera = cameraProvider.bindToLifecycle(
                     this,
                     cameraSelector,
                     preview,
@@ -111,6 +114,18 @@ class ProductCameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    private fun toggleFlash() {
+        if (camera != null && camera?.cameraInfo?.hasFlashUnit() == true) {
+            isFlashOn = !isFlashOn
+            camera?.cameraControl?.enableTorch(isFlashOn)
+            
+            // تغيير شفافية الزر كإشارة بصرية لتفعيل الفلاش
+            btnFlash.alpha = if (isFlashOn) 1.0f else 0.5f
+        } else {
+            Toast.makeText(this, "الفلاش غير متوفر في هذا الجهاز", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
@@ -118,7 +133,6 @@ class ProductCameraActivity : AppCompatActivity() {
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         btnCapture.isEnabled = false
-        btnCapture.text = "⏳ جاري..."
 
         imageCapture.takePicture(
             outputOptions,
@@ -126,17 +140,14 @@ class ProductCameraActivity : AppCompatActivity() {
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
 
-                    // ✔️ ضغط الصورة (كما طلبت)
                     val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
                     val stream = FileOutputStream(photoFile)
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
                     stream.flush()
                     stream.close()
 
-                    // ✔️ التعديل المطلوب
                     val finalPath = photoFile.absolutePath
 
-                    // ✔️ التاخير البسيط (كما طلبت)
                     Thread.sleep(100)
 
                     val resultIntent = Intent()
@@ -147,7 +158,6 @@ class ProductCameraActivity : AppCompatActivity() {
 
                 override fun onError(exception: ImageCaptureException) {
                     btnCapture.isEnabled = true
-                    btnCapture.text = "📸 تصوير"
                     Toast.makeText(this@ProductCameraActivity, "خطأ في التصوير: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -163,6 +173,8 @@ class ProductCameraActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
+        if (::cameraExecutor.isInitialized) {
+            cameraExecutor.shutdown()
+        }
     }
 }
