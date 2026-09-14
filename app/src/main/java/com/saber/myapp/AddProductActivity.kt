@@ -1132,37 +1132,8 @@ private fun createDate(
     }
 }
 
-// =====================================================
-// إنشاء التاريخ والتحقق الحقيقي منه بواسطة java.time
-// =====================================================
 
-private fun createDate(
-    year: Int,
-    month: Int,
-    day: Int
-): String? {
-
-    return try {
-
-        val date = LocalDate.of(
-            year,
-            month,
-            day
-        )
-
-        date.format(dateFormatter)
-
-    } catch (e: DateTimeParseException) {
-
-        null
-
-    } catch (e: DateTimeException) {
-
-        null
-    }
-}
-
-   
+  
     // الدالة المضافة حديثاً
     private fun fetchProductFromApi(barcode: String) {
 
