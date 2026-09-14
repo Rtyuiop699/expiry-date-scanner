@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,35 +11,31 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- شريط التحكم السفلي -->
+    <!-- شريط التحكم بالأسفل -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="32dp">
+        android:paddingHorizontal="48dp"
+        android:gravity="center_vertical">
 
-        <!-- زر الفلاش -->
+        <!-- أيقونة الكاميرا (في المنتصف) -->
+        <ImageButton
+            android:id="@+id/btnCapture"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_camera"
+            android:contentDescription="التقاط صورة" />
+
+        <!-- أيقونة الفلاش (على الجانب) -->
         <ImageButton
             android:id="@+id/btnFlash"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_flash"
-            app:tint="@android:color/white"
+            android:background="@drawable/ic_flash"
             android:contentDescription="الفلاش" />
-
-        <!-- زر التقاط الصورة (في المنتصف) -->
-        <ImageButton
-            android:id="@+id/btnCapture"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_centerInParent="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_camera"
-            app:tint="@android:color/white"
-            android:contentDescription="التقاط صورة" />
 
     </RelativeLayout>
 
