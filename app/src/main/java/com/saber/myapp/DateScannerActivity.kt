@@ -20,7 +20,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -42,13 +41,14 @@ class DateScannerActivity : AppCompatActivity() {
     private lateinit var previewView: PreviewView
 
     private lateinit var btnCapture: ImageButton
-private lateinit var btnConfirm: ImageButton
-private lateinit var btnSOCR: ImageButton
-private lateinit var btnFlash: ImageButton
+    private lateinit var btnConfirm: ImageButton
+    private lateinit var btnSOCR: ImageButton
+    private lateinit var btnFlash: ImageButton
 
     private lateinit var tvResult: TextView
 
     private var camera: Camera? = null
+    private var cameraProvider: ProcessCameraProvider? = null
 
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
@@ -56,14 +56,12 @@ private lateinit var btnFlash: ImageButton
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
 
-
-            companion object {
+    companion object {
         private const val REQUEST_CAMERA = 100
         private const val REQUEST_GEMINI_DATE = 101
 
         const val EXTRA_DATE = "recognized_date"
-    } // تم إغلاق companion object فقط، ونستكمل بقية الكلاس بشكل طبيعي
-            
+    }
 
     // ============================================================
     // إنشاء الشاشة
@@ -92,21 +90,10 @@ private lateinit var btnFlash: ImageButton
         // الأيقونات
         // ========================================================
 
-        btnCapture.setImageResource(
-            R.drawable.ic_camera
-        )
-
-        btnConfirm.setImageResource(
-            R.drawable.ic_check
-        )
-
-        btnSOCR.setImageResource(
-            R.drawable.ic_socr
-        )
-
-        btnFlash.setImageResource(
-            R.drawable.ic_flash
-        )
+        btnCapture.setImageResource(R.drawable.ic_camera)
+        btnConfirm.setImageResource(R.drawable.ic_check)
+        btnSOCR.setImageResource(R.drawable.ic_socr)
+        btnFlash.setImageResource(R.drawable.ic_flash)
 
         // ========================================================
         // زر التصوير
@@ -121,25 +108,12 @@ private lateinit var btnFlash: ImageButton
         // ========================================================
 
         btnConfirm.setOnClickListener {
-
             if (recognizedDate != null) {
-
                 val resultIntent = Intent()
-
-                resultIntent.putExtra(
-                    EXTRA_DATE,
-                    recognizedDate
-                )
-
-                setResult(
-                    RESULT_OK,
-                    resultIntent
-                )
-
+                resultIntent.putExtra(EXTRA_DATE, recognizedDate)
+                setResult(RESULT_OK, resultIntent)
                 finish()
-
             } else {
-
                 Toast.makeText(
                     this,
                     "لم يتم التعرف على تاريخ بعد",
@@ -152,51 +126,38 @@ private lateinit var btnFlash: ImageButton
         // زر S.OCR
         // ========================================================
 
-     btnSOCR.setOnClickListener {
-
-    val intent = Intent(
-        this,
-        GeminiDateScannerActivity::class.java
-    )
-
-    startActivityForResult(
-        intent,
-        REQUEST_GEMINI_DATE
-    )
-     }
+        btnSOCR.setOnClickListener {
+            val intent = Intent(
+                this,
+                GeminiDateScannerActivity::class.java
+            )
+            startActivityForResult(
+                intent,
+                REQUEST_GEMINI_DATE
+            )
+        }
 
         // ========================================================
         // زر الفلاش
         // ========================================================
 
         btnFlash.setOnClickListener {
-
             val currentCamera = camera
-
             if (currentCamera == null) {
-
                 Toast.makeText(
                     this,
                     "الكاميرا غير جاهزة",
                     Toast.LENGTH_SHORT
                 ).show()
-
                 return@setOnClickListener
             }
 
             val isTorchOn =
-                currentCamera.cameraInfo.torchState.value ==
-                        TorchState.ON
-
+                currentCamera.cameraInfo.torchState.value == TorchState.ON
             val newState = !isTorchOn
 
-            currentCamera.cameraControl.enableTorch(
-                newState
-            )
-
-            btnFlash.setImageResource(
-                R.drawable.ic_flash
-            )
+            currentCamera.cameraControl.enableTorch(newState)
+            btnFlash.setImageResource(R.drawable.ic_flash)
         }
 
         // ========================================================
@@ -205,77 +166,48 @@ private lateinit var btnFlash: ImageButton
 
         checkCameraPermission()
     }
-   override fun onActivityResult(
-    requestCode: Int,
-    resultCode: Int,
-    data: Intent?
-) {
-    super.onActivityResult(
-        requestCode,
-        resultCode,
-        data
-    )
 
-    if (
-        requestCode == REQUEST_GEMINI_DATE &&
-        resultCode == RESULT_OK
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
     ) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        val recognizedDate =
-            data?.getStringExtra(
-                GeminiDateScannerActivity.EXTRA_DATE
-            )
+        if (requestCode == REQUEST_GEMINI_DATE && resultCode == RESULT_OK) {
+            val recognizedDate = data?.getStringExtra(GeminiDateScannerActivity.EXTRA_DATE)
 
-        if (!recognizedDate.isNullOrBlank()) {
-
-            // تمرير التاريخ إلى AddProductActivity
-            val resultIntent = Intent()
-
-            resultIntent.putExtra(
-                EXTRA_DATE,
-                recognizedDate
-            )
-
-            setResult(
-                RESULT_OK,
-                resultIntent
-            )
-
-            // إغلاق شاشة OCR المحلية
-            finish()
-
-        } else {
-
-            Toast.makeText(
-                this,
-                "لم يتم استلام تاريخ من Gemini",
-                Toast.LENGTH_SHORT
-            ).show()
+            if (!recognizedDate.isNullOrBlank()) {
+                val resultIntent = Intent()
+                resultIntent.putExtra(EXTRA_DATE, recognizedDate)
+                setResult(RESULT_OK, resultIntent)
+                finish()
+            } else {
+                Toast.makeText(
+                    this,
+                    "لم يتم استلام تاريخ من Gemini",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
-   }
-// ============================================================
-    // القسم الثاني
-    // الكاميرا + التقاط الصورة + OCR
+        // ============================================================
+    // القسم الثاني: الكاميرا + التقاط الصورة + OCR
     // ============================================================
 
     private fun checkCameraPermission() {
-
         if (
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_CAMERA
             )
-
         } else {
-
             startCamera()
         }
     }
@@ -285,56 +217,52 @@ private lateinit var btnFlash: ImageButton
     // ============================================================
 
     private fun startCamera() {
+        if (!::cameraExecutor.isInitialized || cameraExecutor.isShutdown) {
+            cameraExecutor = Executors.newSingleThreadExecutor()
+        }
 
-        cameraExecutor =
-            Executors.newSingleThreadExecutor()
-
-        val cameraProviderFuture =
-            ProcessCameraProvider.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
+            cameraProvider = cameraProviderFuture.get()
 
-            val cameraProvider =
-                cameraProviderFuture.get()
+            val preview = Preview.Builder().build()
+            preview.setSurfaceProvider(previewView.surfaceProvider)
 
-            val preview =
-                Preview.Builder().build()
-
-            preview.setSurfaceProvider(
-                previewView.surfaceProvider
-            )
-
-            imageCapture =
-                ImageCapture.Builder()
-                    .setCaptureMode(
-                        ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
-                    )
-                    .build()
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .build()
 
             try {
+                cameraProvider?.unbindAll()
 
-                cameraProvider.unbindAll()
-
-                camera =
-                    cameraProvider.bindToLifecycle(
-                        this,
-                        CameraSelector.DEFAULT_BACK_CAMERA,
-                        preview,
-                        imageCapture
-                    )
-
+                camera = cameraProvider?.bindToLifecycle(
+                    this,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageCapture
+                )
             } catch (e: Exception) {
-
                 Toast.makeText(
                     this,
                     "فشل تشغيل الكاميرا: ${e.message}",
                     Toast.LENGTH_SHORT
                 ).show()
-
                 finish()
             }
-
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    // ============================================================
+    // إيقاف المعاينة لتثبيت الصورة أثناء المعالجة
+    // ============================================================
+
+    private fun stopCameraPreview() {
+        try {
+            cameraProvider?.unbindAll()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // ============================================================
@@ -342,50 +270,36 @@ private lateinit var btnFlash: ImageButton
     // ============================================================
 
     private fun takePhoto() {
+        val imageCapture = imageCapture ?: return
 
-        val imageCapture =
-            imageCapture ?: return
-
-        val photoFile =
-            createImageFile()
-
-        val outputOptions =
-            ImageCapture.OutputFileOptions.Builder(
-                photoFile
-            ).build()
+        val photoFile = createImageFile()
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         // منع الضغط المتكرر
         btnCapture.isEnabled = false
 
         // أيقونة انتظار بدل النص
-        btnCapture.setImageResource(
-            R.drawable.ic_loading
-        )
+        btnCapture.setImageResource(R.drawable.ic_loading)
+
+        // إظهار نص جاري التعرف فوراً بالصيغة المطلوبة
+        tvResult.text = "جاري التعرف على التاريخ...\nللحصول على دقة أكبر اضغط على زر AI في شريط الأزرار السفلي"
 
         imageCapture.takePicture(
-
             outputOptions,
-
             ContextCompat.getMainExecutor(this),
-
             object : ImageCapture.OnImageSavedCallback {
 
-                override fun onImageSaved(
-                    output: ImageCapture.OutputFileResults
-                ) {
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    // إيقاف بث الكاميرا الحية لتجميد المشهد على آخر لقطة
+                    stopCameraPreview()
 
-                    val bitmap =
-                        BitmapFactory.decodeFile(
-                            photoFile.absolutePath
-                        )
+                    val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
 
                     if (bitmap != null) {
-
                         recognizeDate(bitmap)
-
                     } else {
-
                         resetCaptureButton()
+                        startCamera()
 
                         Toast.makeText(
                             this@DateScannerActivity,
@@ -395,11 +309,9 @@ private lateinit var btnFlash: ImageButton
                     }
                 }
 
-                override fun onError(
-                    exception: ImageCaptureException
-                ) {
-
+                override fun onError(exception: ImageCaptureException) {
                     resetCaptureButton()
+                    startCamera()
 
                     Toast.makeText(
                         this@DateScannerActivity,
@@ -416,12 +328,8 @@ private lateinit var btnFlash: ImageButton
     // ============================================================
 
     private fun resetCaptureButton() {
-
         btnCapture.isEnabled = true
-
-        btnCapture.setImageResource(
-            R.drawable.ic_camera
-        )
+        btnCapture.setImageResource(R.drawable.ic_camera)
     }
 
     // ============================================================
@@ -429,399 +337,152 @@ private lateinit var btnFlash: ImageButton
     // ============================================================
 
     private fun createImageFile(): File {
-
-        val timeStamp =
-            SimpleDateFormat(
-                "yyyyMMdd_HHmmss",
-                Locale.getDefault()
-            ).format(Date())
-
-        return File.createTempFile(
-            "DATE_$timeStamp",
-            ".jpg",
-            getExternalFilesDir(null)
-        )
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        return File.createTempFile("DATE_$timeStamp", ".jpg", getExternalFilesDir(null))
     }
 
     // ============================================================
     // التعرف على التاريخ
     // ============================================================
 
-    private fun recognizeDate(
-        bitmap: Bitmap
-    ) {
+    private fun recognizeDate(bitmap: Bitmap) {
+        val cropped = imageProcessor.cropCenter(bitmap)
+        val processedBitmap = imageProcessor.preprocessImage(cropped)
+        val image = InputImage.fromBitmap(processedBitmap, 0)
 
-        val cropped =
-            imageProcessor.cropCenter(bitmap)
-
-        val processedBitmap =
-            imageProcessor.preprocessImage(
-                cropped
-            )
-
-        val image =
-            InputImage.fromBitmap(
-                processedBitmap,
-                0
-            )
-
-        val recognizer =
-            TextRecognition.getClient(
-                TextRecognizerOptions.DEFAULT_OPTIONS
-            )
-
-        tvResult.text =
-            "جاري التعرف..."
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
         recognizer.process(image)
-
             .addOnSuccessListener { result ->
-
-                val text =
-                    result.text
-
-                val extractedDate =
-                    extractDateFromText(text)
+                val text = result.text
+                val extractedDate = extractDateFromText(text)
 
                 if (extractedDate != null) {
-
-                    recognizedDate =
-                        extractedDate
-
-                    tvResult.text =
-                        "✅ $extractedDate\n$text"
-
-                    btnConfirm.isEnabled =
-                        true
-
+                    recognizedDate = extractedDate
+                    tvResult.text = "✅ $extractedDate\n$text"
+                    btnConfirm.isEnabled = true
                 } else {
-
-                    recognizedDate =
-                        null
-
-                    tvResult.text =
-                        "❌ لم يتم التعرف\n$text"
-
-                    btnConfirm.isEnabled =
-                        false
+                    recognizedDate = null
+                    tvResult.text = "❌ لم يتم التعرف\n$text"
+                    btnConfirm.isEnabled = false
                 }
 
                 resetCaptureButton()
             }
-
             .addOnFailureListener {
-
-                recognizedDate =
-                    null
-
-                tvResult.text =
-                    "❌ حدث خطأ أثناء التعرف"
-
-                btnConfirm.isEnabled =
-                    false
-
+                recognizedDate = null
+                tvResult.text = "❌ حدث خطأ أثناء التعرف"
+                btnConfirm.isEnabled = false
                 resetCaptureButton()
             }
     }
+        // ============================================================
+    // القسم الثالث: استخراج التاريخ واختيار أفضل تاريخ
     // ============================================================
-    // القسم الثالث
-    // استخراج التاريخ واختيار أفضل تاريخ
-    // ============================================================
 
-    private fun extractDateFromText(
-        text: String
-    ): String? {
-
-        val cleanedText =
-            fixCommonOCRMistakes(
-                text.replace("\n", " ")
-                    .replace(",", " ")
-                    .trim()
-            )
-
-        val patterns = listOf(
-
-            Regex(
-                """\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""
-            ),
-
-            Regex(
-                """\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""
-            ),
-
-            Regex(
-                """\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""
-            ),
-
-            Regex(
-                """[A-Z](\d{2})/(\d{2})/(\d{2})"""
-            ),
-
-            Regex(
-                """\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""
-            ),
-
-            Regex(
-                """\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""
-            ),
-
-            Regex(
-                """\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""
-            ),
-
-            Regex(
-                """[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""
-            ),
-
-            Regex(
-                """\b(\d{8})\b"""
-            ),
-
-            Regex(
-                """\b(\d{6})\b"""
-            ),
-
-            Regex(
-                """\b(\d{1,2})[/-](\d{4})\b"""
-            ),
-
-            Regex(
-                """(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""",
-                RegexOption.IGNORE_CASE
-            ),
-
-            Regex(
-                """(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""",
-                RegexOption.IGNORE_CASE
-            ),
-
-            Regex(
-                """\b(\d{4})\b"""
-            )
+    private fun extractDateFromText(text: String): String? {
+        val cleanedText = fixCommonOCRMistakes(
+            text.replace("\n", " ").replace(",", " ").trim()
         )
 
-        val foundDates =
-            mutableListOf<DetectedDate>()
+        val patterns = listOf(
+            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
+            Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
+            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
+            Regex("""[A-Z](\d{2})/(\d{2})/(\d{2})"""),
+            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
+            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""),
+            Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""),
+            Regex("""[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""),
+            Regex("""\b(\d{8})\b"""),
+            Regex("""\b(\d{6})\b"""),
+            Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
+            Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
+            Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
+            Regex("""\b(\d{4})\b""")
+        )
+
+        val foundDates = mutableListOf<DetectedDate>()
 
         for (pattern in patterns) {
-
-            val matches =
-                pattern.findAll(cleanedText)
-
+            val matches = pattern.findAll(cleanedText)
             for (match in matches) {
-
-                val groups =
-                    match.groupValues
-
+                val groups = match.groupValues
                 val result: String?
-
                 val hasDay: Boolean
 
                 when {
-
-                    groups.size == 4 &&
-                            groups[3].length == 4 -> {
-
-                        val day =
-                            groups[1].padStart(2, '0')
-
-                        val month =
-                            groups[2].padStart(2, '0')
-
-                        val year =
-                            groups[3]
-
-                        result =
+                    groups.size == 4 && groups[3].length == 4 -> {
+                        val day = groups[1].padStart(2, '0')
+                        val month = groups[2].padStart(2, '0')
+                        val year = groups[3]
+                        result = "$year-$month-$day"
+                        hasDay = true
+                    }
+                    groups.size == 4 && groups[1].length == 4 -> {
+                        val year = groups[1]
+                        val month = groups[2].padStart(2, '0')
+                        val day = groups[3].padStart(2, '0')
+                        result = "$year-$month-$day"
+                        hasDay = true
+                    }
+                    groups.size == 4 && groups[3].length == 2 -> {
+                        val day = groups[1].padStart(2, '0')
+                        val month = groups[2].padStart(2, '0')
+                        val year = "20${groups[3]}"
+                        result = "$year-$month-$day"
+                        hasDay = true
+                    }
+                    groups.size == 2 && groups[1].length == 6 -> {
+                        val numbers = groups[1]
+                        val day = numbers.substring(0, 2)
+                        val month = numbers.substring(2, 4)
+                        val year = "20" + numbers.substring(4, 6)
+                        result = if (month.toIntOrNull() in 1..12 && day.toIntOrNull() in 1..31) {
                             "$year-$month-$day"
-
+                        } else null
                         hasDay = true
                     }
-
-                    groups.size == 4 &&
-                            groups[1].length == 4 -> {
-
-                        val year =
-                            groups[1]
-
-                        val month =
-                            groups[2].padStart(2, '0')
-
-                        val day =
-                            groups[3].padStart(2, '0')
-
-                        result =
-                            "$year-$month-$day"
-
+                    groups.size == 2 && groups[1].length == 8 -> {
+                        val numbers = groups[1]
+                        val year = numbers.substring(0, 4)
+                        val month = numbers.substring(4, 6)
+                        val day = numbers.substring(6, 8)
+                        result = "$year-$month-$day"
                         hasDay = true
                     }
-
-                    groups.size == 4 &&
-                            groups[3].length == 2 -> {
-
-                        val day =
-                            groups[1].padStart(2, '0')
-
-                        val month =
-                            groups[2].padStart(2, '0')
-
-                        val year =
-                            "20${groups[3]}"
-
-                        result =
-                            "$year-$month-$day"
-
-                        hasDay = true
-                    }
-
-                    groups.size == 2 &&
-                            groups[1].length == 6 -> {
-
-                        val numbers =
-                            groups[1]
-
-                        val day =
-                            numbers.substring(0, 2)
-
-                        val month =
-                            numbers.substring(2, 4)
-
-                        val year =
-                            "20" +
-                                    numbers.substring(4, 6)
-
-                        result =
-                            if (
-                                month.toIntOrNull() in 1..12 &&
-                                day.toIntOrNull() in 1..31
-                            ) {
-
-                                "$year-$month-$day"
-
-                            } else {
-
-                                null
-                            }
-
-                        hasDay = true
-                    }
-
-                    groups.size == 2 &&
-                            groups[1].length == 8 -> {
-
-                        val numbers =
-                            groups[1]
-
-                        val year =
-                            numbers.substring(0, 4)
-
-                        val month =
-                            numbers.substring(4, 6)
-
-                        val day =
-                            numbers.substring(6, 8)
-
-                        result =
-                            "$year-$month-$day"
-
-                        hasDay = true
-                    }
-
-                    groups.size == 3 &&
-                            groups[2].length == 4 -> {
-
-                        val month =
-                            groups[1].padStart(2, '0')
-
-                        val year =
-                            groups[2]
-
-                        result =
-                            "$year-$month-01"
-
+                    groups.size == 3 && groups[2].length == 4 -> {
+                        val month = groups[1].padStart(2, '0')
+                        val year = groups[2]
+                        result = "$year-$month-01"
                         hasDay = false
                     }
-
-                    groups.size == 3 &&
-                            groups[1].matches(
-                                Regex("[A-Za-z]+")
-                            ) -> {
-
-                        val month =
-                            monthNameToNumber(
-                                groups[1]
-                            )
-
-                        val year =
-                            groups[2]
-
-                        result =
-                            if (month != null) {
-
-                                "$year-$month-01"
-
-                            } else {
-
-                                null
-                            }
-
+                    groups.size == 3 && groups[1].matches(Regex("[A-Za-z]+")) -> {
+                        val month = monthNameToNumber(groups[1])
+                        val year = groups[2]
+                        result = if (month != null) "$year-$month-01" else null
                         hasDay = false
                     }
-
-                    groups.size == 2 &&
-                            groups[1].length == 4 -> {
-
-                        result =
-                            "${groups[1]}-01-01"
-
+                    groups.size == 2 && groups[1].length == 4 -> {
+                        result = "${groups[1]}-01-01"
                         hasDay = false
                     }
-
                     else -> {
-
                         result = null
-
                         hasDay = false
                     }
                 }
 
-                if (
-                    result != null &&
-                    isValidDateFromString(result)
-                ) {
+                if (result != null && isValidDateFromString(result)) {
+                    val beforeStart = maxOf(0, match.range.first - 15)
+                    val afterEnd = minOf(cleanedText.length, match.range.last + 16)
+                    val surroundingText = cleanedText.substring(beforeStart, afterEnd)
 
-                    val beforeStart =
-                        maxOf(
-                            0,
-                            match.range.first - 15
-                        )
-
-                    val afterEnd =
-                        minOf(
-                            cleanedText.length,
-                            match.range.last + 16
-                        )
-
-                    val surroundingText =
-                        cleanedText.substring(
-                            beforeStart,
-                            afterEnd
-                        )
-
-                    val isExpiry =
-                        surroundingText.contains(
-                            "EXP",
-                            ignoreCase = true
-                        ) ||
-                        surroundingText.contains(
-                            "BEST BEFORE",
-                            ignoreCase = true
-                        ) ||
-                        surroundingText.contains(
-                            "EXPIRY",
-                            ignoreCase = true
-                        ) ||
-                        surroundingText.contains("ينتهي") ||
-                        surroundingText.contains("صلاحية")
+                    val isExpiry = surroundingText.contains("EXP", ignoreCase = true) ||
+                            surroundingText.contains("BEST BEFORE", ignoreCase = true) ||
+                            surroundingText.contains("EXPIRY", ignoreCase = true) ||
+                            surroundingText.contains("ينتهي") ||
+                            surroundingText.contains("صلاحية")
 
                     foundDates.add(
                         DetectedDate(
@@ -837,187 +498,65 @@ private lateinit var btnFlash: ImageButton
 
         return chooseBestDate(foundDates)
     }
-
-    // ============================================================
-    // نموذج التاريخ المكتشف
-    // ============================================================
-
-    private data class DetectedDate(
+        private data class DetectedDate(
         val date: String,
         val hasRealDay: Boolean,
         val isExpiry: Boolean,
         val position: Int
     )
 
-    // ============================================================
-    // اختيار أفضل تاريخ
-    // ============================================================
+    private fun chooseBestDate(dates: List<DetectedDate>): String? {
+        if (dates.isEmpty()) return null
 
-    private fun chooseBestDate(
-        dates: List<DetectedDate>
-    ): String? {
+        val today = Calendar.getInstance()
+        val expiryFullDates = dates.filter { it.isExpiry && it.hasRealDay }
+        if (expiryFullDates.isNotEmpty()) return chooseClosestFutureOrLatest(expiryFullDates, today)
 
-        if (dates.isEmpty()) {
-            return null
-        }
+        val fullDates = dates.filter { it.hasRealDay }
+        if (fullDates.isNotEmpty()) return chooseClosestFutureOrLatest(fullDates, today)
 
-        val today =
-            Calendar.getInstance()
+        val expiryPartialDates = dates.filter { it.isExpiry && !it.hasRealDay }
+        if (expiryPartialDates.isNotEmpty()) return chooseClosestFutureOrLatest(expiryPartialDates, today)
 
-        val expiryFullDates =
-            dates.filter {
-                it.isExpiry &&
-                        it.hasRealDay
-            }
-
-        if (expiryFullDates.isNotEmpty()) {
-
-            return chooseClosestFutureOrLatest(
-                expiryFullDates,
-                today
-            )
-        }
-
-        val fullDates =
-            dates.filter {
-                it.hasRealDay
-            }
-
-        if (fullDates.isNotEmpty()) {
-
-            return chooseClosestFutureOrLatest(
-                fullDates,
-                today
-            )
-        }
-
-        val expiryPartialDates =
-            dates.filter {
-                it.isExpiry &&
-                        !it.hasRealDay
-            }
-
-        if (expiryPartialDates.isNotEmpty()) {
-
-            return chooseClosestFutureOrLatest(
-                expiryPartialDates,
-                today
-            )
-        }
-
-        return chooseClosestFutureOrLatest(
-            dates,
-            today
-        )
+        return chooseClosestFutureOrLatest(dates, today)
     }
 
-    // ============================================================
-    // اختيار أقرب تاريخ مستقبلي
-    // ============================================================
+    private fun chooseClosestFutureOrLatest(dates: List<DetectedDate>, today: Calendar): String? {
+        val parsedDates = dates.mapNotNull { detected ->
+            try {
+                val parts = detected.date.split("-")
+                if (parts.size != 3) return@mapNotNull null
 
-    private fun chooseClosestFutureOrLatest(
-        dates: List<DetectedDate>,
-        today: Calendar
-    ): String? {
-
-        val parsedDates =
-            dates.mapNotNull { detected ->
-
-                try {
-
-                    val parts =
-                        detected.date.split("-")
-
-                    if (parts.size != 3) {
-                        return@mapNotNull null
-                    }
-
-                    val cal =
-                        Calendar.getInstance().apply {
-
-                            clear()
-
-                            set(
-                                Calendar.YEAR,
-                                parts[0].toInt()
-                            )
-
-                            set(
-                                Calendar.MONTH,
-                                parts[1].toInt() - 1
-                            )
-
-                            set(
-                                Calendar.DAY_OF_MONTH,
-                                parts[2].toInt()
-                            )
-
-                            set(
-                                Calendar.HOUR_OF_DAY,
-                                23
-                            )
-
-                            set(
-                                Calendar.MINUTE,
-                                59
-                            )
-
-                            set(
-                                Calendar.SECOND,
-                                59
-                            )
-                        }
-
-                    Pair(
-                        cal,
-                        detected
-                    )
-
-                } catch (e: Exception) {
-
-                    null
+                val cal = Calendar.getInstance().apply {
+                    clear()
+                    set(Calendar.YEAR, parts[0].toInt())
+                    set(Calendar.MONTH, parts[1].toInt() - 1)
+                    set(Calendar.DAY_OF_MONTH, parts[2].toInt())
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
                 }
+                Pair(cal, detected)
+            } catch (e: Exception) {
+                null
             }
-
-        if (parsedDates.isEmpty()) {
-            return null
         }
 
-        val futureDates =
-            parsedDates.filter {
-                !it.first.before(today)
-            }
+        if (parsedDates.isEmpty()) return null
 
+        val futureDates = parsedDates.filter { !it.first.before(today) }
         if (futureDates.isNotEmpty()) {
-
-            return futureDates
-                .minByOrNull {
-                    it.first.timeInMillis
-                }
-                ?.second
-                ?.date
+            return futureDates.minByOrNull { it.first.timeInMillis }?.second?.date
         }
 
-        return parsedDates
-            .maxByOrNull {
-                it.first.timeInMillis
-            }
-            ?.second
-            ?.date
+        return parsedDates.maxByOrNull { it.first.timeInMillis }?.second?.date
     }
-    // ============================================================
-    // القسم الرابع
-    // الدوال المساعدة + تنظيف الموارد
-    // ============================================================
 
     // ============================================================
-    // إصلاح أخطاء OCR الشائعة
+    // القسم الرابع: الدوال المساعدة + تنظيف الموارد
     // ============================================================
 
-    private fun fixCommonOCRMistakes(
-        text: String
-    ): String {
-
+    private fun fixCommonOCRMistakes(text: String): String {
         return text
             .replace("O", "0")
             .replace("o", "0")
@@ -1027,156 +566,58 @@ private lateinit var btnFlash: ImageButton
             .replace("s", "5")
     }
 
-    // ============================================================
-    // التحقق من صحة التاريخ
-    // ============================================================
+    private fun isValidDateFromString(date: String): Boolean {
+        val parts = date.split("-")
+        if (parts.size != 3) return false
 
-    private fun isValidDateFromString(
-        date: String
-    ): Boolean {
+        val year = parts[0].toIntOrNull() ?: return false
+        val month = parts[1].toIntOrNull() ?: return false
+        val day = parts[2].toIntOrNull() ?: return false
 
-        val parts =
-            date.split("-")
-
-        if (parts.size != 3) {
-            return false
-        }
-
-        val year =
-            parts[0].toIntOrNull()
-                ?: return false
-
-        val month =
-            parts[1].toIntOrNull()
-                ?: return false
-
-        val day =
-            parts[2].toIntOrNull()
-                ?: return false
-
-        if (
-            year !in 2000..2100 ||
-            month !in 1..12 ||
-            day !in 1..31
-        ) {
-            return false
-        }
+        if (year !in 2000..2100 || month !in 1..12 || day !in 1..31) return false
 
         return try {
-
-            val calendar =
-                Calendar.getInstance().apply {
-
-                    isLenient = false
-
-                    set(
-                        Calendar.YEAR,
-                        year
-                    )
-
-                    set(
-                        Calendar.MONTH,
-                        month - 1
-                    )
-
-                    set(
-                        Calendar.DAY_OF_MONTH,
-                        day
-                    )
-
-                    set(
-                        Calendar.HOUR_OF_DAY,
-                        0
-                    )
-
-                    set(
-                        Calendar.MINUTE,
-                        0
-                    )
-
-                    set(
-                        Calendar.SECOND,
-                        0
-                    )
-
-                    set(
-                        Calendar.MILLISECOND,
-                        0
-                    )
-                }
-
+            val calendar = Calendar.getInstance().apply {
+                isLenient = false
+                set(Calendar.YEAR, year)
+                set(Calendar.MONTH, month - 1)
+                set(Calendar.DAY_OF_MONTH, day)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
             calendar.time
-
             true
-
         } catch (e: Exception) {
-
             false
         }
     }
 
-    // ============================================================
-    // تحويل اسم الشهر إلى رقم
-    // ============================================================
-
-    private fun monthNameToNumber(
-        month: String
-    ): String? {
-
-        return when (
-            month.uppercase(Locale.ROOT)
-        ) {
-
-            "JAN",
-            "JANUARY" -> "01"
-
-            "FEB",
-            "FEBRUARY" -> "02"
-
-            "MAR",
-            "MARCH" -> "03"
-
-            "APR",
-            "APRIL" -> "04"
-
+    private fun monthNameToNumber(month: String): String? {
+        return when (month.uppercase(Locale.ROOT)) {
+            "JAN", "JANUARY" -> "01"
+            "FEB", "FEBRUARY" -> "02"
+            "MAR", "MARCH" -> "03"
+            "APR", "APRIL" -> "04"
             "MAY" -> "05"
-
-            "JUN",
-            "JUNE" -> "06"
-
-            "JUL",
-            "JULY" -> "07"
-
-            "AUG",
-            "AUGUST" -> "08"
-
-            "SEP",
-            "SEPT",
-            "SEPTEMBER" -> "09"
-
-            "OCT",
-            "OCTOBER" -> "10"
-
-            "NOV",
-            "NOVEMBER" -> "11"
-
-            "DEC",
-            "DECEMBER" -> "12"
-
+            "JUN", "JUNE" -> "06"
+            "JUL", "JULY" -> "07"
+            "AUG", "AUGUST" -> "08"
+            "SEP", "SEPT", "SEPTEMBER" -> "09"
+            "OCT", "OCTOBER" -> "10"
+            "NOV", "NOVEMBER" -> "11"
+            "DEC", "DECEMBER" -> "12"
             else -> null
         }
     }
 
-    // ============================================================
-    // إنهاء Activity وتنظيف الكاميرا
-    // ============================================================
-
     override fun onDestroy() {
-
         super.onDestroy()
-
         if (::cameraExecutor.isInitialized) {
             cameraExecutor.shutdown()
         }
     }
 }
+
+    
