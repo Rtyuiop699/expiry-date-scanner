@@ -380,11 +380,12 @@ private fun enterSelectionMode(
     }
     anim.start()
 
-    // 4. إظهار الإجراءات المحددة وإجبار الأيقونات على المحاذاة لأقصى اليسار
+        // 4. إظهار الإجراءات المحددة وإجبار الحاوية على المحاذاة لأقصى اليسار عبر تحويل اتجاهها إلى LTR
+    searchAndActionsBar.layoutDirection = android.view.View.LAYOUT_DIRECTION_LTR
     setupSelectionActions(actionsContainer)
-    actionsContainer.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-    actionsContainer.visibility = View.VISIBLE
-
+    actionsContainer.gravity = android.view.Gravity.START or android.view.Gravity.CENTER_VERTICAL
+    actionsContainer.visibility = android.view.View.VISIBLE
+    
     // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء وربطه بحدث الخروج
     val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
     btnMultiSelect?.setImageResource(R.drawable.ic_cancel_circle)
