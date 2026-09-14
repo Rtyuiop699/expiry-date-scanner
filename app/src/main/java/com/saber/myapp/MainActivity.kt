@@ -426,87 +426,90 @@ private fun enterSelectionMode(
     // =========================================================
 
     private fun exitSelectionMode() {
-        if (!isSelectionMode) return
+    if (!isSelectionMode) return
 
-        isSelectionMode = false
+    isSelectionMode = false
 
-        listHandler.clearSelection()
-        listHandler.setSelectionMode(false)
+    listHandler.clearSelection()
+    listHandler.setSelectionMode(false)
 
-        val searchField = findViewById<EditText>(R.id.searchField)
-        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-        val searchContainer = findViewById<View>(R.id.searchContainer)
-        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
-        val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+    val searchField = findViewById<EditText>(R.id.searchField)
+    val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+    val searchContainer = findViewById<View>(R.id.searchContainer)
+    val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
+    val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
 
-        btnMultiSelect.setImageResource(R.drawable.ic_check_box)
-        btnMultiSelect.setOnClickListener {
-            enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
-        }
+    // إعادة اتجاه الشريط إلى RTL عند الخروج من وضع التحديد
+    searchAndActionsBar.layoutDirection = android.view.View.LAYOUT_DIRECTION_RTL
 
-        searchField.clearFocus()
-        searchField.isCursorVisible = false
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
+    btnMultiSelect.setImageResource(R.drawable.ic_check_box)
+    btnMultiSelect.setOnClickListener {
+        enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
+    }
 
-        actionsContainer.findViewById<ImageView>(R.id.btnDeleteSelected)?.visibility = View.GONE
-        actionsContainer.findViewById<ImageView>(R.id.btnPrintSelected)?.visibility = View.GONE
-        actionsContainer.findViewById<ImageView>(R.id.btnPdfSelected)?.visibility = View.GONE
+    searchField.clearFocus()
+    searchField.isCursorVisible = false
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-        btnMultiSelect.visibility = View.VISIBLE
-        actionsContainer.visibility = View.VISIBLE
+    actionsContainer.findViewById<ImageView>(R.id.btnDeleteSelected)?.visibility = View.GONE
+    actionsContainer.findViewById<ImageView>(R.id.btnPrintSelected)?.visibility = View.GONE
+    actionsContainer.findViewById<ImageView>(R.id.btnPdfSelected)?.visibility = View.GONE
 
-        val initialWidth = searchContainer.width
-        val parent = searchContainer.parent as? View ?: return
-        val parentWidth = parent.width
+    btnMultiSelect.visibility = View.VISIBLE
+    actionsContainer.visibility = View.VISIBLE
 
-        val searchParams = searchContainer.layoutParams
-        val actionsParams = actionsContainer.layoutParams
+    val initialWidth = searchContainer.width
+    val parent = searchContainer.parent as? View ?: return
+    val parentWidth = parent.width
 
-        val actionsMargins =
-            actionsParams as? android.view.ViewGroup.MarginLayoutParams
+    val searchParams = searchContainer.layoutParams
+    val actionsParams = actionsContainer.layoutParams
 
-        val searchMargins =
-            searchParams as? android.view.ViewGroup.MarginLayoutParams
+    val actionsMargins =
+        actionsParams as? android.view.ViewGroup.MarginLayoutParams
 
-        val targetWidth =
-            parentWidth -
-            actionsContainer.width -
-            (actionsMargins?.marginStart ?: 0) -
-            (searchMargins?.marginStart ?: 0) -
-            (searchMargins?.marginEnd ?: 0)
+    val searchMargins =
+        searchParams as? android.view.ViewGroup.MarginLayoutParams
 
-        if (searchParams is LinearLayout.LayoutParams) {
-            searchParams.weight = 0f
-            searchContainer.layoutParams = searchParams
-        }
+    val targetWidth =
+        parentWidth -
+        actionsContainer.width -
+        (actionsMargins?.marginStart ?: 0) -
+        (searchMargins?.marginStart ?: 0) -
+        (searchMargins?.marginEnd ?: 0)
 
-        searchField.visibility = View.VISIBLE
+    if (searchParams is LinearLayout.LayoutParams) {
+        searchParams.weight = 0f
+        searchContainer.layoutParams = searchParams
+    }
 
-        ValueAnimator.ofInt(initialWidth, targetWidth).apply {
-            duration = 250
-            interpolator = FastOutSlowInInterpolator()
-            addUpdateListener { animator ->
-                val animatedWidth = animator.animatedValue as Int
-                val params = searchContainer.layoutParams
-                params.width = animatedWidth
-                if (params is LinearLayout.LayoutParams) {
-                    params.weight = 0f
-                }
-                searchContainer.layoutParams = params
+    searchField.visibility = View.VISIBLE
+
+    ValueAnimator.ofInt(initialWidth, targetWidth).apply {
+        duration = 250
+        interpolator = FastOutSlowInInterpolator()
+        addUpdateListener { animator ->
+            val animatedWidth = animator.animatedValue as Int
+            val params = searchContainer.layoutParams
+            params.width = animatedWidth
+            if (params is LinearLayout.LayoutParams) {
+                params.weight = 0f
             }
-
-            doOnEnd {
-                val finalParams = searchContainer.layoutParams
-                if (finalParams is LinearLayout.LayoutParams) {
-                    finalParams.width = 0
-                    finalParams.weight = 1f
-                    searchContainer.layoutParams = finalParams
-                }
-                searchField.isCursorVisible = true
-            }
-            start()
+            searchContainer.layoutParams = params
         }
+
+        doOnEnd {
+            val finalParams = searchContainer.layoutParams
+            if (finalParams is LinearLayout.LayoutParams) {
+                finalParams.width = 0
+                finalParams.weight = 1f
+                searchContainer.layoutParams = finalParams
+            }
+            searchField.isCursorVisible = true
+        }
+        start()
+    }
     }
     
                 
