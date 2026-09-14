@@ -313,25 +313,7 @@ class DatabaseHelper(context: Context) :
             )
         }
 
-        // =================================================
-        // التأكد من عدم وجود الباركود
-        // =================================================
-
-        val cursor = db.rawQuery(
-            "SELECT 1 FROM $TABLE_PRODUCTS WHERE $COL_BARCODE = ?",
-            arrayOf(product.barcode)
-        )
-
-        if (cursor.moveToFirst()) {
-
-            cursor.close()
-            db.close()
-
-            return false
-        }
-
-        cursor.close()
-
+        
         // =================================================
         // بيانات المنتج
         // =================================================
