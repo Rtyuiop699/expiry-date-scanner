@@ -339,7 +339,6 @@ class MainActivity : AppCompatActivity() {
 // =========================================================
 // الدخول إلى وضع التحديد المتعدد
 // =========================================================
-
 private fun enterSelectionMode(
     searchField: EditText,
     actionsContainer: LinearLayout,
@@ -349,46 +348,79 @@ private fun enterSelectionMode(
     if (isSelectionMode) return
     isSelectionMode = true
 
-    // 1. إخفاء لوحة المفاتيح وفقدان التركيز
+    // إخفاء لوحة المفاتيح وفقدان التركيز
     searchField.clearFocus()
     searchField.isCursorVisible = false
+
     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
     imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
     closeProductBalloon()
 
-    // 2. إخفاء النص وتفريغه
+    // إخفاء النص وتفريغ البحث
     searchField.setText("")
     searchField.visibility = View.GONE
 
-    // 3. تحريك عرض الحاوية بشكل تدريجي انسيابي باستخدام ValueAnimator
+    // تصغير حقل البحث
     val initialWidth = searchContainer.width
     val targetWidth = dpToPx(52)
 
-    val anim = ValueAnimator.ofInt(initialWidth, targetWidth).apply {
+    ValueAnimator.ofInt(initialWidth, targetWidth).apply {
         duration = 250
         interpolator = FastOutSlowInInterpolator()
+
         addUpdateListener { valueAnimator ->
             val animatedValue = valueAnimator.animatedValue as Int
+
             val params = searchContainer.layoutParams
             params.width = animatedValue
+
             if (params is LinearLayout.LayoutParams) {
                 params.weight = 0f
             }
+
             searchContainer.layoutParams = params
         }
-    }
-    anim.start()
+    }.start()
 
-        // 4. إظهار الإجراءات المحددة وإجبار الحاوية على المحاذاة لأقصى اليسار عبر تحويل اتجاهها إلى LTR
-    searchAndActionsBar.layoutDirection = android.view.View.LAYOUT_DIRECTION_LTR
+    // إبقاء الشريط الرئيسي RTL
+    searchAndActionsBar.layoutDirection = View.LAYOUT_DIRECTION_RTL
+
+    // إظهار أزرار وضع التحديد
     setupSelectionActions(actionsContainer)
-    actionsContainer.gravity = android.view.Gravity.START or android.view.Gravity.CENTER_VERTICAL
-    actionsContainer.visibility = android.view.View.VISIBLE
-    
-    // 5. تغيير صورة زر التحديد إلى الدائرة الحمراء وربطه بحدث الخروج
+    actionsContainer.visibility = View.VISIBLE
+
+    // العثور على الـ Spaces الموجودة داخل actionsContainer
+    // وإخفاؤها حتى تتجمع الأيقونات معًا
+    for (i in 0 until actionsContainer.childCount) {
+        val child = actionsContainer.getChildAt(i)
+
+        if (child is Space) {
+            child.visibility = View.GONE
+        }
+    }
+
+    // جعل actionsContainer يأخذ المساحة المتبقية
+    val actParams = actionsContainer.layoutParams
+
+    if (actParams is LinearLayout.LayoutParams) {
+        actParams.width = 0
+        actParams.weight = 1f
+        actionsContainer.layoutParams = actParams
+    }
+
+    // إبقاء محتوى actionsContainer في جهة البداية
+    actionsContainer.gravity =
+        android.view.Gravity.START or android.view.Gravity.CENTER_VERTICAL
+
+    // =====================================================
+    // زر الخروج من وضع التحديد
+    // =====================================================
+
     val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+
     btnMultiSelect?.setImageResource(R.drawable.ic_cancel_circle)
+
     btnMultiSelect?.setOnClickListener {
         exitSelectionMode()
     }
@@ -425,7 +457,8 @@ private fun enterSelectionMode(
     // الخروج من وضع التحديد المتعدد
     // =========================================================
 
-    private fun exitSelectionMode() {
+    
+        private fun exitSelectionMode() {
     if (!isSelectionMode) return
 
     isSelectionMode = false
@@ -439,78 +472,187 @@ private fun enterSelectionMode(
     val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
     val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
 
-    // إعادة اتجاه الشريط إلى RTL عند الخروج من وضع التحديد
-    searchAndActionsBar.layoutDirection = android.view.View.LAYOUT_DIRECTION_RTL
+    // =====================================================
+    // إعادة الشريط إلى RTL
+    // =====================================================
+
+    searchAndActionsBar.layoutDirection =
+        View.LAYOUT_DIRECTION_RTL
+
+    // =====================================================
+    // إعادة زر التحديد إلى حالته الطبيعية
+    // =====================================================
 
     btnMultiSelect.setImageResource(R.drawable.ic_check_box)
+
     btnMultiSelect.setOnClickListener {
-        enterSelectionMode(searchField, actionsContainer, searchAndActionsBar, searchContainer)
+        enterSelectionMode(
+            searchField,
+            actionsContainer,
+            searchAndActionsBar,
+            searchContainer
+        )
     }
+
+    // =====================================================
+    // إخفاء لوحة المفاتيح
+    // =====================================================
 
     searchField.clearFocus()
     searchField.isCursorVisible = false
-    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-    imm?.hideSoftInputFromWindow(searchField.windowToken, 0)
 
-    actionsContainer.findViewById<ImageView>(R.id.btnDeleteSelected)?.visibility = View.GONE
-    actionsContainer.findViewById<ImageView>(R.id.btnPrintSelected)?.visibility = View.GONE
-    actionsContainer.findViewById<ImageView>(R.id.btnPdfSelected)?.visibility = View.GONE
+    val imm =
+        getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+
+    imm?.hideSoftInputFromWindow(
+        searchField.windowToken,
+        0
+    )
+
+    // =====================================================
+    // إخفاء أزرار العمليات الخاصة بالتحديد
+    // =====================================================
+
+    actionsContainer
+        .findViewById<ImageView>(R.id.btnDeleteSelected)
+        ?.visibility = View.GONE
+
+    actionsContainer
+        .findViewById<ImageView>(R.id.btnPrintSelected)
+        ?.visibility = View.GONE
+
+    actionsContainer
+        .findViewById<ImageView>(R.id.btnPdfSelected)
+        ?.visibility = View.GONE
 
     btnMultiSelect.visibility = View.VISIBLE
     actionsContainer.visibility = View.VISIBLE
 
-    val initialWidth = searchContainer.width
-    val parent = searchContainer.parent as? View ?: return
-    val parentWidth = parent.width
+    // =====================================================
+    // إعادة الـ Spaces إلى وضعها الطبيعي
+    // =====================================================
 
-    val searchParams = searchContainer.layoutParams
-    val actionsParams = actionsContainer.layoutParams
+    for (i in 0 until actionsContainer.childCount) {
+        val child = actionsContainer.getChildAt(i)
 
-    val actionsMargins =
-        actionsParams as? android.view.ViewGroup.MarginLayoutParams
-
-    val searchMargins =
-        searchParams as? android.view.ViewGroup.MarginLayoutParams
-
-    val targetWidth =
-        parentWidth -
-        actionsContainer.width -
-        (actionsMargins?.marginStart ?: 0) -
-        (searchMargins?.marginStart ?: 0) -
-        (searchMargins?.marginEnd ?: 0)
-
-    if (searchParams is LinearLayout.LayoutParams) {
-        searchParams.weight = 0f
-        searchContainer.layoutParams = searchParams
+        if (child is Space) {
+            child.visibility = View.VISIBLE
+        }
     }
+
+    // =====================================================
+    // إعادة actionsContainer إلى حجمه الطبيعي
+    // =====================================================
+
+    val actParams = actionsContainer.layoutParams
+
+    if (actParams is LinearLayout.LayoutParams) {
+        actParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        actParams.weight = 0f
+        actionsContainer.layoutParams = actParams
+    }
+
+    // إجبار Android على إعادة قياس الحاوية
+    actionsContainer.requestLayout()
+
+    // =====================================================
+    // إظهار حقل البحث
+    // =====================================================
 
     searchField.visibility = View.VISIBLE
 
-    ValueAnimator.ofInt(initialWidth, targetWidth).apply {
-        duration = 250
-        interpolator = FastOutSlowInInterpolator()
-        addUpdateListener { animator ->
-            val animatedWidth = animator.animatedValue as Int
-            val params = searchContainer.layoutParams
-            params.width = animatedWidth
-            if (params is LinearLayout.LayoutParams) {
-                params.weight = 0f
-            }
-            searchContainer.layoutParams = params
+    // ننتظر إعادة قياس actionsContainer قبل حساب عرض البحث
+    actionsContainer.post {
+
+        val initialWidth = searchContainer.width
+
+        val parent = searchContainer.parent as? View ?: return@post
+        val parentWidth = parent.width
+
+        val searchParams = searchContainer.layoutParams
+        val actionsParams = actionsContainer.layoutParams
+
+        val actionsMargins =
+            actionsParams as? android.view.ViewGroup.MarginLayoutParams
+
+        val searchMargins =
+            searchParams as? android.view.ViewGroup.MarginLayoutParams
+
+        // =================================================
+        // حساب العرض النهائي لحقل البحث
+        // =================================================
+
+        val targetWidth =
+            parentWidth -
+            actionsContainer.measuredWidth -
+            (actionsMargins?.marginStart ?: 0) -
+            (searchMargins?.marginStart ?: 0) -
+            (searchMargins?.marginEnd ?: 0)
+
+        // =================================================
+        // تثبيت عرض البحث أثناء الأنيميشن
+        // =================================================
+
+        if (searchParams is LinearLayout.LayoutParams) {
+            searchParams.width = initialWidth
+            searchParams.weight = 0f
+            searchContainer.layoutParams = searchParams
         }
 
-        doOnEnd {
-            val finalParams = searchContainer.layoutParams
-            if (finalParams is LinearLayout.LayoutParams) {
-                finalParams.width = 0
-                finalParams.weight = 1f
-                searchContainer.layoutParams = finalParams
+        // =================================================
+        // توسيع حقل البحث تدريجيًا
+        // =================================================
+
+        ValueAnimator.ofInt(
+            initialWidth,
+            targetWidth
+        ).apply {
+
+            duration = 250
+
+            interpolator = FastOutSlowInInterpolator()
+
+            addUpdateListener { animator ->
+
+                val animatedWidth =
+                    animator.animatedValue as Int
+
+                val params =
+                    searchContainer.layoutParams
+
+                params.width = animatedWidth
+
+                if (params is LinearLayout.LayoutParams) {
+                    params.weight = 0f
+                }
+
+                searchContainer.layoutParams = params
             }
-            searchField.isCursorVisible = true
+
+            doOnEnd {
+
+                // =================================================
+                // بعد انتهاء الحركة:
+                // إعادة البحث إلى weight = 1
+                // ليأخذ كل المساحة المتبقية
+                // =================================================
+
+                val finalParams =
+                    searchContainer.layoutParams
+
+                if (finalParams is LinearLayout.LayoutParams) {
+                    finalParams.width = 0
+                    finalParams.weight = 1f
+                    searchContainer.layoutParams = finalParams
+                }
+
+                searchField.isCursorVisible = true
+            }
+
+            start()
         }
-        start()
     }
-    }
+        }
     
                 
 
