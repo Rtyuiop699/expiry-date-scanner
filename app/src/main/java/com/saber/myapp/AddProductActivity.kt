@@ -278,22 +278,86 @@ binding.btnScanDate.setOnClickListener {
         }
     }
   }
-                
-    private fun loadIntentData() { 
-        val barcodeValue = intent.getStringExtra("BARCODE_EXTRA") ?: "" 
-        val nameValue = intent.getStringExtra("NAME_EXTRA") ?: "" 
-        val expiryValue = intent.getStringExtra("EXPIRY_EXTRA") ?: "" 
-        val imagePathValue = intent.getStringExtra("IMAGE_PATH_EXTRA") 
 
-        binding.editTextBarcode.setText(barcodeValue) 
-        binding.editTextProductName.setText(nameValue) 
-        binding.editTextDate.setText(expiryValue) 
-        processProductImage(imagePathValue) 
+   private fun loadIntentData() {
 
-        if (barcodeValue.isNotEmpty() && nameValue.isBlank()) { 
-            fetchProductFromApi(barcodeValue) 
+    val barcodeValue =
+        intent.getStringExtra("BARCODE_EXTRA") ?: ""
+
+    val nameValue =
+        intent.getStringExtra("NAME_EXTRA") ?: ""
+
+    val expiryValue =
+        intent.getStringExtra("EXPIRY_EXTRA") ?: ""
+
+    val imagePathValue =
+        intent.getStringExtra("IMAGE_PATH_EXTRA")
+
+    binding.editTextBarcode.setText(barcodeValue)
+
+    if (barcodeValue.isNotBlank()) {
+
+        val existingProduct =
+            databaseHelper.getProductByBarcode(barcodeValue)
+
+        if (existingProduct != null) {
+
+            binding.editTextProductName.setText(
+                existingProduct.name
+            )
+
+            binding.autoCompleteCategories.setText(
+                existingProduct.category,
+                false
+            )
+
+            binding.editCarton.setText(
+                existingProduct.cartons.toString()
+            )
+
+            binding.editPack.setText(
+                existingProduct.packsPerCarton.toString()
+            )
+
+            binding.editPiece.setText(
+                existingProduct.piecesPerPack.toString()
+            )
+
+            binding.editCartonPurchasePrice.setText(
+                existingProduct.cartonPurchasePrice.toString()
+            )
+
+            binding.editPieceSalePrice.setText(
+                existingProduct.pieceSalePrice.toString()
+            )
+
+            processProductImage(
+                existingProduct.imagePath
+            )
+
+            // لا ننسخ تاريخ الدفعة القديمة
+            binding.editTextDate.setText("")
+
+            calculateQuantity()
+
+            return
         }
     }
+
+    // باركود غير موجود
+    binding.editTextProductName.setText(nameValue)
+    binding.editTextDate.setText(expiryValue)
+
+    processProductImage(imagePathValue)
+
+    if (
+        barcodeValue.isNotBlank() &&
+        nameValue.isBlank()
+    ) {
+        fetchProductFromApi(barcodeValue)
+    }
+   }             
+    
 private fun loadCategories() {
 
     categories.clear()
