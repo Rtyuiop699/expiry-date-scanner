@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,30 +12,36 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <!-- شريط التحكم السفلي -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center">
+        android:layout_height="120dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="32dp">
 
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="إلغاء"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#F44336" />
+        <!-- زر الفلاش -->
+        <ImageButton
+            android:id="@+id/btnFlash"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_flash"
+            app:tint="@android:color/white"
+            android:contentDescription="الفلاش" />
 
-        <Button
+        <!-- زر التقاط الصورة (في المنتصف) -->
+        <ImageButton
             android:id="@+id/btnCapture"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="📸 تصوير"
-            android:backgroundTint="#4CAF50" />
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_centerInParent="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_camera"
+            app:tint="@android:color/white"
+            android:contentDescription="التقاط صورة" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
