@@ -571,86 +571,85 @@ class DatabaseHelper(context: Context) :
     // =====================================================
     // تحديث المنتج
     // =====================================================
+// =====================================================
+// تحديث المنتج
+// =====================================================
 
-    fun updateProduct(product: Product): Int {
+fun updateProduct(product: Product): Int {
 
-        val db = writableDatabase
+    val db = writableDatabase
 
-        // حفظ التصنيف
-        if (product.category.isNotBlank()) {
+    // حفظ التصنيف
+    if (product.category.isNotBlank()) {
 
-            val categoryValues = ContentValues().apply {
-                put(
-                    COL_CATEGORY_NAME,
-                    product.category.trim()
-                )
-            }
-
-            db.insertWithOnConflict(
-                TABLE_CATEGORIES,
-                null,
-                categoryValues,
-                SQLiteDatabase.CONFLICT_IGNORE
+        val categoryValues = ContentValues().apply {
+            put(
+                COL_CATEGORY_NAME,
+                product.category.trim()
             )
         }
 
-        val values = ContentValues().apply {
+        db.insertWithOnConflict(
+            TABLE_CATEGORIES,
+            null,
+            categoryValues,
+            SQLiteDatabase.CONFLICT_IGNORE
+        )
+    }
 
-            put(COL_BARCODE, product.barcode)
-            put(COL_NAME, product.name)
-            put(COL_EXPIRY, product.expiryDate)
-            put(COL_IMAGE, product.imagePath)
-            put(COL_CATEGORY, product.category)
+    val values = ContentValues().apply {
 
-            put(COL_CARTONS, product.cartons)
-            put(
-                COL_PACKS_PER_CARTON,
-                product.packsPerCarton
-            )
-            put(
-                COL_PIECES_PER_PACK,
-                product.piecesPerPack
-            )
+        put(COL_BARCODE, product.barcode)
+        put(COL_NAME, product.name)
+        put(COL_EXPIRY, product.expiryDate)
+        put(COL_IMAGE, product.imagePath)
+        put(COL_CATEGORY, product.category)
 
-            put(
-                COL_CARTON_PURCHASE_PRICE,
-                product.cartonPurchasePrice
-            )
+        put(COL_CARTONS, product.cartons)
+        put(COL_PACKS_PER_CARTON, product.packsPerCarton)
+        put(COL_PIECES_PER_PACK, product.piecesPerPack)
 
-            put(
-                COL_PIECE_SALE_PRICE,
-                product.pieceSalePrice
-            )
-        }
-
-        val result = db.update(
-            TABLE_PRODUCTS,
-            values,
-            "$COL_BARCODE = ?",
-            arrayOf(product.barcode)
+        put(
+            COL_CARTON_PURCHASE_PRICE,
+            product.cartonPurchasePrice
         )
 
-        db.close()
-
-        return result
+        put(
+            COL_PIECE_SALE_PRICE,
+            product.pieceSalePrice
+        )
     }
+
+    val result = db.update(
+        TABLE_PRODUCTS,
+        values,
+        "$COL_ID = ?",
+        arrayOf(product.id.toString())
+    )
+
+    db.close()
+
+    return result
+}
 
     // =====================================================
     // حذف المنتج
     // =====================================================
+// =====================================================
+// حذف المنتج
+// =====================================================
 
-    fun deleteProduct(barcode: String): Int {
+fun deleteProduct(id: Int): Int {
 
-        val db = writableDatabase
+    val db = writableDatabase
 
-        val result = db.delete(
-            TABLE_PRODUCTS,
-            "$COL_BARCODE = ?",
-            arrayOf(barcode)
-        )
+    val result = db.delete(
+        TABLE_PRODUCTS,
+        "$COL_ID = ?",
+        arrayOf(id.toString())
+    )
 
-        db.close()
+    db.close()
 
-        return result
-    }
-    }
+    return result
+}
