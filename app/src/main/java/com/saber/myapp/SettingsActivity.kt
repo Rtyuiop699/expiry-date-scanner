@@ -13,6 +13,12 @@ import androidx.core.os.LocaleListCompat
 
 class SettingsActivity : AppCompatActivity() {
 
+    // متغيرات لتتبع بداية التفعيل ومنع التكرار اللانهائي
+    private var isLanguageInitial = true
+    private var isThemeInitial = true
+    private var isExportGlobalInitial = true
+    private var isExportOcrInitial = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -22,13 +28,13 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        // 2. إعداد القوائم المنسدلة (Spinners)
+        // 2. إعداد القوائم المنسدلة
         setupLanguageSpinner()
         setupThemeSpinner()
         setupExportGlobalSpinner()
         setupExportOcrSpinner()
 
-        // 3. جعل النقر على السطر بالكامل يفتح القائمة المنسدلة
+        // 3. فتح القائمة عند الضغط على الصف كاملاً
         findViewById<View>(R.id.itemLanguage).setOnClickListener {
             findViewById<Spinner>(R.id.spinnerLanguage).performClick()
         }
@@ -52,6 +58,10 @@ class SettingsActivity : AppCompatActivity() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isLanguageInitial) {
+                    isLanguageInitial = false
+                    return
+                }
                 when (position) {
                     0 -> setAppLocale("ar")
                     1 -> Toast.makeText(
@@ -73,16 +83,20 @@ class SettingsActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, themes)
         spinner.adapter = adapter
 
-        // ضبط التحديد الحالي بناءً على مظهر النظام/التطبيق
+        // ضبط الاختيار المبدئي حسب الوضع الحالي
         val currentNightMode = AppCompatDelegate.getDefaultNightMode()
         if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            spinner.setSelection(1)
+            spinner.setSelection(1, false)
         } else {
-            spinner.setSelection(0)
+            spinner.setSelection(0, false)
         }
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isThemeInitial) {
+                    isThemeInitial = false
+                    return
+                }
                 when (position) {
                     0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -99,10 +113,14 @@ class SettingsActivity : AppCompatActivity() {
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
         spinner.adapter = adapter
-        spinner.setSelection(1) // افتراضياً: إيقاف
+        spinner.setSelection(1, false)
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isExportGlobalInitial) {
+                    isExportGlobalInitial = false
+                    return
+                }
                 val status = options[position]
                 Toast.makeText(this@SettingsActivity, "تصدير المنتجات: $status", Toast.LENGTH_SHORT).show()
             }
@@ -117,10 +135,14 @@ class SettingsActivity : AppCompatActivity() {
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
         spinner.adapter = adapter
-        spinner.setSelection(1) // افتراضياً: إيقاف
+        spinner.setSelection(1, false)
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isExportOcrInitial) {
+                    isExportOcrInitial = false
+                    return
+                }
                 val status = options[position]
                 Toast.makeText(this@SettingsActivity, "تصدير صور OCR: $status", Toast.LENGTH_SHORT).show()
             }
