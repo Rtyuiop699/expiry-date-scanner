@@ -869,18 +869,17 @@ private fun enterSelectionMode(
     // =========================================================
     // نافذة تأكيد حذف منتج واحد
     // =========================================================
-
     private fun showDeleteConfirmationDialog(product: Product) {
-        AlertDialog.Builder(this)
-            .setTitle("حذف المنتج")
-            .setMessage("هل تريد حذف المنتج:\n\n${product.name}؟")
-            .setNegativeButton("إلغاء", null)
-            .setPositiveButton("حذف") { _, _ ->
-                databaseHelper.deleteProduct(product.barcode)
-                loadProductsFromDatabase()
-                Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
-            }
-            .show()
+    AlertDialog.Builder(this)
+        .setTitle("حذف المنتج")
+        .setMessage("هل تريد حذف المنتج:\n\n${product.name}؟")
+        .setNegativeButton("إلغاء", null)
+        .setPositiveButton("حذف") { _, _ ->
+            databaseHelper.deleteProduct(product.id)
+            loadProductsFromDatabase()
+            Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
+        }
+        .show()
     }
     
     // =========================================================
