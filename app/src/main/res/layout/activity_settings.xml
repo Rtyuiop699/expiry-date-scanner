@@ -55,18 +55,17 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- عنصر تغيير اللغة -->
+            <!-- 1. عنصر تغيير اللغة -->
             <RelativeLayout
-                android:id="@+id/itemLanguage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="12dp">
+                android:paddingVertical="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/spinnerLanguage"
+                    android:layout_toStartOf="@id/menuLanguage"
                     android:orientation="vertical">
 
                     <TextView
@@ -86,31 +85,37 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Spinner
-                    android:id="@+id/spinnerLanguage"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuLanguage"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="120dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/bg_custom_spinner_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="36dp"
-                    android:spinnerMode="dropdown" />
+                    android:layout_centerVertical="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteLanguage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:paddingVertical="10dp"
+                        android:text="العربية"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
 
-            <!-- عنصر تغيير المظهر (فاتح / داكن) -->
+            <!-- 2. عنصر تغيير المظهر (فاتح / داكن) -->
             <RelativeLayout
-                android:id="@+id/itemTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingVertical="12dp">
+                android:layout_marginTop="12dp"
+                android:paddingVertical="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/spinnerTheme"
+                    android:layout_toStartOf="@id/menuTheme"
                     android:orientation="vertical">
 
                     <TextView
@@ -130,31 +135,36 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Spinner
-                    android:id="@+id/spinnerTheme"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuTheme"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="120dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/bg_custom_spinner_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="36dp"
-                    android:spinnerMode="dropdown" />
+                    android:layout_centerVertical="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:paddingVertical="10dp"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
 
-            <!-- تصدير إلى قاعدة البيانات العالمية (تشغيل / إيقاف) -->
+            <!-- 3. تصدير إلى قاعدة البيانات العالمية (تشغيل / إيقاف) -->
             <RelativeLayout
-                android:id="@+id/itemExportGlobal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingVertical="12dp">
+                android:layout_marginTop="12dp"
+                android:paddingVertical="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/spinnerExportGlobal"
+                    android:layout_toStartOf="@id/menuExportGlobal"
                     android:orientation="vertical">
 
                     <TextView
@@ -174,31 +184,37 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Spinner
-                    android:id="@+id/spinnerExportGlobal"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuExportGlobal"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="120dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/bg_custom_spinner_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="36dp"
-                    android:spinnerMode="dropdown" />
+                    android:layout_centerVertical="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteExportGlobal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:paddingVertical="10dp"
+                        android:text="إيقاف"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
 
-            <!-- تصدير صور OCR (تشغيل / إيقاف) -->
+            <!-- 4. تصدير صور OCR (تشغيل / إيقاف) -->
             <RelativeLayout
-                android:id="@+id/itemExportOcr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingVertical="12dp">
+                android:layout_marginTop="12dp"
+                android:paddingVertical="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/spinnerExportOcr"
+                    android:layout_toStartOf="@id/menuExportOcr"
                     android:orientation="vertical">
 
                     <TextView
@@ -218,19 +234,26 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <Spinner
-                    android:id="@+id/spinnerExportOcr"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuExportOcr"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="120dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/bg_custom_spinner_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="36dp"
-                    android:spinnerMode="dropdown" />
+                    android:layout_centerVertical="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoCompleteExportOcr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:paddingVertical="10dp"
+                        android:text="إيقاف"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
-                        
+                    
