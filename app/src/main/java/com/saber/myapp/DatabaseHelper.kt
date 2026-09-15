@@ -653,3 +653,4 @@ fun deleteProduct(id: Int): Int {
 
     return result
 }
+    }
