@@ -92,7 +92,7 @@
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/bg_setting_dropdown"
+                    android:background="@drawable/bg_custom_spinner_field"
                     android:paddingStart="8dp"
                     android:paddingEnd="36dp"
                     android:spinnerMode="dropdown" />
@@ -136,7 +136,7 @@
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/bg_setting_dropdown"
+                    android:background="@drawable/bg_custom_spinner_field"
                     android:paddingStart="8dp"
                     android:paddingEnd="36dp"
                     android:spinnerMode="dropdown" />
@@ -180,7 +180,7 @@
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/bg_setting_dropdown"
+                    android:background="@drawable/bg_custom_spinner_field"
                     android:paddingStart="8dp"
                     android:paddingEnd="36dp"
                     android:spinnerMode="dropdown" />
@@ -224,7 +224,7 @@
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/bg_setting_dropdown"
+                    android:background="@drawable/bg_custom_spinner_field"
                     android:paddingStart="8dp"
                     android:paddingEnd="36dp"
                     android:spinnerMode="dropdown" />
