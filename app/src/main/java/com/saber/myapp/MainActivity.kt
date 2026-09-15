@@ -661,28 +661,27 @@ private fun enterSelectionMode(
     // =========================================================
 
     private fun deleteSelectedProducts() {
-        val selectedProducts = listHandler.getSelectedProducts()
+    val selectedProducts = listHandler.getSelectedProducts()
 
-        if (selectedProducts.isEmpty()) {
-            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("حذف المنتجات")
-            .setMessage("هل تريد حذف ${selectedProducts.size} منتج؟")
-            .setNegativeButton("إلغاء", null)
-            .setPositiveButton("حذف") { _, _ ->
-                for (product in selectedProducts) {
-                    databaseHelper.deleteProduct(product.barcode)
-                }
-                exitSelectionMode()
-                loadProductsFromDatabase()
-                Toast.makeText(this, "تم حذف المنتجات المحددة", Toast.LENGTH_SHORT).show()
-            }
-            .show()
+    if (selectedProducts.isEmpty()) {
+        Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
+        return
     }
 
+    AlertDialog.Builder(this)
+        .setTitle("حذف المنتجات")
+        .setMessage("هل تريد حذف ${selectedProducts.size} منتج؟")
+        .setNegativeButton("إلغاء", null)
+        .setPositiveButton("حذف") { _, _ ->
+            for (product in selectedProducts) {
+                databaseHelper.deleteProduct(product.id)
+            }
+            exitSelectionMode()
+            loadProductsFromDatabase()
+            Toast.makeText(this, "تم حذف المنتجات المحددة", Toast.LENGTH_SHORT).show()
+        }
+        .show()
+    }
 
     // =========================================================
     // طباعة المنتجات المحددة
