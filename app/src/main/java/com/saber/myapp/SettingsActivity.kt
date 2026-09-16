@@ -1,8 +1,10 @@
 package com.saber.myapp
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Filter
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,7 +32,8 @@ class SettingsActivity : AppCompatActivity() {
         val languages = arrayOf("العربية", "English")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteLanguage)
         
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, languages)
+        // استخدام المحول المخصص لمنع الفلترة
+        val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, languages)
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
@@ -49,10 +52,10 @@ class SettingsActivity : AppCompatActivity() {
         val themes = arrayOf("فاتح", "داكن")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteTheme)
         
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, themes)
+        val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, themes)
         autoComplete.setAdapter(adapter)
 
-        // تحديد الخيار المعروض حالياً بدون تنفيذ أي حدث
+        // ضبط النص المعروض حالياً بدون تفعيل الفلترة (false)
         val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         autoComplete.setText(if (isDarkMode) "داكن" else "فاتح", false)
 
@@ -68,7 +71,7 @@ class SettingsActivity : AppCompatActivity() {
         val options = arrayOf("تشغيل", "إيقاف")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteExportGlobal)
         
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, options)
+        val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
@@ -81,7 +84,7 @@ class SettingsActivity : AppCompatActivity() {
         val options = arrayOf("تشغيل", "إيقاف")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteExportOcr)
         
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, options)
+        val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
@@ -93,5 +96,33 @@ class SettingsActivity : AppCompatActivity() {
     private fun setAppLocale(languageCode: String) {
         val appLocale = LocaleListCompat.forLanguageTags(languageCode)
         AppCompatDelegate.setApplicationLocales(appLocale)
+    }
+
+    /**
+     * كلاس مخصص لمنع الفلترة الذكية للـ AutoCompleteTextView
+     * يضمن إظهار كل عناصر القائمة دائماً حتى بعد اختيار أحد الخيارات
+     */
+    private inner class NoFilterAdapter<T>(
+        context: Context,
+        resource: Int,
+        private val items: Array<T>
+    ) : ArrayAdapter<T>(context, resource, items) {
+
+        private val noFilter = object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val results = FilterResults()
+                results.values = items
+                results.count = items.size
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                notifyDataSetChanged()
+            }
+        }
+
+        override fun getFilter(): Filter {
+            return noFilter
+        }
     }
 }
