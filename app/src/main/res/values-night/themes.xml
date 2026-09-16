@@ -8,23 +8,23 @@
         <item name="colorOnPrimary">@android:color/white</item>
 
         <!-- اللون الثانوي -->
-        <item name="colorSecondary">@color/primary_dark_color</item>
+        <item name="colorSecondary">@color/primary_color</item>
         <item name="colorOnSecondary">@android:color/white</item>
 
         <!-- خلفية التطبيق -->
-        <item name="android:colorBackground">@color/bg_light</item>
+        <item name="android:colorBackground">@color/bg_dark</item>
 
         <!-- لون سطح العناصر -->
-        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurface">@color/surface_dark</item>
 
         <!-- النصوص القياسية -->
-        <item name="android:textColorPrimary">@color/text_primary_light</item>
-        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
 
         <!-- شريط الحالة -->
-        <item name="android:statusBarColor">@color/primary_dark_color</item>
+        <item name="android:statusBarColor">@color/bg_dark</item>
 
-        <!-- لون الأيقونات/النصوص على شريط الحالة -->
+        <!-- النص/الأيقونة في شريط الحالة -->
         <item name="android:windowLightStatusBar">false</item>
 
     </style>

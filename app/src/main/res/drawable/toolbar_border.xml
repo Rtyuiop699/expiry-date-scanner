@@ -1,6 +1,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FFFFFF"/>
+    <solid android:color="@color/toolbar_background"/>
     <stroke
         android:width="0.5dp"
-        android:color="#33000000"/>
+        android:color="@color/toolbar_border_stroke"/>
 </shape>

@@ -18,7 +18,7 @@
             android:text="تعليمات الاستخدام"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#025144"
+            android:textColor="?attr/colorPrimary"
             android:layout_marginBottom="16dp" />
 
         <!-- نص الشرح -->
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="أهلاً بكم في تطبيق إدارة المخزون لإدارة المنتجات والأصناف في المتاجر والبقالات.\n\nمن خلال إدارة المخزون هذا يمكنك تصنيف منتجات المواد الغذائية وتواريخ الانتهاء بسبولة، كل ما عليك فعله هو الضغط على زر (+) الموجود في أسفل يمين الشاشة وسيفتح لك ماسح الباركود، بعد ذلك قم بإدخال البيانات في الحقول ثم الضغط على أيقونة الحفظ في الأعلى.\n\nكما يمكن لتطبيقنا التعرف على تاريخ الصلاحية تلقائياً من خلال الكاميرا، قم بالضغط على زر OCR الموجود أمام حقل التاريخ ثم توجيه الكاميرا نحو التاريخ على العبوة وسيقوم بقرائته وطباعته تلقائياً."
             android:textSize="15sp"
-            android:textColor="#333333"
+            android:textColor="?android:attr/textColorPrimary"
             android:lineSpacingExtra="4dp" />
 
         <!-- ملاحظة الميزة المدفوعة -->
@@ -48,7 +48,7 @@
             android:text="هذا التطبيق من إنتاج سوبر كود\nاليمن - عدن"
             android:textSize="12sp"
             android:gravity="center"
-            android:textColor="#777777"
+            android:textColor="?android:attr/textColorSecondary"
             android:layout_marginBottom="20dp" />
 
         <!-- زر الإغلاق -->
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="حسناً، فهمت"
-            android:backgroundTint="#025144"
+            android:backgroundTint="?attr/colorPrimary"
             android:textColor="#FFFFFF" />
 
     </LinearLayout>

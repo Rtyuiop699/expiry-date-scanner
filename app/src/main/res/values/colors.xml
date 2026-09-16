@@ -1,3 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?><resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- الهوية الأساسية للتطبيق -->
+    <color name="primary_color">#2E7D32</color>
+    <color name="primary_dark_color">#1B5E20</color>
+
+    <!-- الخلفيات - الوضع الفاتح -->
+    <color name="bg_light">#F5F5F5</color>
+    <color name="surface_light">#FFFFFF</color>
+
+    <!-- النصوص - الوضع الفاتح -->
+    <color name="text_primary_light">#1D1B20</color>
+    <color name="text_secondary_light">#757575</color>
+
+    <!-- الحدود - الوضع الفاتح -->
+    <color name="stroke_light">#CCCCCC</color>
+
+    <!-- الخلفيات - الوضع الداكن -->
+    <color name="bg_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+
+    <!-- النصوص - الوضع الداكن -->
+    <color name="text_primary_dark">#E6E1E5</color>
+    <color name="text_secondary_dark">#A0A0A0</color>
+
+    <!-- الحدود - الوضع الداكن -->
+    <color name="stroke_dark">#444444</color>
+
+    <!-- خلفية نتيجة OCR -->
+    <color name="ocr_result_background">#F2F2F2</color>
+
+    <!-- خلفية وحدود شريط الأدوات -->
+    <color name="toolbar_background">#FFFFFF</color>
+    <color name="toolbar_border_stroke">#33000000</color>
+
+    <!-- خلفية حقل البحث -->
+    <color name="search_background">#F1F3F4</color>
+
+    <!-- ألوان القائمة العائمة -->
+    <color name="floating_menu_background">#FFFFFF</color>
+    <color name="floating_menu_stroke">#E0E0E0</color>
+
+    <!-- لون خلفية أيقونة التطبيق -->
     <color name="ic_launcher_background">#FFFFFF</color>
+
 </resources>

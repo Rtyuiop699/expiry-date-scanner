@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#66BB6A</color>
+    <color name="primary_dark_color">#2E7D32</color>
+
+    <color name="bg_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+
+    <color name="text_primary_dark">#E6E1E5</color>
+    <color name="text_secondary_dark">#A0A0A0</color>
+
+    <color name="stroke_dark">#444444</color>
+
+    <!-- خلفية نتيجة OCR - الوضع الداكن -->
+    <color name="ocr_result_background">#2A2A2A</color>
+
+    <!-- خلفية وحدود شريط الأدوات - الوضع الداكن -->
+    <color name="toolbar_background">#1E1E1E</color>
+    <color name="toolbar_border_stroke">#444444</color>
+
+    <!-- خلفية حقل البحث - الوضع الداكن -->
+    <color name="search_background">#2A2A2A</color>
+
+    <!-- ألوان القائمة العائمة - الوضع الداكن -->
+    <color name="floating_menu_background">#1E1E1E</color>
+    <color name="floating_menu_stroke">#444444</color>
+
+    <!-- نفس اسم اللون المستخدم في ملفات الواجهات،
+         لكن بقيمة مناسبة للوضع الداكن -->
+    <color name="stroke_light">#444444</color>
+</resources>
