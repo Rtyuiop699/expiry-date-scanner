@@ -11,6 +11,9 @@
 
     <color name="stroke_dark">#444444</color>
 
+    <!-- لون الفواصل - الوضع الداكن -->
+    <color name="divider_color">#444444</color>
+
     <!-- خلفية نتيجة OCR - الوضع الداكن -->
     <color name="ocr_result_background">#2A2A2A</color>
 

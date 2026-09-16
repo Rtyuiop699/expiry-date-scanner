@@ -27,6 +27,9 @@
     <!-- الحدود - الوضع الداكن -->
     <color name="stroke_dark">#444444</color>
 
+    <!-- لون الفواصل -->
+    <color name="divider_color">#DDDDDD</color>
+
     <!-- خلفية نتيجة OCR -->
     <color name="ocr_result_background">#F2F2F2</color>
 
