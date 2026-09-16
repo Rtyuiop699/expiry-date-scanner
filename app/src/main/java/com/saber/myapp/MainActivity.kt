@@ -137,10 +137,18 @@ class MainActivity : AppCompatActivity() {
         // عناصر البحث والأزرار
         // =====================================================
         val searchField = findViewById<EditText>(R.id.searchField)
-        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
-        val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
-        val searchContainer = findViewById<View>(R.id.searchContainer)
-        val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
+val searchContainer = findViewById<View>(R.id.searchContainer)
+val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
+val btnHelp = findViewById<ImageView>(R.id.btnHelp)
+
+// =====================================================
+// زر المساعدة
+// =====================================================
+btnHelp.setOnClickListener {
+    showHelpDialog()
+}
 
         // =====================================================
         // زر التحديد المتعدد
