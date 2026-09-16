@@ -85,7 +85,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+  private fun showHelpDialog() {
 
+    val dialogView = layoutInflater.inflate(
+        R.layout.dialog_help,
+        null
+    )
+
+    val dialog = AlertDialog.Builder(this)
+        .setView(dialogView)
+        .setPositiveButton("إغلاق", null)
+        .create()
+
+    dialog.show()
+  }
     // =========================================================
     // onCreate
     // =========================================================
