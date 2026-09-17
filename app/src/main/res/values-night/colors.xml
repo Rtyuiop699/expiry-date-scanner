@@ -30,5 +30,9 @@
 
     <!-- نفس اسم اللون المستخدم في ملفات الواجهات،
          لكن بقيمة مناسبة للوضع الداكن -->
-    <color name="stroke_light">#444444</color>
+     
+  <color name="stroke_light">#444444</color>
+
+    <color name="product_selected_background">#26382A</color>
+
 </resources>
