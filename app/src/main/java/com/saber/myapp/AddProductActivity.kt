@@ -279,7 +279,7 @@ binding.btnScanDate.setOnClickListener {
     }
   }
 
-   private fun loadIntentData() {
+  private fun loadIntentData() {
 
     val isEditMode =
         intent.getBooleanExtra("IS_EDIT_MODE", false)
@@ -298,6 +298,70 @@ binding.btnScanDate.setOnClickListener {
 
     val imagePathValue =
         intent.getStringExtra("IMAGE_PATH_EXTRA")
+
+
+    // =====================================================
+    // وضع التعديل
+    // =====================================================
+
+    if (isEditMode && productId != -1) {
+
+        val existingProduct =
+            databaseHelper.getProductById(productId)
+
+        if (existingProduct != null) {
+
+            binding.editTextBarcode.setText(
+                existingProduct.barcode
+            )
+
+            binding.editTextProductName.setText(
+                existingProduct.name
+            )
+
+            binding.autoCompleteCategories.setText(
+                existingProduct.category,
+                false
+            )
+
+            binding.editCarton.setText(
+                existingProduct.cartons.toString()
+            )
+
+            binding.editPack.setText(
+                existingProduct.packsPerCarton.toString()
+            )
+
+            binding.editPiece.setText(
+                existingProduct.piecesPerPack.toString()
+            )
+
+            binding.editCartonPurchasePrice.setText(
+                existingProduct.cartonPurchasePrice.toString()
+            )
+
+            binding.editPieceSalePrice.setText(
+                existingProduct.pieceSalePrice.toString()
+            )
+
+            binding.editTextDate.setText(
+                existingProduct.expiryDate
+            )
+
+            processProductImage(
+                existingProduct.imagePath
+            )
+
+            calculateQuantity()
+        }
+
+        return
+    }
+
+
+    // =====================================================
+    // الوضع العادي — لا نغير منطق الباركود الحالي
+    // =====================================================
 
     binding.editTextBarcode.setText(barcodeValue)
 
@@ -350,8 +414,13 @@ binding.btnScanDate.setOnClickListener {
         }
     }
 
+
+    // =====================================================
     // باركود غير موجود
+    // =====================================================
+
     binding.editTextProductName.setText(nameValue)
+
     binding.editTextDate.setText(expiryValue)
 
     processProductImage(imagePathValue)
@@ -362,7 +431,7 @@ binding.btnScanDate.setOnClickListener {
     ) {
         fetchProductFromApi(barcodeValue)
     }
-   }             
+  } 
     
 private fun loadCategories() {
 
