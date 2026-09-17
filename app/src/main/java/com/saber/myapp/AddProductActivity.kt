@@ -28,7 +28,8 @@ class AddProductActivity : AppCompatActivity() {
     private val REQUEST_PRODUCT_CAMERA = 1001
     private val REQUEST_DATE_SCAN = 1002
     private lateinit var categoriesAdapter: ArrayAdapter<String>
-
+    private var editProductId: Int = -1
+    private var isEditMode: Boolean = false
     // القائمة الأساسية للتصنيفات
     private val categories = mutableListOf<String>()
 
@@ -286,7 +287,8 @@ binding.btnScanDate.setOnClickListener {
 
     val productId =
         intent.getIntExtra("PRODUCT_ID_EXTRA", -1)
-
+    this.isEditMode = isEditMode
+this.editProductId = productId
     val barcodeValue =
         intent.getStringExtra("BARCODE_EXTRA") ?: ""
 
