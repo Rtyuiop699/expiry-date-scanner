@@ -50,29 +50,69 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+private fun setupThemeMenu() {
+val themes = arrayOf("فاتح", "داكن")
+val autoComplete =
+findViewById<AutoCompleteTextView>(R.id.autoCompleteTheme)
 
-    private fun setupThemeMenu() {
-        val themes = arrayOf("فاتح", "داكن")
-        val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteTheme)
-        
-        val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, themes)
-        autoComplete.setAdapter(adapter)
+val adapter = NoFilterAdapter(
+    this,
+    android.R.layout.simple_spinner_dropdown_item,
+    themes
+)
 
-        val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-        autoComplete.setText(if (isDarkMode) "داكن" else "فاتح", false)
+autoComplete.setAdapter(adapter)
 
-        autoComplete.setOnItemClickListener { _, _, position, _ ->
-            // إغلاق القائمة المنسدلة وإلغاء التركيز
-            autoComplete.dismissDropDown()
-            autoComplete.clearFocus()
+// قراءة الوضع المحفوظ
+val preferences = getSharedPreferences(
+    "app_settings",
+    MODE_PRIVATE
+)
 
-            when (position) {
-                0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
+val isDarkMode = preferences.getBoolean(
+    "dark_mode",
+    false
+)
+
+// عرض الوضع الحالي
+autoComplete.setText(
+    if (isDarkMode) "داكن" else "فاتح",
+    false
+)
+
+autoComplete.setOnItemClickListener { _, _, position, _ ->
+
+    // إغلاق القائمة المنسدلة
+    autoComplete.dismissDropDown()
+
+    when (position) {
+
+        0 -> {
+            // حفظ الوضع الفاتح
+            preferences.edit()
+                .putBoolean("dark_mode", false)
+                .apply()
+
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
+
+        1 -> {
+            // حفظ الوضع الداكن
+            preferences.edit()
+                .putBoolean("dark_mode", true)
+                .apply()
+
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES
+            )
         }
     }
+}
 
+}
+    
     private fun setupExportGlobalMenu() {
         val options = arrayOf("تشغيل", "إيقاف")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteExportGlobal)
