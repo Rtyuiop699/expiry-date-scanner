@@ -47,4 +47,5 @@
     <!-- لون خلفية أيقونة التطبيق -->
     <color name="ic_launcher_background">#FFFFFF</color>
 
+    <color name="product_selected_background">#FFF0F0</color>
 </resources>
