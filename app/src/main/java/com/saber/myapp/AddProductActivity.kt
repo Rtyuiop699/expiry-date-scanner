@@ -281,6 +281,12 @@ binding.btnScanDate.setOnClickListener {
 
    private fun loadIntentData() {
 
+    val isEditMode =
+        intent.getBooleanExtra("IS_EDIT_MODE", false)
+
+    val productId =
+        intent.getIntExtra("PRODUCT_ID_EXTRA", -1)
+
     val barcodeValue =
         intent.getStringExtra("BARCODE_EXTRA") ?: ""
 
