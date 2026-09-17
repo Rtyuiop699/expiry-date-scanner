@@ -455,25 +455,24 @@ class ProductAdapter(
         // =====================================================
         // خلفية المنتج المحدد
         // =====================================================
+         if (
+    selectionMode &&
+    isSelected
+) {
 
-        if (
-            selectionMode &&
-            isSelected
-        ) {
+    holder.itemView.setBackgroundColor(
+        ContextCompat.getColor(
+            holder.itemView.context,
+            R.color.product_selected_background
+        )
+    )
 
-            holder.itemView.setBackgroundColor(
-                Color.parseColor(
-                    "#FFF0F0"
-                )
-            )
+} else {
 
-        } else {
-
-            holder.itemView.setBackgroundColor(
-                Color.TRANSPARENT
-            )
-        }
-
+    holder.itemView.setBackgroundColor(
+        Color.TRANSPARENT
+    )
+         }
 
         // =====================================================
         // الضغط على مربع التحديد
