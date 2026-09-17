@@ -567,10 +567,107 @@ class DatabaseHelper(context: Context) :
 
         return product
     }
+// =====================================================
+// جلب منتج بواسطة ID
+// =====================================================
 
-    // =====================================================
-    // تحديث المنتج
-    // =====================================================
+fun getProductById(id: Int): Product? {
+
+    val db = readableDatabase
+
+    val cursor = db.query(
+        TABLE_PRODUCTS,
+        null,
+        "$COL_ID = ?",
+        arrayOf(id.toString()),
+        null,
+        null,
+        null
+    )
+
+    val product = if (cursor.moveToFirst()) {
+
+        Product(
+
+            id = cursor.getInt(
+                cursor.getColumnIndexOrThrow(
+                    COL_ID
+                )
+            ),
+
+            barcode = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    COL_BARCODE
+                )
+            ),
+
+            name = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    COL_NAME
+                )
+            ),
+
+            expiryDate = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    COL_EXPIRY
+                )
+            ),
+
+            cartons = cursor.getInt(
+                cursor.getColumnIndexOrThrow(
+                    COL_CARTONS
+                )
+            ),
+
+            packsPerCarton = cursor.getInt(
+                cursor.getColumnIndexOrThrow(
+                    COL_PACKS_PER_CARTON
+                )
+            ),
+
+            piecesPerPack = cursor.getInt(
+                cursor.getColumnIndexOrThrow(
+                    COL_PIECES_PER_PACK
+                )
+            ),
+
+            cartonPurchasePrice =
+                cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(
+                        COL_CARTON_PURCHASE_PRICE
+                    )
+                ),
+
+            pieceSalePrice =
+                cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(
+                        COL_PIECE_SALE_PRICE
+                    )
+                ),
+
+            imagePath = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    COL_IMAGE
+                )
+            ),
+
+            category = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    COL_CATEGORY
+                )
+            )
+        )
+
+    } else {
+        null
+    }
+
+    cursor.close()
+    db.close()
+
+    return product
+}
+
 // =====================================================
 // تحديث المنتج
 // =====================================================
