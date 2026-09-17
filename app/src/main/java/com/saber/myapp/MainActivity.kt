@@ -104,9 +104,28 @@ class MainActivity : AppCompatActivity() {
     // =========================================================
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    super.onCreate(savedInstanceState)
 
+    // استعادة الوضع المحفوظ
+    val preferences = getSharedPreferences(
+        "app_settings",
+        MODE_PRIVATE
+    )
+
+    val isDarkMode = preferences.getBoolean(
+        "dark_mode",
+        false
+    )
+
+    AppCompatDelegate.setDefaultNightMode(
+        if (isDarkMode) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+    )
+
+    setContentView(R.layout.activity_main)
         // =====================================================
         // قاعدة البيانات
         // =====================================================
