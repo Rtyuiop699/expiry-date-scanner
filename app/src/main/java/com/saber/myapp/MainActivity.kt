@@ -335,9 +335,11 @@ btnHelp.setOnClickListener {
         // زر التعديل
         menuView.findViewById<android.widget.ImageButton>(R.id.btnActionEdit)?.setOnClickListener {
             selectedProduct?.let { selected ->
-                val intent = Intent(this, AddProductActivity::class.java).apply {
-                    putExtra("BARCODE_EXTRA", selected.barcode)
-                }
+               val intent = Intent(this, AddProductActivity::class.java).apply {
+    putExtra("BARCODE_EXTRA", selected.barcode)
+    putExtra("PRODUCT_ID_EXTRA", selected.id)
+    putExtra("IS_EDIT_MODE", true)
+               } 
                 addProductLauncher.launch(intent)
             }
             closeProductBalloon()
