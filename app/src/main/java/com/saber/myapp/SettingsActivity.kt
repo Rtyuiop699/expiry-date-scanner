@@ -32,11 +32,14 @@ class SettingsActivity : AppCompatActivity() {
         val languages = arrayOf("العربية", "English")
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteLanguage)
         
-        // استخدام المحول المخصص لمنع الفلترة
         val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, languages)
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
+            // إغلاق القائمة المنسدلة وإلغاء التركيز
+            autoComplete.dismissDropDown()
+            autoComplete.clearFocus()
+
             when (position) {
                 0 -> setAppLocale("ar")
                 1 -> Toast.makeText(
@@ -55,11 +58,14 @@ class SettingsActivity : AppCompatActivity() {
         val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, themes)
         autoComplete.setAdapter(adapter)
 
-        // ضبط النص المعروض حالياً بدون تفعيل الفلترة (false)
         val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         autoComplete.setText(if (isDarkMode) "داكن" else "فاتح", false)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
+            // إغلاق القائمة المنسدلة وإلغاء التركيز
+            autoComplete.dismissDropDown()
+            autoComplete.clearFocus()
+
             when (position) {
                 0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -75,6 +81,10 @@ class SettingsActivity : AppCompatActivity() {
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
+            // إغلاق القائمة المنسدلة وإلغاء التركيز
+            autoComplete.dismissDropDown()
+            autoComplete.clearFocus()
+
             val status = options[position]
             Toast.makeText(this, "تصدير المنتجات: $status", Toast.LENGTH_SHORT).show()
         }
@@ -88,6 +98,10 @@ class SettingsActivity : AppCompatActivity() {
         autoComplete.setAdapter(adapter)
 
         autoComplete.setOnItemClickListener { _, _, position, _ ->
+            // إغلاق القائمة المنسدلة وإلغاء التركيز
+            autoComplete.dismissDropDown()
+            autoComplete.clearFocus()
+
             val status = options[position]
             Toast.makeText(this, "تصدير صور OCR: $status", Toast.LENGTH_SHORT).show()
         }
@@ -100,7 +114,6 @@ class SettingsActivity : AppCompatActivity() {
 
     /**
      * كلاس مخصص لمنع الفلترة الذكية للـ AutoCompleteTextView
-     * يضمن إظهار كل عناصر القائمة دائماً حتى بعد اختيار أحد الخيارات
      */
     private inner class NoFilterAdapter<T>(
         context: Context,
