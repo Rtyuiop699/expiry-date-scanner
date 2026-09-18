@@ -555,7 +555,7 @@ if (
     // =========================
 
     val product = Product(
-        id = 0,
+        id = if (isEditMode) editProductId else 0,
         barcode = barcode,
         name = name,
         expiryDate = normalizedDate,
