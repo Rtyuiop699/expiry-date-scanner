@@ -624,7 +624,7 @@ if (
 
     finish()
     }
-
+    }
     private fun setupToolbar() {
 
     binding.topAppBar.setNavigationOnClickListener {
