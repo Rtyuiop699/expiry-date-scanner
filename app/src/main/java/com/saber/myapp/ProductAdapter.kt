@@ -342,87 +342,79 @@ class ProductAdapter(
             "Barcode: ${product.barcode}"
 
 
+
         // =====================================================
-        // صورة المنتج
-        // =====================================================
+// صورة المنتج
+// =====================================================
 
-        val path =
-            product.imagePath
+val path = product.imagePath
 
-        when {
+// إلغاء أي تحميل سابق لهذا الـ ViewHolder
+com.bumptech.glide.Glide
+    .with(holder.itemView.context)
+    .clear(holder.imageView)
 
-            // -------------------------------------------------
-            // صورة محلية
-            // -------------------------------------------------
+// الصورة الافتراضية أولاً
+holder.imageView.setImageResource(
+    android.R.drawable.ic_menu_report_image
+)
 
-            !path.isNullOrEmpty() &&
-                    !path.startsWith("http") -> {
+when {
 
-                val file =
-                    java.io.File(path)
+    // -------------------------------------------------
+    // لا توجد صورة
+    // -------------------------------------------------
 
-                if (file.exists()) {
-
-                    val bitmap =
-                        BitmapFactory.decodeFile(
-                            file.absolutePath
-                        )
-
-                    holder.imageView
-                        .setImageBitmap(
-                            bitmap
-                        )
-
-                } else {
-
-                    holder.imageView
-                        .setImageResource(
-                            android.R.drawable
-                                .ic_menu_report_image
-                        )
-                }
-            }
+    path.isNullOrBlank() -> {
+        // تبقى الصورة الافتراضية
+    }
 
 
-            // -------------------------------------------------
-            // صورة من الإنترنت
-            // -------------------------------------------------
+    // -------------------------------------------------
+    // صورة من الإنترنت
+    // -------------------------------------------------
 
-            !path.isNullOrEmpty() &&
-                    path.startsWith("http") -> {
+    path.startsWith("http://") ||
+    path.startsWith("https://") -> {
 
-                com.bumptech.glide.Glide
-                    .with(
-                        holder.itemView.context
-                    )
-                    .load(path)
-                    .placeholder(
-                        android.R.drawable
-                            .progress_horizontal
-                    )
-                    .error(
-                        android.R.drawable
-                            .ic_menu_report_image
-                    )
-                    .into(
-                        holder.imageView
-                    )
-            }
+        com.bumptech.glide.Glide
+            .with(holder.itemView.context)
+            .load(path)
+            .placeholder(
+                android.R.drawable.progress_horizontal
+            )
+            .error(
+                android.R.drawable.ic_menu_report_image
+            )
+            .into(holder.imageView)
+    }
 
 
-            // -------------------------------------------------
-            // لا توجد صورة
-            // -------------------------------------------------
+    // -------------------------------------------------
+    // صورة محلية
+    // -------------------------------------------------
 
-            else -> {
+    else -> {
 
-                holder.imageView
-                    .setImageResource(
-                        android.R.drawable
-                            .ic_menu_report_image
-                    )
-            }
+        val file = java.io.File(path)
+
+        if (file.exists()) {
+
+            com.bumptech.glide.Glide
+                .with(holder.itemView.context)
+                .load(file)
+                .placeholder(
+                    android.R.drawable.progress_horizontal
+                )
+                .error(
+                    android.R.drawable.ic_menu_report_image
+                )
+                .into(holder.imageView)
+
         }
+    }
+}
+        
 
 
         // =====================================================
