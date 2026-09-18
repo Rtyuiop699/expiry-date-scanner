@@ -575,6 +575,43 @@ if (
     // حفظ المنتج في قاعدة البيانات
     // =========================
 
+    if (isEditMode) {
+
+    AlertDialog.Builder(this)
+        .setTitle("تأكيد حفظ التعديلات")
+        .setMessage(
+            "لقد أجريت تعديلات على هذا المنتج، هل تريد حفظ التعديلات؟"
+        )
+        .setNegativeButton("لا", null)
+        .setPositiveButton("نعم") { _, _ ->
+
+            val result =
+                databaseHelper.updateProduct(product)
+
+            if (result > 0) {
+
+                Toast.makeText(
+                    this,
+                    "تم حفظ التعديلات بنجاح",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                setResult(RESULT_OK)
+                finish()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "تعذر حفظ التعديلات",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        .show()
+
+} else {
+
     databaseHelper.addProduct(product)
 
     Toast.makeText(
@@ -587,7 +624,6 @@ if (
 
     finish()
     }
-
 
     private fun setupToolbar() {
 
