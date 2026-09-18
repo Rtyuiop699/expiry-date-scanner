@@ -348,7 +348,10 @@ class ProductAdapter(
 // =====================================================
 
 val path = product.imagePath
-
+android.util.Log.d(
+    "PRODUCT_IMAGE",
+    "name=${product.name} | imagePath=$path"
+)
 // إلغاء أي تحميل سابق لهذا الـ ViewHolder
 com.bumptech.glide.Glide
     .with(holder.itemView.context)
