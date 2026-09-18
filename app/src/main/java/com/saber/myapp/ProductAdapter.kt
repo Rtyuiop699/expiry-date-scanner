@@ -348,10 +348,17 @@ class ProductAdapter(
 // =====================================================
 
 val path = product.imagePath
-android.util.Log.d(
-    "PRODUCT_IMAGE",
-    "name=${product.name} | imagePath=$path"
-)
+
+android.widget.Toast.makeText(
+    holder.itemView.context,
+    "imagePath = ${
+        if (path.isNullOrBlank())
+            "فارغ"
+        else
+            path.take(80)
+    }",
+    android.widget.Toast.LENGTH_LONG
+).show()
 // إلغاء أي تحميل سابق لهذا الـ ViewHolder
 com.bumptech.glide.Glide
     .with(holder.itemView.context)
