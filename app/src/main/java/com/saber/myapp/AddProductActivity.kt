@@ -568,7 +568,7 @@ val fixedImagePath = fixOpenFoodFactsImageUrl(currentImagePath) ?: ""
         cartonPurchasePrice = cartonPurchasePrice,
         pieceSalePrice = pieceSalePrice,
 
-        imagePath = currentImagePath!!,
+        imagePath = fixedImagePath,
         category = category
     )
 
