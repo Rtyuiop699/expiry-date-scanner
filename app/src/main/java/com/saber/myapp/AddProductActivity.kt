@@ -1335,7 +1335,9 @@ private fun createDate(
                         product.productName ?: ""
                     )
 
-                    val imageUrl = product.imageUrl
+                    // ✅ إصلاح الرابط قبل التمرير
+                    val rawImageUrl = product.imageUrl
+                    val imageUrl = fixOpenFoodFactsImageUrl(rawImageUrl)
 
                     if (!imageUrl.isNullOrBlank()) {
                         processProductImage(imageUrl)
@@ -1358,5 +1360,28 @@ private fun createDate(
             }
         }
     }
- } 
-}    
+}
+
+/**
+ * إصلاح رابط الصورة من Open Food Facts
+ * يضيف .jpg إذا كان الرابط بدون امتداد
+ */
+private fun fixOpenFoodFactsImageUrl(url: String?): String? {
+
+    if (url.isNullOrBlank()) return null
+
+    val hasExtension = url.matches(
+        Regex(
+            """.*\.(jpg|jpeg|png|webp|gif|bmp)$""",
+            RegexOption.IGNORE_CASE
+        )
+    )
+
+    if (hasExtension) return url
+
+    return if (url.contains("openfoodfacts.org")) {
+        "$url.jpg"
+    } else {
+        url
+    }
+}
