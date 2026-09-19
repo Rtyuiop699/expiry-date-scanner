@@ -243,168 +243,109 @@ class ProductAdapter(
     // =========================================================
     // ربط البيانات
     // =========================================================
+   override fun onBindViewHolder(
+    holder: ProductViewHolder,
+    position: Int
+) {
 
-    override fun onBindViewHolder(
-        holder: ProductViewHolder,
-        position: Int
-    ) {
+    val product = filteredProducts[position]
 
-        val product =
-            filteredProducts[position]
+    // =====================================================
+    // اسم المنتج
+    // =====================================================
 
+    holder.nameView.text = product.name
 
-        // =====================================================
-        // اسم المنتج
-        // =====================================================
+    // =====================================================
+    // تاريخ الانتهاء
+    // =====================================================
 
-        holder.nameView.text =
-            product.name
+    holder.expiryView.text = product.expiryDate
 
+    // =====================================================
+    // حساب الأيام المتبقية
+    // =====================================================
 
-        // =====================================================
-        // تاريخ الانتهاء
-        // =====================================================
+    val daysRemaining: Long? = try {
+        val expiryDate = LocalDate.parse(product.expiryDate)
+        val today = LocalDate.now()
+        ChronoUnit.DAYS.between(today, expiryDate)
+    } catch (e: Exception) {
+        null
+    }
 
-        holder.expiryView.text =
-            product.expiryDate
-
-
-        // =====================================================
-        // حساب الأيام المتبقية
-        // =====================================================
-
-        try {
-
-            val expiryDate =
-                LocalDate.parse(
-                    product.expiryDate
-                )
-
-            val today =
-                LocalDate.now()
-
-            val daysRemaining =
-                ChronoUnit.DAYS.between(
-                    today,
-                    expiryDate
-                )
-
-            when {
-
-                daysRemaining > 1 -> {
-
-                    holder.remainingView.text =
-                        "متبقي $daysRemaining يوم"
-                }
-
-                daysRemaining == 1L -> {
-
-                    holder.remainingView.text =
-                        "متبقي يوم واحد"
-                }
-
-                daysRemaining == 0L -> {
-
-                    holder.remainingView.text =
-                        "ينتهي اليوم"
-                }
-
-                else -> {
-
-                    val expiredDays =
-                        -daysRemaining
-
-                    if (expiredDays == 1L) {
-
-                        holder.remainingView.text =
-                            "منتهي منذ يوم واحد"
-
-                    } else {
-
-                        holder.remainingView.text =
-                            "منتهي منذ $expiredDays يوم"
-                    }
+    if (daysRemaining == null) {
+        holder.remainingView.text = "تاريخ غير صالح"
+    } else {
+        when {
+            daysRemaining > 1 -> {
+                holder.remainingView.text = "متبقي $daysRemaining يوم"
+            }
+            daysRemaining == 1L -> {
+                holder.remainingView.text = "متبقي يوم واحد"
+            }
+            daysRemaining == 0L -> {
+                holder.remainingView.text = "ينتهي اليوم"
+            }
+            else -> {
+                val expiredDays = -daysRemaining
+                holder.remainingView.text = if (expiredDays == 1L) {
+                    "منتهي منذ يوم واحد"
+                } else {
+                    "منتهي منذ $expiredDays يوم"
                 }
             }
+        }
+    }
 
-        } catch (e: Exception) {
+    // =====================================================
+    // الباركود
+    // =====================================================
 
-            holder.remainingView.text =
-                "تاريخ غير صالح"
+    holder.barcodeView.text = "Barcode: ${product.barcode}"
+
+    // =====================================================
+    // صورة المنتج
+    // =====================================================
+
+    // ✅ تعريف path — هنا الحل!
+    val path = product.imagePath
+
+    android.util.Log.d(
+        "PRODUCT_IMAGE",
+        "name=${product.name} | imagePath=$path"
+    )
+
+    // إلغاء أي تحميل سابق لهذا الـ ViewHolder
+    com.bumptech.glide.Glide
+        .with(holder.itemView.context)
+        .clear(holder.imageView)
+
+    // الصورة الافتراضية أولاً
+    holder.imageView.setImageResource(
+        android.R.drawable.ic_menu_report_image
+    )
+
+    when {
+
+        // -------------------------------------------------
+        // لا توجد صورة
+        // -------------------------------------------------
+
+        path.isNullOrBlank() -> {
+            // تبقى الصورة الافتراضية
         }
 
+        // -------------------------------------------------
+        // صورة من الإنترنت
+        // -------------------------------------------------
 
-        // =====================================================
-        // الباركود
-        // =====================================================
-
-        holder.barcodeView.text =
-            "Barcode: ${product.barcode}"
-
-
-
-        // =====================================================
-// صورة المنتج
-// =====================================================
-android.util.Log.d(
-    "PRODUCT_IMAGE",
-    "name=${product.name} | imagePath=$path"
-)
-
-// إلغاء أي تحميل سابق لهذا الـ ViewHolder
-com.bumptech.glide.Glide
-    .with(holder.itemView.context)
-    .clear(holder.imageView)
-
-// الصورة الافتراضية أولاً
-holder.imageView.setImageResource(
-    android.R.drawable.ic_menu_report_image
-)
-
-when {
-
-    // -------------------------------------------------
-    // لا توجد صورة
-    // -------------------------------------------------
-
-    path.isNullOrBlank() -> {
-        // تبقى الصورة الافتراضية
-    }
-
-
-    // -------------------------------------------------
-    // صورة من الإنترنت
-    // -------------------------------------------------
-
-    path.startsWith("http://") ||
-    path.startsWith("https://") -> {
-
-        com.bumptech.glide.Glide
-            .with(holder.itemView.context)
-            .load(path)
-            .placeholder(
-                android.R.drawable.progress_horizontal
-            )
-            .error(
-                android.R.drawable.ic_menu_report_image
-            )
-            .into(holder.imageView)
-    }
-
-
-    // -------------------------------------------------
-    // صورة محلية
-    // -------------------------------------------------
-
-    else -> {
-
-        val file = java.io.File(path)
-
-        if (file.exists()) {
+        path.startsWith("http://") ||
+                path.startsWith("https://") -> {
 
             com.bumptech.glide.Glide
                 .with(holder.itemView.context)
-                .load(file)
+                .load(path)
                 .placeholder(
                     android.R.drawable.progress_horizontal
                 )
@@ -412,129 +353,99 @@ when {
                     android.R.drawable.ic_menu_report_image
                 )
                 .into(holder.imageView)
+        }
 
+        // -------------------------------------------------
+        // صورة محلية
+        // -------------------------------------------------
+
+        else -> {
+
+            val file = java.io.File(path)
+
+            if (file.exists()) {
+
+                com.bumptech.glide.Glide
+                    .with(holder.itemView.context)
+                    .load(file)
+                    .placeholder(
+                        android.R.drawable.progress_horizontal
+                    )
+                    .error(
+                        android.R.drawable.ic_menu_report_image
+                    )
+                    .into(holder.imageView)
+            }
         }
     }
-}
-        
 
+    // =====================================================
+    // وضع التحديد
+    // =====================================================
 
-        // =====================================================
-        // وضع التحديد
-        // =====================================================
+    val isSelected = selectedProductIds.contains(product.id)
 
-        val isSelected =
-            selectedProductIds.contains(
-                product.id
+    if (selectionMode) {
+        holder.checkBox.visibility = View.VISIBLE
+        holder.checkBox.isChecked = isSelected
+    } else {
+        holder.checkBox.visibility = View.GONE
+        holder.checkBox.isChecked = false
+    }
+
+    // =====================================================
+    // خلفية المنتج المحدد
+    // =====================================================
+
+    if (selectionMode && isSelected) {
+        holder.itemView.setBackgroundColor(
+            ContextCompat.getColor(
+                holder.itemView.context,
+                R.color.product_selected_background
             )
-
-
-        if (selectionMode) {
-
-            holder.checkBox.visibility =
-                View.VISIBLE
-
-            holder.checkBox.isChecked =
-                isSelected
-
-        } else {
-
-            holder.checkBox.visibility =
-                View.GONE
-
-            holder.checkBox.isChecked =
-                false
-        }
-
-
-        // =====================================================
-        // خلفية المنتج المحدد
-        // =====================================================
-         if (
-    selectionMode &&
-    isSelected
-) {
-
-    holder.itemView.setBackgroundColor(
-        ContextCompat.getColor(
-            holder.itemView.context,
-            R.color.product_selected_background
         )
-    )
+    } else {
+        holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+    }
 
-} else {
+    // =====================================================
+    // الضغط على مربع التحديد
+    // =====================================================
 
-    holder.itemView.setBackgroundColor(
-        Color.TRANSPARENT
-    )
-         }
-
-        // =====================================================
-        // الضغط على مربع التحديد
-        // =====================================================
-
-        holder.checkBox.setOnClickListener {
-
-            if (selectionMode) {
-
-                toggleSelection(
-                    product
-                )
-            }
-        }
-
-
-        // =====================================================
-        // الضغط العادي على المنتج
-        // =====================================================
-
-        holder.itemView.setOnClickListener {
-
-            if (selectionMode) {
-
-                toggleSelection(
-                    product
-                )
-
-            } else {
-
-                onItemClick(
-                    product
-                )
-            }
-        }
-
-
-        // =====================================================
-        // الضغط المطول
-        // =====================================================
-
-        holder.itemView.setOnLongClickListener { view ->
-
-            if (selectionMode) {
-
-                // أثناء التحديد:
-                // الضغط المطول يحدد / يلغي التحديد
-                toggleSelection(
-                    product
-                )
-
-                true
-
-            } else {
-
-                // الوضع الطبيعي:
-                // يبقى الـBalloon كما كان
-                onItemLongClick(
-                    view,
-                    product
-                )
-
-                true
-            }
+    holder.checkBox.setOnClickListener {
+        if (selectionMode) {
+            toggleSelection(product)
         }
     }
 
+    // =====================================================
+    // الضغط العادي على المنتج
+    // =====================================================
+
+    holder.itemView.setOnClickListener {
+        if (selectionMode) {
+            toggleSelection(product)
+        } else {
+            onItemClick(product)
+        }
+    }
+
+    // =====================================================
+    // الضغط المطول
+    // =====================================================
+
+    holder.itemView.setOnLongClickListener { view ->
+        if (selectionMode) {
+            toggleSelection(product)
+            true
+        } else {
+            onItemLongClick(view, product)
+            true
+        }
+    }
+   }
+   
+        
 
     // =========================================================
     // عدد العناصر
