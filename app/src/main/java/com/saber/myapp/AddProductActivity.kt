@@ -553,7 +553,8 @@ if (
     // =========================
     // إنشاء المنتج
     // =========================
-
+// ✅ إصلاح رابط الصورة قبل الحفظ
+val fixedImagePath = fixOpenFoodFactsImageUrl(currentImagePath) ?: ""
     val product = Product(
         id = if (isEditMode) editProductId else 0,
         barcode = barcode,
