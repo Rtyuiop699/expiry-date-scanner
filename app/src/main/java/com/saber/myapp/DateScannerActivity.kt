@@ -379,125 +379,151 @@ class DateScannerActivity : AppCompatActivity() {
         // ============================================================
     // القسم الثالث: استخراج التاريخ واختيار أفضل تاريخ
     // ============================================================
-
     private fun extractDateFromText(text: String): String? {
-        val cleanedText = fixCommonOCRMistakes(
-            text.replace("\n", " ").replace(",", " ").trim()
-        )
+    val cleanedText = fixCommonOCRMistakes(
+        text.replace("\n", " ").replace(",", " ").trim()
+    )
 
-        val patterns = listOf(
-            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
-            Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
-            Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
-            Regex("""[A-Z](\d{2})/(\d{2})/(\d{2})"""),
-            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
-            Regex("""\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""),
-            Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""),
-            Regex("""[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""),
-            Regex("""\b(\d{8})\b"""),
-            Regex("""\b(\d{6})\b"""),
-            Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
-            Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
-            Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
-            Regex("""\b(\d{4})\b""")
-        )
+    val patterns = listOf(
+        // الصيغ الجديدة من الصور
+        Regex("""[PEpe]\s*(\d{2})\s+(\d{2})\s+(\d{2})"""),
+        Regex("""[PEpe]\s*(\d{6})"""),
+        // ⬇️ إضافة صيغة MM/YY
+        Regex("""\b(\d{2})[/-](\d{2})\b"""), 
+        
+        // الصيغ القديمة
+        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{4})\b"""),
+        Regex("""\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b"""),
+        Regex("""\b(\d{1,2})[/-](\d{1,2})[/-](\d{2})\b"""),
+        Regex("""[A-Z](\d{2})/(\d{2})/(\d{2})"""),
+        Regex("""\b(\d{2})\s+(\d{2})\s+(\d{4})\b"""),
+        Regex("""\b(\d{2})\s+(\d{2})\s+(\d{2})\b"""),
+        Regex("""\b(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})\b"""),
+        Regex("""[A-Z]\d{1,2}\s+(\d{1,2})\s+(\d{2,4})"""),
+        Regex("""\b(\d{8})\b"""),
+        Regex("""\b(\d{6})\b"""),
+        Regex("""\b(\d{1,2})[/-](\d{4})\b"""),
+        Regex("""(?:DATE:\s*)?([A-Za-z]+)\s+(\d{4})""", RegexOption.IGNORE_CASE),
+        Regex("""(?:EXP|BEST BEFORE|صلاحية|ينتهي|valid|expiry)[\s:]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})""", RegexOption.IGNORE_CASE),
+        Regex("""\b(\d{4})\b""")
+    )
 
-        val foundDates = mutableListOf<DetectedDate>()
+    val foundDates = mutableListOf<DetectedDate>()
 
-        for (pattern in patterns) {
-            val matches = pattern.findAll(cleanedText)
-            for (match in matches) {
-                val groups = match.groupValues
-                val result: String?
-                val hasDay: Boolean
+    for (pattern in patterns) {
+        val matches = pattern.findAll(cleanedText)
+        for (match in matches) {
+            val groups = match.groupValues
+            val result: String?
+            val hasDay: Boolean
 
-                when {
-                    groups.size == 4 && groups[3].length == 4 -> {
-                        val day = groups[1].padStart(2, '0')
-                        val month = groups[2].padStart(2, '0')
-                        val year = groups[3]
-                        result = "$year-$month-$day"
-                        hasDay = true
-                    }
-                    groups.size == 4 && groups[1].length == 4 -> {
-                        val year = groups[1]
-                        val month = groups[2].padStart(2, '0')
-                        val day = groups[3].padStart(2, '0')
-                        result = "$year-$month-$day"
-                        hasDay = true
-                    }
-                    groups.size == 4 && groups[3].length == 2 -> {
-                        val day = groups[1].padStart(2, '0')
-                        val month = groups[2].padStart(2, '0')
-                        val year = "20${groups[3]}"
-                        result = "$year-$month-$day"
-                        hasDay = true
-                    }
-                    groups.size == 2 && groups[1].length == 6 -> {
-                        val numbers = groups[1]
-                        val day = numbers.substring(0, 2)
-                        val month = numbers.substring(2, 4)
-                        val year = "20" + numbers.substring(4, 6)
-                        result = if (month.toIntOrNull() in 1..12 && day.toIntOrNull() in 1..31) {
-                            "$year-$month-$day"
-                        } else null
-                        hasDay = true
-                    }
-                    groups.size == 2 && groups[1].length == 8 -> {
-                        val numbers = groups[1]
-                        val year = numbers.substring(0, 4)
-                        val month = numbers.substring(4, 6)
-                        val day = numbers.substring(6, 8)
-                        result = "$year-$month-$day"
-                        hasDay = true
-                    }
-                    groups.size == 3 && groups[2].length == 4 -> {
-                        val month = groups[1].padStart(2, '0')
-                        val year = groups[2]
-                        result = "$year-$month-01"
-                        hasDay = false
-                    }
-                    groups.size == 3 && groups[1].matches(Regex("[A-Za-z]+")) -> {
-                        val month = monthNameToNumber(groups[1])
-                        val year = groups[2]
-                        result = if (month != null) "$year-$month-01" else null
-                        hasDay = false
-                    }
-                    groups.size == 2 && groups[1].length == 4 -> {
-                        result = "${groups[1]}-01-01"
-                        hasDay = false
-                    }
-                    else -> {
-                        result = null
-                        hasDay = false
-                    }
+            when {
+                // التعامل مع [PE] DD MM YY
+                groups.size == 4 && groups[1].length == 2 && groups[2].length == 2 && groups[3].length == 2 -> {
+                    val day = groups[1].padStart(2, '0')
+                    val month = groups[2].padStart(2, '0')
+                    val year = "20${groups[3]}"
+                    result = "$year-$month-$day"
+                    hasDay = true
                 }
-
-                if (result != null && isValidDateFromString(result)) {
-                    val beforeStart = maxOf(0, match.range.first - 15)
-                    val afterEnd = minOf(cleanedText.length, match.range.last + 16)
-                    val surroundingText = cleanedText.substring(beforeStart, afterEnd)
-
-                    val isExpiry = surroundingText.contains("EXP", ignoreCase = true) ||
-                            surroundingText.contains("BEST BEFORE", ignoreCase = true) ||
-                            surroundingText.contains("EXPIRY", ignoreCase = true) ||
-                            surroundingText.contains("ينتهي") ||
-                            surroundingText.contains("صلاحية")
-
-                    foundDates.add(
-                        DetectedDate(
-                            date = result,
-                            hasRealDay = hasDay,
-                            isExpiry = isExpiry,
-                            position = match.range.first
-                        )
-                    )
+                // التعامل مع [PE] DDMMYY
+                groups.size == 2 && groups[1].length == 6 -> {
+                    val numbers = groups[1]
+                    val day = numbers.substring(0, 2)
+                    val month = numbers.substring(2, 4)
+                    val year = "20" + numbers.substring(4, 6)
+                    result = if (month.toIntOrNull() in 1..12 && day.toIntOrNull() in 1..31) {
+                        "$year-$month-$day"
+                    } else null
+                    hasDay = true
+                }
+                // ⬇️ التعامل مع MM/YY (بدون يوم)
+                groups.size == 3 && groups[1].length == 2 && groups[2].length == 2 -> {
+                    val month = groups[1].padStart(2, '0')
+                    val year = "20${groups[2]}"
+                    result = "$year-$month-01" // يوم افتراضي
+                    hasDay = false
+                }
+                // باقي الشروط القديمة...
+                groups.size == 4 && groups[3].length == 4 -> {
+                    val day = groups[1].padStart(2, '0')
+                    val month = groups[2].padStart(2, '0')
+                    val year = groups[3]
+                    result = "$year-$month-$day"
+                    hasDay = true
+                }
+                groups.size == 4 && groups[1].length == 4 -> {
+                    val year = groups[1]
+                    val month = groups[2].padStart(2, '0')
+                    val day = groups[3].padStart(2, '0')
+                    result = "$year-$month-$day"
+                    hasDay = true
+                }
+                groups.size == 4 && groups[3].length == 2 -> {
+                    val day = groups[1].padStart(2, '0')
+                    val month = groups[2].padStart(2, '0')
+                    val year = "20${groups[3]}"
+                    result = "$year-$month-$day"
+                    hasDay = true
+                }
+                groups.size == 2 && groups[1].length == 8 -> {
+                    val numbers = groups[1]
+                    val year = numbers.substring(0, 4)
+                    val month = numbers.substring(4, 6)
+                    val day = numbers.substring(6, 8)
+                    result = "$year-$month-$day"
+                    hasDay = true
+                }
+                groups.size == 3 && groups[2].length == 4 -> {
+                    val month = groups[1].padStart(2, '0')
+                    val year = groups[2]
+                    result = "$year-$month-01"
+                    hasDay = false
+                }
+                groups.size == 3 && groups[1].matches(Regex("[A-Za-z]+")) -> {
+                    val month = monthNameToNumber(groups[1])
+                    val year = groups[2]
+                    result = if (month != null) "$year-$month-01" else null
+                    hasDay = false
+                }
+                groups.size == 2 && groups[1].length == 4 -> {
+                    result = "${groups[1]}-01-01"
+                    hasDay = false
+                }
+                else -> {
+                    result = null
+                    hasDay = false
                 }
             }
-        }
 
-        return chooseBestDate(foundDates)
+            if (result != null && isValidDateFromString(result)) {
+                val beforeStart = maxOf(0, match.range.first - 15)
+                val afterEnd = minOf(cleanedText.length, match.range.last + 16)
+                val surroundingText = cleanedText.substring(beforeStart, afterEnd)
+
+                val isExpiry = surroundingText.contains("EXP", ignoreCase = true) ||
+                        surroundingText.contains("BEST BEFORE", ignoreCase = true) ||
+                        surroundingText.contains("EXPIRY", ignoreCase = true) ||
+                        surroundingText.contains("ينتهي") ||
+                        surroundingText.contains("صلاحية") ||
+                        match.value.startsWith("E", ignoreCase = true) ||
+                        match.value.startsWith("e", ignoreCase = true)
+
+                foundDates.add(
+                    DetectedDate(
+                        date = result,
+                        hasRealDay = hasDay,
+                        isExpiry = isExpiry,
+                        position = match.range.first
+                    )
+                )
+            }
+        }
     }
+
+    return chooseBestDate(foundDates)
+    }
+    
         private data class DetectedDate(
         val date: String,
         val hasRealDay: Boolean,
