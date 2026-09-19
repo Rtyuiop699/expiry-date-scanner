@@ -1386,3 +1386,4 @@ private fun fixOpenFoodFactsImageUrl(url: String?): String? {
         url
     }
 }
+} 
