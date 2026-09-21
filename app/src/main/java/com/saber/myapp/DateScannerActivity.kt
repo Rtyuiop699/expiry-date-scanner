@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import com.google.mlkit.vision.text.TextRecognizer
 import android.widget.ImageButton
 import android.Manifest
 import android.content.Intent
