@@ -1,5 +1,10 @@
 package com.saber.myapp.image
 
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
+
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -137,5 +142,35 @@ class ImageProcessor {
         }
 
         return result
+    }
+}
+    // =====================================================
+    // معالجة الخطوط النقطية والرفيعة باستخدام OpenCV
+    // =====================================================
+
+    fun processDotMatrix(bitmap: Bitmap): Bitmap {
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
+
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGB2GRAY)
+
+        val contrastMat = Mat()
+        Imgproc.equalizeHist(grayMat, contrastMat)
+
+        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(2.0, 2.0))
+        val dilatedMat = Mat()
+        Imgproc.erode(contrastMat, dilatedMat, kernel)
+
+        val resultBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(dilatedMat, resultBitmap)
+
+        mat.release()
+        grayMat.release()
+        contrastMat.release()
+        dilatedMat.release()
+        kernel.release()
+
+        return resultBitmap
     }
 }
