@@ -345,37 +345,66 @@ class DateScannerActivity : AppCompatActivity() {
     // التعرف على التاريخ
     // ============================================================
 
-    private fun recognizeDate(bitmap: Bitmap) {
-        val cropped = imageProcessor.cropCenter(bitmap)
-        val processedBitmap = imageProcessor.preprocessImage(cropped)
-        val image = InputImage.fromBitmap(processedBitmap, 0)
+   private fun recognizeDate(bitmap: Bitmap) {
+    val cropped = imageProcessor.cropCenter(bitmap)
+    val processedBitmap = imageProcessor.preprocessImage(cropped)
+    val image = InputImage.fromBitmap(processedBitmap, 0)
 
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-        recognizer.process(image)
-            .addOnSuccessListener { result ->
-                val text = result.text
-                val extractedDate = extractDateFromText(text)
+    recognizer.process(image)
+        .addOnSuccessListener { result ->
+            val text = result.text
+            val extractedDate = extractDateFromText(text)
 
-                if (extractedDate != null) {
-                    recognizedDate = extractedDate
-                    tvResult.text = "✅ $extractedDate\n$text"
-                    btnConfirm.isEnabled = true
-                } else {
-                    recognizedDate = null
-                    tvResult.text = "❌ لم يتم التعرف\n$text"
-                    btnConfirm.isEnabled = false
-                }
-
+            if (extractedDate != null) {
+                recognizedDate = extractedDate
+                tvResult.text = "✅ $extractedDate\n$text"
+                btnConfirm.isEnabled = true
                 resetCaptureButton()
+            } else {
+                // إذا فشل التعرف العادي، نجرب معالجة الخط النقطي بـ OpenCV
+                tryDotMatrixRecognition(cropped, recognizer, textOriginal = text)
             }
-            .addOnFailureListener {
+        }
+        .addOnFailureListener {
+            tryDotMatrixRecognition(cropped, recognizer, textOriginal = "")
+        }
+}
+
+private fun tryDotMatrixRecognition(
+    croppedBitmap: Bitmap, 
+    recognizer: TextRecognizer,
+    textOriginal: String
+) {
+    val dotMatrixBitmap = imageProcessor.processDotMatrix(croppedBitmap)
+    val dotMatrixImage = InputImage.fromBitmap(dotMatrixBitmap, 0)
+
+    recognizer.process(dotMatrixImage)
+        .addOnSuccessListener { result ->
+            val text = result.text
+            val extractedDate = extractDateFromText(text)
+
+            if (extractedDate != null) {
+                recognizedDate = extractedDate
+                tvResult.text = "✅ $extractedDate (Dot-Matrix)\n$text"
+                btnConfirm.isEnabled = true
+            } else {
                 recognizedDate = null
-                tvResult.text = "❌ حدث خطأ أثناء التعرف"
+                val combinedText = if (text.isNotBlank()) text else textOriginal
+                tvResult.text = "❌ لم يتم التعرف\n$combinedText"
                 btnConfirm.isEnabled = false
-                resetCaptureButton()
             }
-    }
+            resetCaptureButton()
+        }
+        .addOnFailureListener {
+            recognizedDate = null
+            tvResult.text = "❌ حدث خطأ أثناء التعرف"
+            btnConfirm.isEnabled = false
+            resetCaptureButton()
+        }
+}
+
         // ============================================================
     // القسم الثالث: استخراج التاريخ واختيار أفضل تاريخ
     // ============================================================
