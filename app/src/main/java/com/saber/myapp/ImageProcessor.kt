@@ -148,29 +148,47 @@ class ImageProcessor {
     // معالجة الخطوط النقطية والرفيعة باستخدام OpenCV
     // =====================================================
 
-    fun processDotMatrix(bitmap: Bitmap): Bitmap {
-        val mat = Mat()
-        Utils.bitmapToMat(bitmap, mat)
+fun processDotMatrix(bitmap: Bitmap): Bitmap {
+    val mat = Mat()
+    Utils.bitmapToMat(bitmap, mat)
 
-        val grayMat = Mat()
-        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGB2GRAY)
+    // 1. تحويل إلى تدرج رمادي
+    val grayMat = Mat()
+    Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-        val contrastMat = Mat()
-        Imgproc.equalizeHist(grayMat, contrastMat)
+    // 2. تحسين التباين بـ CLAHE (أفضل من equalizeHist مع الانعكاس)
+    val clahe = Imgproc.createCLAHE(3.0, Size(8.0, 8.0))
+    val contrastMat = Mat()
+    clahe.apply(grayMat, contrastMat)
 
-        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(2.0, 2.0))
-        val dilatedMat = Mat()
-        Imgproc.erode(contrastMat, dilatedMat, kernel)
+    // 3. عتبة تكيفية (بدل العتبة الثابتة)
+    val threshMat = Mat()
+    Imgproc.adaptiveThreshold(
+        contrastMat, threshMat, 255.0,
+        Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
+        Imgproc.THRESH_BINARY_INV,
+        15, 10.0
+    )
 
-        val resultBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(dilatedMat, resultBitmap)
+    // 4. لحام النقاط: نواة مستطيلة عمودية + dilate
+    val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(2.0, 5.0))
+    val dilatedMat = Mat()
+    Imgproc.dilate(threshMat, dilatedMat, kernel,
+        org.opencv.core.Point(-1.0, -1.0), 2)
 
-        mat.release()
-        grayMat.release()
-        contrastMat.release()
-        dilatedMat.release()
-        kernel.release()
+    // 5. تحويل إلى RGBA قبل الإرجاع
+    val rgbaMat = Mat()
+    Imgproc.cvtColor(dilatedMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
 
-        return resultBitmap
-    }
+    val resultBitmap = Bitmap.createBitmap(
+        rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
+    )
+    Utils.matToBitmap(rgbaMat, resultBitmap)
+
+    // تحرير الموارد
+    mat.release(); grayMat.release(); contrastMat.release()
+    threshMat.release(); dilatedMat.release(); rgbaMat.release(); kernel.release()
+
+    return resultBitmap
+}
 }
