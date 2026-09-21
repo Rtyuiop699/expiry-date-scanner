@@ -1,10 +1,5 @@
 package com.saber.myapp.image
 
-import org.opencv.android.Utils
-import org.opencv.core.Mat
-import org.opencv.core.Size
-import org.opencv.imgproc.Imgproc
-
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,6 +7,11 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
 import android.graphics.Paint
+
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
 
 class ImageProcessor {
 
@@ -143,7 +143,7 @@ class ImageProcessor {
 
         return result
     }
-}
+
     // =====================================================
     // معالجة الخطوط النقطية والرفيعة باستخدام OpenCV
     // =====================================================
