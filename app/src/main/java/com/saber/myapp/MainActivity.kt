@@ -1,5 +1,7 @@
 package com.saber.myapp
 
+import org.opencv.android.OpenCVLoader
+
 import androidx.appcompat.app.AppCompatDelegate
 import android.animation.ValueAnimator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -127,6 +129,17 @@ class MainActivity : AppCompatActivity() {
     )
 
     setContentView(R.layout.activity_main)
+          // =====================================================
+    // تهيئة مكتبة OpenCV
+    // =====================================================
+    if (!OpenCVLoader.initLocal()) {
+        android.util.Log.e("OpenCV", "فشل تحميل مكتبة OpenCV")
+    } else {
+        android.util.Log.d("OpenCV", "تم تحميل مكتبة OpenCV بنجاح")
+    }
+    
+        
+        
         // =====================================================
         // قاعدة البيانات
         // =====================================================
