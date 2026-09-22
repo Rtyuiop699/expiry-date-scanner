@@ -355,7 +355,7 @@ class DateScannerActivity : AppCompatActivity() {
         imageProcessor.preprocessImage(cropped)
 
     // حفظ نفس الصورة التي سيتم إرسالها إلى ML Kit OCR
-    PProcessedImageStore.save(
+    ProcessedImageStore.save(
     this,
     processedBitmap,
     "normal"
