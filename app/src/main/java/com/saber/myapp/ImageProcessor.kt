@@ -264,5 +264,111 @@ fun processDotMatrix(bitmap: Bitmap): Bitmap {
 
     return resultBitmap
 }
+fun processDotMatrixStages(bitmap: Bitmap): DotMatrixStages {
 
+    val mat = Mat()
+    Utils.bitmapToMat(bitmap, mat)
+
+    // 1. Grayscale
+    val grayMat = Mat()
+
+    Imgproc.cvtColor(
+        mat,
+        grayMat,
+        Imgproc.COLOR_RGBA2GRAY
+    )
+
+    // 2. CLAHE
+    val clahe =
+        Imgproc.createCLAHE(
+            2.5,
+            Size(8.0, 8.0)
+        )
+
+    val contrastMat = Mat()
+
+    clahe.apply(
+        grayMat,
+        contrastMat
+    )
+
+    // 3. Upscale 2x
+    val resizedMat = Mat()
+
+    Imgproc.resize(
+        contrastMat,
+        resizedMat,
+        Size(
+            contrastMat.cols() * 2.0,
+            contrastMat.rows() * 2.0
+        ),
+        0.0,
+        0.0,
+        Imgproc.INTER_CUBIC
+    )
+
+    // 4. Adaptive Threshold
+    val threshMat = Mat()
+
+    Imgproc.adaptiveThreshold(
+        resizedMat,
+        threshMat,
+        255.0,
+        Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
+        Imgproc.THRESH_BINARY,
+        21,
+        7.0
+    )
+
+    // 5. Morphology
+    val kernel =
+        Imgproc.getStructuringElement(
+            Imgproc.MORPH_RECT,
+            Size(2.0, 2.0)
+        )
+
+    val morphedMat = Mat()
+
+    Imgproc.morphologyEx(
+        threshMat,
+        morphedMat,
+        Imgproc.MORPH_CLOSE,
+        kernel
+    )
+
+    // تحويل مراحل المعالجة إلى Bitmap
+    val grayBitmap =
+        matToBitmap(grayMat)
+
+    val contrastBitmap =
+        matToBitmap(contrastMat)
+
+    val resizedBitmap =
+        matToBitmap(resizedMat)
+
+    val thresholdBitmap =
+        matToBitmap(threshMat)
+
+    val morphologyBitmap =
+        matToBitmap(morphedMat)
+
+    // تحرير موارد OpenCV
+    mat.release()
+    grayMat.release()
+    contrastMat.release()
+    resizedMat.release()
+    threshMat.release()
+    morphedMat.release()
+    kernel.release()
+    clahe.collectGarbage()
+
+    return DotMatrixStages(
+        original = bitmap,
+        gray = grayBitmap,
+        contrast = contrastBitmap,
+        resized = resizedBitmap,
+        threshold = thresholdBitmap,
+        morphology = morphologyBitmap
+    )
+}
 }
