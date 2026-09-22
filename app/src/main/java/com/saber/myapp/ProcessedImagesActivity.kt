@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -30,12 +31,25 @@ class ProcessedImagesActivity : AppCompatActivity() {
             ProcessedImageStore.getAll(this)
 
         adapter =
-            ProcessedImagesAdapter(images)
+            ProcessedImagesAdapter(images) { file ->
+
+                val intent =
+                    Intent(
+                        this,
+                        ProcessedImageViewerActivity::class.java
+                    )
+
+                intent.putExtra(
+                    ProcessedImageViewerActivity.EXTRA_IMAGE_PATH,
+                    file.absolutePath
+                )
+
+                startActivity(intent)
+            }
 
         recyclerView.adapter = adapter
 
         if (images.isEmpty()) {
-
             recyclerView.visibility =
                 RecyclerView.GONE
 
@@ -43,7 +57,6 @@ class ProcessedImagesActivity : AppCompatActivity() {
                 TextView.VISIBLE
 
         } else {
-
             recyclerView.visibility =
                 RecyclerView.VISIBLE
 

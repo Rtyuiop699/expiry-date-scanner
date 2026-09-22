@@ -47,8 +47,12 @@
             android:exported="false" />
 
         <activity
-    android:name=".ProcessedImagesActivity"
-    android:exported="false" />
+            android:name=".ProcessedImagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProcessedImageViewerActivity"
+            android:exported="false" />
       
         <activity
             android:name=".AddProductActivity"

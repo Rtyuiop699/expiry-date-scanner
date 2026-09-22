@@ -13,26 +13,20 @@ import java.util.Date
 import java.util.Locale
 
 class ProcessedImagesAdapter(
-    private var images: List<File>
+    private var images: List<File>,
+    private val onImageClick: (File) -> Unit
 ) : RecyclerView.Adapter<ProcessedImagesAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        val image: ImageView =
-            view.findViewById(R.id.imgProcessed)
-
-        val type: TextView =
-            view.findViewById(R.id.tvProcessedType)
-
-        val date: TextView =
-            view.findViewById(R.id.tvProcessedDate)
+        val image: ImageView = view.findViewById(R.id.imgProcessed)
+        val type: TextView = view.findViewById(R.id.tvProcessedType)
+        val date: TextView = view.findViewById(R.id.tvProcessedDate)
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-
         val view = LayoutInflater.from(parent.context)
             .inflate(
                 R.layout.item_processed_image,
@@ -47,8 +41,11 @@ class ProcessedImagesAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-
         val file = images[position]
+
+        holder.itemView.setOnClickListener {
+            onImageClick(file)
+        }
 
         val bitmap =
             BitmapFactory.decodeFile(file.absolutePath)
@@ -76,11 +73,12 @@ class ProcessedImagesAdapter(
             )
     }
 
-    override fun getItemCount(): Int {
-        return images.size
-    }
+    override fun getItemCount(): Int =
+        images.size
 
-    fun updateImages(newImages: List<File>) {
+    fun updateImages(
+        newImages: List<File>
+    ) {
         images = newImages
         notifyDataSetChanged()
     }
