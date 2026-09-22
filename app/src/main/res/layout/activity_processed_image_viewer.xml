@@ -14,7 +14,7 @@
         android:elevation="0dp"
         android:title="عرض الصورة"
         android:titleTextColor="?android:attr/textColorPrimary"
-        android:navigationIcon="@drawable/ic_arrowback" />
+        android:navigationIcon="@drawable/icarrowback" />
 
     <FrameLayout
         android:layout_width="match_parent"
