@@ -12,6 +12,14 @@ import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
+data class DotMatrixStages(
+    val original: Bitmap,
+    val gray: Bitmap,
+    val contrast: Bitmap,
+    val resized: Bitmap,
+    val threshold: Bitmap,
+    val morphology: Bitmap
+)
 
 class ImageProcessor {
 
