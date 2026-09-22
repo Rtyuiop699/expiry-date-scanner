@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 loadProductsFromDatabase()
                 Toast.makeText(
                     this,
-                    "تم حفظ المنتج بنجاح",
+                    getString(R.string.product_saved_successfully),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
     val dialog = AlertDialog.Builder(this)
         .setView(dialogView)
-        .setPositiveButton("إغلاق", null)
+        .setPositiveButton(R.string.close, null)
         .create()
 
     dialog.show()
@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                 if (!isSelectionMode) {
                     Toast.makeText(
                         this,
-                        "اضغط ضغط مطول لمزيد من الخيارات: ${product.name}",
+                        getString(R.string.long_press_for_options, product.name),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -277,7 +277,7 @@ btnHelp.setOnClickListener {
                 handleBarcodeResult(barcode)
             },
             onScanCancelled = {
-                Toast.makeText(this, "تم إلغاء المسح", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.scan_cancelled), Toast.LENGTH_SHORT).show()
             }
         )
 
@@ -290,7 +290,7 @@ btnHelp.setOnClickListener {
                 scannerHelper.startScanner()
             },
             onPermissionDenied = {
-                Toast.makeText(this, "عذراً، يجب الموافقة على تصريح الكاميرا", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.camera_permission_required), Toast.LENGTH_SHORT).show()
             }
         )
 

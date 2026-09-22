@@ -11,7 +11,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="اسم المنتج">
+        android:hint="@string/product_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextProductName"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="رمز الباركود">
+        android:hint="@string/barcode">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextBarcode"
@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="تاريخ الصلاحية">
+        android:hint="@string/expiry_date_hint">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextProductDate"
@@ -59,7 +59,7 @@
         android:layout_marginTop="4dp"
         android:src="@android:drawable/ic_menu_camera"
         android:background="@android:color/transparent"
-        android:contentDescription="Scan Date"/>
+        android:contentDescription="@string/scan_date"/>
 
     <!-- الصورة -->
     <ImageView
@@ -75,14 +75,14 @@
         android:id="@+id/btnCaptureImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="التقاط صورة"/>
+        android:text="@string/take_photo"/>
 
     <!-- حفظ -->
     <Button
         android:id="@+id/btnSaveProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="حفظ المنتج"
+        android:text="@string/save_product"
         android:layout_marginTop="8dp"/>
 
 </LinearLayout>

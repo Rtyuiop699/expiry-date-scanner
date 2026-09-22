@@ -29,7 +29,7 @@
             android:padding="0dp"
             android:visibility="gone"
             android:buttonTint="#2E7D32"
-            android:contentDescription="تحديد المنتج" />
+            android:contentDescription="@string/select_product" />
 
         <!-- ===================================================== -->
         <!-- 1. معلومات المنتج - أقصى اليسار -->
@@ -79,7 +79,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:text="متبقي 5 أيام"
+    android:text=""
     android:textSize="14sp"
     android:textColor="?android:attr/textColorPrimary"
     android:gravity="left"
@@ -127,7 +127,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="138dp"
             android:layout_marginRight="82dp"
-            android:text="قوة جبل مشروب غازي 500 ملي"
+            android:text=""
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"

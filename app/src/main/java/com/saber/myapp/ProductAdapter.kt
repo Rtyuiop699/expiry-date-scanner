@@ -275,24 +275,33 @@ class ProductAdapter(
     }
 
     if (daysRemaining == null) {
-        holder.remainingView.text = "تاريخ غير صالح"
+        holder.remainingView.text = holder.itemView.context.getString(R.string.invalid_date)
     } else {
         when {
             daysRemaining > 1 -> {
-                holder.remainingView.text = "متبقي $daysRemaining يوم"
+                holder.remainingView.text =
+                    holder.itemView.context.getString(
+                        R.string.days_remaining,
+                        daysRemaining
+                    )
             }
             daysRemaining == 1L -> {
-                holder.remainingView.text = "متبقي يوم واحد"
+                holder.remainingView.text =
+                    holder.itemView.context.getString(R.string.one_day_remaining)
             }
             daysRemaining == 0L -> {
-                holder.remainingView.text = "ينتهي اليوم"
+                holder.remainingView.text =
+                    holder.itemView.context.getString(R.string.expires_today)
             }
             else -> {
                 val expiredDays = -daysRemaining
                 holder.remainingView.text = if (expiredDays == 1L) {
-                    "منتهي منذ يوم واحد"
+                    holder.itemView.context.getString(R.string.expired_one_day)
                 } else {
-                    "منتهي منذ $expiredDays يوم"
+                    holder.itemView.context.getString(
+                        R.string.expired_days,
+                        expiredDays
+                    )
                 }
             }
         }

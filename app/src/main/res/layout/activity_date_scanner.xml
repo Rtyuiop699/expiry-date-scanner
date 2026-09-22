@@ -132,7 +132,7 @@
         android:paddingTop="8dp"
         android:paddingEnd="18dp"
         android:paddingBottom="8dp"
-        android:text="ضع تاريخ الانتهاء داخل الإطار"
+        android:text="@string/place_expiry_date_inside_frame"
         android:textColor="#00FF00"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -171,7 +171,7 @@
             android:paddingTop="10dp"
             android:paddingEnd="12dp"
             android:paddingBottom="10dp"
-            android:text="سوف يظهر التاريخ المكتشف هنا"
+            android:text="@string/detected_date_will_appear_here"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -198,7 +198,7 @@
         android:layout_height="62dp"
         android:layout_margin="6dp"
         android:background="@android:color/transparent"
-        android:contentDescription="تشغيل الفلاش"
+        android:contentDescription="@string/flash_on"
         android:padding="2dp"
         android:src="@drawable/ic_flash"
         android:scaleType="fitCenter" />
@@ -215,7 +215,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:background="@android:color/transparent"
-        android:contentDescription="التقاط صورة"
+        android:contentDescription="@string/take_photo"
         android:padding="1dp"
         android:src="@drawable/ic_camera"
         android:scaleType="fitCenter" />
@@ -231,7 +231,7 @@
         android:layout_height="62dp"
         android:layout_margin="6dp"
         android:background="@android:color/transparent"
-        android:contentDescription="استخدام التاريخ"
+        android:contentDescription="@string/use_date"
         android:enabled="false"
         android:padding="2dp"
         android:src="@drawable/ic_check"
@@ -248,7 +248,7 @@
         android:layout_height="62dp"
         android:layout_margin="6dp"
         android:background="@android:color/transparent"
-        android:contentDescription="التعرف بالذكاء الاصطناعي"
+        android:contentDescription="@string/recognize_with_ai"
         android:padding="2dp"
         android:src="@drawable/ic_socr"
         android:scaleType="fitCenter" />

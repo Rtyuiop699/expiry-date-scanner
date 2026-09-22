@@ -14,7 +14,7 @@
         android:layout_margin="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_edit"
-        android:contentDescription="تعديل" />
+        android:contentDescription="@string/edit" />
 
     <ImageButton
         android:id="@+id/btnActionPdf"
@@ -23,7 +23,7 @@
         android:layout_margin="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/icpdf"
-        android:contentDescription="PDF" />
+        android:contentDescription="@string/pdf" />
 
     <ImageButton
         android:id="@+id/btnActionPrint"
@@ -32,7 +32,7 @@
         android:layout_margin="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/icprint"
-        android:contentDescription="طباعة" />
+        android:contentDescription="@string/print" />
 
     <ImageButton
         android:id="@+id/btnActionDelete"
@@ -41,7 +41,7 @@
         android:layout_margin="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/icdeletered"
-        android:contentDescription="حذف" />
+        android:contentDescription="@string/delete" />
 
 </LinearLayout>
 

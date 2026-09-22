@@ -1,0 +1,118 @@
+<resources>
+    <string name="app_name">Inventory Management</string>
+
+    <!-- Add product -->
+    <string name="add_product">Add Product</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="category">Category</string>
+    <string name="add_category">Add Category</string>
+    <string name="product_name">Product Name</string>
+    <string name="barcode">Barcode</string>
+    <string name="scan_expiry_date">Scan Expiry Date</string>
+    <string name="expiry_date">Expiry Date</string>
+
+    <!-- Quantities and prices -->
+    <string name="quantities_and_prices">Quantities &amp; Prices</string>
+    <string name="carton_count">Number of Cartons</string>
+    <string name="cartons">Cartons</string>
+    <string name="packs_per_carton">Packs per Carton</string>
+    <string name="packs">Packs</string>
+    <string name="pieces_per_pack">Pieces per Pack</string>
+    <string name="pieces">Pieces</string>
+    <string name="has_pack">Has Pack ✓</string>
+    <string name="calculate">Calculate</string>
+
+    <!-- Purchase prices -->
+    <string name="purchase_prices">Purchase Prices</string>
+    <string name="carton_purchase_price">Carton Purchase Price</string>
+    <string name="pack_purchase_price">Pack Purchase Price</string>
+    <string name="piece_purchase_price">Piece Purchase Price</string>
+    <string name="total_purchase">Total Purchase</string>
+
+    <!-- Sale prices -->
+    <string name="sale_prices">Sale Prices</string>
+    <string name="piece_sale_price">Piece Sale Price</string>
+    <string name="pack_sale_price">Pack Sale Price</string>
+    <string name="carton_sale_price">Carton Sale Price</string>
+    <string name="total_sale">Total Sale</string>
+
+    <!-- Profits -->
+    <string name="profits">Profits</string>
+    <string name="piece_profit">Profit per Piece</string>
+    <string name="pack_profit">Profit per Pack</string>
+    <string name="carton_profit">Profit per Carton</string>
+    <string name="total_profit">Total Profit</string>
+
+    <string name="flash">Flash</string>
+
+    <string name="super_ocr">Super OCR</string>
+    <string name="captured_image">Captured Image</string>
+    <string name="gemini_analyzing">🤖 Gemini is analyzing the image</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="capture_product_image">Take a photo of a product</string>
+    <string name="help">Help</string>
+    <string name="flash_on">Turn On Flash</string>
+
+
+    <string name="place_expiry_date_inside_frame">Place the expiry date inside the frame</string>
+    <string name="detected_date_will_appear_here">The detected date will appear here</string>
+    <string name="use_date">Use Date</string>
+    <string name="recognize_with_ai">Recognize with AI</string>
+
+
+    <string name="inventory_title">Inventory Management</string>
+    <string name="sort">Sort</string>
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="search_product_hint">Search for a product...</string>
+    <string name="multi_select">Multi-select</string>
+    <string name="delete_selected_products">Delete selected products</string>
+    <string name="print_selected_products">Print selected products</string>
+    <string name="pdf_selected_products">PDF for selected products</string>
+    <string name="edit">Edit</string>
+    <string name="pdf">PDF</string>
+    <string name="print">Print</string>
+    <string name="delete">Delete</string>
+    <string name="add_clear">Add / Clear</string>
+
+
+    <string name="app_settings">App Settings</string>
+    <string name="interface_and_sync">Interface &amp; Sync</string>
+    <string name="change_language">Change Language</string>
+    <string name="language_description">Choose the app language and translated labels</string>
+    <string name="arabic">Arabic</string>
+    <string name="appearance_and_dark_mode">Appearance &amp; Dark Mode</string>
+    <string name="appearance_description">Control the overall app appearance (Light / Dark)</string>
+    <string name="export_products_global_database">Export Products to Global Database</string>
+    <string name="cloud_data_description">Share local product data to enrich cloud content</string>
+    <string name="off">Off</string>
+    <string name="export_ocr_images">Export OCR Images for Contribution</string>
+    <string name="ocr_images_description">Send OCR-captured images to measure accuracy and improve algorithms</string>
+
+
+    <string name="expiry_date_hint">Expiry Date</string>
+    <string name="scan_date">Scan Date</string>
+    <string name="save_product">Save Product</string>
+
+
+    <string name="help_description">The smart expiry date app allows you to easily manage your inventory by scanning barcodes and entering the required data for each product. The app can also read and recognize expiry dates using the camera and artificial intelligence.</string>
+
+
+    <string name="select_product">Select product</string>
+
+
+    <string name="add_new_product">Add\nNew Product</string>
+
+    <string name="invalid_date">Invalid date</string>
+    <string name="days_remaining">%1$d days remaining</string>
+    <string name="one_day_remaining">1 day remaining</string>
+    <string name="expires_today">Expires today</string>
+    <string name="expired_one_day">Expired 1 day ago</string>
+    <string name="expired_days">%1$d days expired</string>
+    <string name="product_saved_successfully">Product saved successfully</string>
+    <string name="close">Close</string>
+    <string name="long_press_for_options">Long press for more options: %1$s</string>
+    <string name="scan_cancelled">Scan cancelled</string>
+    <string name="camera_permission_required">Sorry, camera permission is required</string>
+</resources>

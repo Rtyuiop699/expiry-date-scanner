@@ -1,3 +1,117 @@
 <resources>
     <string name="app_name">إدارة المخزون</string>
+
+    <!-- إضافة منتج -->
+    <string name="add_product">إضافة منتج</string>
+    <string name="take_photo">التقاط صورة</string>
+    <string name="choose_photo">اختيار صورة</string>
+    <string name="category">التصنيف</string>
+    <string name="add_category">إضافة تصنيف</string>
+    <string name="product_name">اسم المنتج</string>
+    <string name="barcode">رمز الباركود</string>
+    <string name="scan_expiry_date">مسح تاريخ الانتهاء</string>
+    <string name="expiry_date">تاريخ الانتهاء</string>
+
+    <!-- الكميات والأسعار -->
+    <string name="quantities_and_prices">الكميات والأسعار</string>
+    <string name="carton_count">عدد الكراتين</string>
+    <string name="cartons">الكراتين</string>
+    <string name="packs_per_carton">الباكت في الكرتون</string>
+    <string name="packs">الباكت</string>
+    <string name="pieces_per_pack">الحبات في الباكت</string>
+    <string name="pieces">الحبات</string>
+    <string name="has_pack">يوجد باكت ✓</string>
+    <string name="calculate">احسب</string>
+
+    <!-- الأسعار -->
+    <string name="purchase_prices">أسعار الشراء</string>
+    <string name="carton_purchase_price">سعر شراء الكرتون</string>
+    <string name="pack_purchase_price">سعر شراء الباكت</string>
+    <string name="piece_purchase_price">سعر شراء الحبة</string>
+    <string name="total_purchase">إجمالي الشراء</string>
+
+    <string name="sale_prices">أسعار البيع</string>
+    <string name="piece_sale_price">سعر بيع الحبة</string>
+    <string name="pack_sale_price">سعر بيع الباكت</string>
+    <string name="carton_sale_price">سعر بيع الكرتون</string>
+    <string name="total_sale">إجمالي البيع</string>
+
+    <!-- الأرباح -->
+    <string name="profits">الأرباح</string>
+    <string name="piece_profit">الربح في الحبة</string>
+    <string name="pack_profit">الربح في الباكت</string>
+    <string name="carton_profit">الربح في الكرتون</string>
+    <string name="total_profit">إجمالي الربح</string>
+
+    <string name="flash">الفلاش</string>
+
+    <string name="super_ocr">Super OCR</string>
+    <string name="captured_image">الصورة الملتقطة</string>
+    <string name="gemini_analyzing">🤖 يقوم Gemini بتحليل الصورة</string>
+    <string name="please_wait">الرجاء الانتظار...</string>
+    <string name="capture_product_image">التقط صورة لمنتج</string>
+    <string name="help">مساعدة</string>
+    <string name="flash_on">تشغيل الفلاش</string>
+
+
+    <string name="place_expiry_date_inside_frame">ضع تاريخ الانتهاء داخل الإطار</string>
+    <string name="detected_date_will_appear_here">سوف يظهر التاريخ المكتشف هنا</string>
+    <string name="use_date">استخدام التاريخ</string>
+    <string name="recognize_with_ai">التعرف بالذكاء الاصطناعي</string>
+
+
+    <string name="inventory_title">إدارة المخزون</string>
+    <string name="sort">ترتيب</string>
+    <string name="settings">إعدادات</string>
+    <string name="search">بحث</string>
+    <string name="search_product_hint">بحث عن منتج...</string>
+    <string name="multi_select">اختيار متعدد</string>
+    <string name="delete_selected_products">حذف المنتجات المحددة</string>
+    <string name="print_selected_products">طباعة المنتجات المحددة</string>
+    <string name="pdf_selected_products">PDF للمنتجات المحددة</string>
+    <string name="edit">تعديل</string>
+    <string name="pdf">PDF</string>
+    <string name="print">طباعة</string>
+    <string name="delete">حذف</string>
+    <string name="add_clear">إضافة / مسح</string>
+
+
+    <string name="app_settings">إعدادات التطبيق</string>
+    <string name="interface_and_sync">الواجهة والمزامنة</string>
+    <string name="change_language">تغيير اللغة</string>
+    <string name="language_description">اختيار لغة التطبيق والتسميات المترجمة</string>
+    <string name="arabic">العربية</string>
+    <string name="appearance_and_dark_mode">المظهر والوضع الداكن</string>
+    <string name="appearance_description">التحكم في المظهر العام للتطبيق (فاتح / داكن)</string>
+    <string name="export_products_global_database">تصدير المنتجات إلى قاعدة البيانات العالمية</string>
+    <string name="cloud_data_description">مشاركة بيانات المنتجات المحلية لإثراء المحتوى السحابي</string>
+    <string name="off">إيقاف</string>
+    <string name="export_ocr_images">تصدير صور OCR للمساهمة</string>
+    <string name="ocr_images_description">إرسال الصور الملتقطة بواسطة OCR لتحديد الدقة وتحسين الخوارزميات</string>
+
+
+    <string name="expiry_date_hint">تاريخ الصلاحية</string>
+    <string name="scan_date">مسح التاريخ</string>
+    <string name="save_product">حفظ المنتج</string>
+
+
+    <string name="help_description">تطبيق تاريخ الصلاحيه الذكي يمكنك من ادارة المخزون لديك بسهوله من خلال مس الباركود وادخال البيانات المطلوبه لكل منتج كما يمكن للتطبيق قراءة التاريخ والتعرف عليه ايضا من خلال الكاميرا باستخدام الذكاء الاصطناعي</string>
+
+
+    <string name="select_product">تحديد المنتج</string>
+
+
+    <string name="add_new_product">إضافة\nمنتج جديد</string>
+
+    <string name="invalid_date">تاريخ غير صالح</string>
+    <string name="days_remaining">%1$d يوم متبقي</string>
+    <string name="one_day_remaining">متبقي يوم واحد</string>
+    <string name="expires_today">ينتهي اليوم</string>
+    <string name="expired_one_day">منتهي منذ يوم واحد</string>
+    <string name="expired_days">%1$d يوم منذ انتهاء الصلاحية</string>
+    <string name="product_saved_successfully">تم حفظ المنتج بنجاح</string>
+    <string name="close">إغلاق</string>
+    <string name="long_press_for_options">اضغط ضغط مطول لمزيد من الخيارات: %1$s</string>
+    <string name="scan_cancelled">تم إلغاء المسح</string>
+    <string name="camera_permission_required">عذراً، يجب الموافقة على تصريح الكاميرا</string>
 </resources>

@@ -20,7 +20,7 @@
         android:background="@drawable/toolbar_border"
         android:elevation="0dp"
         app:navigationIcon="@drawable/icarrowback"
-        app:title="إضافة منتج"
+        app:title="@string/add_product"
         app:titleTextColor="?android:attr/textColorPrimary"
         app:menu="@menu/addproductmenu" />
 
@@ -68,13 +68,13 @@
                         android:id="@+id/btnCaptureImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="التقاط صورة" />
+                        android:text="@string/take_photo" />
 
                     <Button
                         android:id="@+id/btnChooseImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="اختيار صورة"
+                        android:text="@string/choose_photo"
                         android:layout_marginTop="8dp" />
 
                 </LinearLayout>
@@ -118,7 +118,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="التصنيف">
+                    android:hint="@string/category">
 
                     <AutoCompleteTextView
                         android:id="@+id/autoCompleteCategories"
@@ -136,7 +136,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginStart="8dp"
-                    android:contentDescription="إضافة تصنيف"
+                    android:contentDescription="@string/add_category"
                     android:src="@drawable/ic_add_white"
                     app:backgroundTint="#025144"
                     app:tint="#FFFFFF"
@@ -165,7 +165,7 @@
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/ictagred"
                     android:tint="#F44336"
-                    android:contentDescription="اسم المنتج" />
+                    android:contentDescription="@string/product_name" />
 
                 <!-- حقل اسم المنتج -->
 
@@ -173,7 +173,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="اسم المنتج"
+                    android:hint="@string/product_name"
                     app:boxBackgroundMode="outline">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -204,7 +204,7 @@
                     android:layout_height="28dp"
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/icbarcode"
-                    android:contentDescription="رمز الباركود" />
+                    android:contentDescription="@string/barcode" />
 
                 <!-- حقل الباركود -->
 
@@ -212,7 +212,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="رمز الباركود"
+                    android:hint="@string/barcode"
                     app:boxBackgroundMode="outline">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -244,7 +244,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginEnd="8dp"
-                    android:contentDescription="مسح تاريخ الانتهاء"
+                    android:contentDescription="@string/scan_expiry_date"
                     android:src="@drawable/ic_ocr"
                     app:backgroundTint="#025144"
                     app:tint="#FFFFFF"
@@ -257,7 +257,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="تاريخ الانتهاء"
+                    android:hint="@string/expiry_date"
                     app:boxBackgroundMode="outline">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -277,7 +277,7 @@
                     android:layout_marginStart="8dp"
                     android:src="@drawable/iccalendar"
                     android:tint="#4CAF50"
-                    android:contentDescription="تاريخ الانتهاء" />
+                    android:contentDescription="@string/expiry_date" />
 
             </LinearLayout>
 
@@ -311,7 +311,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="  الكميات والأسعار  "
+            android:text="@string/quantities_and_prices"
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center" />
@@ -345,12 +345,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="عدد الكراتين"
+                android:text="@string/carton_count"
                 android:gravity="center" />
 
             <EditText
                 android:id="@+id/editCarton"
-                android:hint="الكراتين"
+                android:hint="@string/cartons"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -369,12 +369,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="الباكت في الكرتون"
+                android:text="@string/packs_per_carton"
                 android:gravity="center" />
 
             <EditText
                 android:id="@+id/editPack"
-                android:hint="الباكت"
+                android:hint="@string/packs"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -392,12 +392,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="الحبات في الباكت"
+                android:text="@string/pieces_per_pack"
                 android:gravity="center" />
 
             <EditText
                 android:id="@+id/editPiece"
-                android:hint="الحبات"
+                android:hint="@string/pieces"
                 android:inputType="number"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -413,7 +413,7 @@
 
     <Button
         android:id="@+id/btnHasPack"
-        android:text="يوجد باكت ✓"
+        android:text="@string/has_pack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
@@ -421,7 +421,7 @@
     <!-- زر الحساب -->
     <Button
         android:id="@+id/btnCalculate"
-        android:text="احسب"
+        android:text="@string/calculate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp" />
@@ -449,7 +449,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="أسعار الشراء"
+            android:text="@string/purchase_prices"
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -459,7 +459,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="سعر شراء الكرتون">
+            android:hint="@string/carton_purchase_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editCartonPurchasePrice"
@@ -475,7 +475,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="سعر شراء الباكت">
+            android:hint="@string/pack_purchase_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvPackPurchasePrice"
@@ -491,7 +491,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="سعر شراء الحبة">
+            android:hint="@string/piece_purchase_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvPiecePurchasePrice"
@@ -507,7 +507,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="إجمالي الشراء">
+            android:hint="@string/total_purchase">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvTotalPurchasePrice"
@@ -533,7 +533,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="أسعار البيع"
+            android:text="@string/sale_prices"
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -543,7 +543,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="سعر بيع الحبة">
+            android:hint="@string/piece_sale_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPieceSalePrice"
@@ -559,7 +559,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="سعر بيع الباكت">
+            android:hint="@string/pack_sale_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvPackSalePrice"
@@ -575,7 +575,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="سعر بيع الكرتون">
+            android:hint="@string/carton_sale_price">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvCartonSalePrice"
@@ -591,7 +591,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="إجمالي البيع">
+            android:hint="@string/total_sale">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvTotalSalePrice"
@@ -612,7 +612,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="الأرباح"
+                    android:text="@string/profits"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:gravity="center"
@@ -637,7 +637,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="الربح في الحبة">
+                            android:hint="@string/piece_profit">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tvPieceProfit"
@@ -654,7 +654,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:hint="الربح في الباكت">
+                            android:hint="@string/pack_profit">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tvPackProfit"
@@ -679,7 +679,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="الربح في الكرتون">
+                            android:hint="@string/carton_profit">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tvCartonProfit"
@@ -695,7 +695,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:hint="إجمالي الربح">
+                            android:hint="@string/total_profit">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tvTotalProfit"

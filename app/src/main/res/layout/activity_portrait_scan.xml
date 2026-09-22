@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="40dp"
-        android:contentDescription="تشغيل الفلاش"
+        android:contentDescription="@string/flash_on"
         android:src="@drawable/ic_flash_off"
         app:backgroundTint="#FFFFFF"
         app:tint="#333333"

@@ -29,7 +29,7 @@
             android:layout_weight="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:text="إعدادات التطبيق"
+            android:text="@string/app_settings"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="الواجهة والمزامنة"
+                android:text="@string/interface_and_sync"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -71,7 +71,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="تغيير اللغة"
+                        android:text="@string/change_language"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -80,7 +80,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="اختيار لغة التطبيق والتسميات المترجمة"
+                        android:text="@string/language_description"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="none"
                         android:paddingVertical="10dp"
-                        android:text="العربية"
+                        android:text="@string/arabic"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
@@ -121,7 +121,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="المظهر والوضع الداكن"
+                        android:text="@string/appearance_and_dark_mode"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -130,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="التحكم في المظهر العام للتطبيق (فاتح / داكن)"
+                        android:text="@string/appearance_description"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -170,7 +170,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="تصدير المنتجات إلى قاعدة البيانات العالمية"
+                        android:text="@string/export_products_global_database"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -179,7 +179,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="مشاركة بيانات المنتجات المحلية لإثراء المحتوى السحابي"
+                        android:text="@string/cloud_data_description"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -198,7 +198,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="none"
                         android:paddingVertical="10dp"
-                        android:text="إيقاف"
+                        android:text="@string/off"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>
@@ -220,7 +220,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="تصدير صور OCR للمساهمة"
+                        android:text="@string/export_ocr_images"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -229,7 +229,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="إرسال الصور الملتقطة بواسطة OCR لتحديد الدقة وتحسين الخوارزميات"
+                        android:text="@string/ocr_images_description"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -248,7 +248,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="none"
                         android:paddingVertical="10dp"
-                        android:text="إيقاف"
+                        android:text="@string/off"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
             </RelativeLayout>

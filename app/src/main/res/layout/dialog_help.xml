@@ -9,12 +9,7 @@
         android:id="@+id/textHelp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="تطبيق تاريخ الصلاحيه الذكي يمكنك من ادارة المخزون لديك بسهوله من خلال مس الباركود وادخال البيانات المطلوبه لكل منتج كما يمكن للتطبيق قراءة التاريخ والتعرف عليه ايضا من خلال الكاميرا باستخدام الذكاء الاصطناعي
-
-كما يمكنك حذف وتعديل كل منتج من خلال الضغط عليه في القائمة
-
-هذا التطبيق من انتاج سوبر كود
-للجمهورية اليمنية - عدن"
+        android:text="@string/help_description"
         android:textSize="16sp" />
 
 </LinearLayout>

@@ -3,7 +3,7 @@
     android:id="@+id/toolbarTitle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="إضافة\nمنتج جديد"
+    android:text="@string/add_new_product"
     android:textSize="16sp"
     android:textColor="?android:attr/textColorPrimary"
     android:gravity="center"
