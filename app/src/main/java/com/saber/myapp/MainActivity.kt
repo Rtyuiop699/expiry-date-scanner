@@ -170,7 +170,9 @@ class MainActivity : AppCompatActivity() {
         // عناصر البحث والأزرار
         // =====================================================
         val searchField = findViewById<EditText>(R.id.searchField)
-val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
+
+       val btnProcessedImages = findViewById<ImageView>(R.id.btnProcessedImages) 
+        val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
 val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
 val searchContainer = findViewById<View>(R.id.searchContainer)
 val btnMultiSelect = findViewById<ImageView>(R.id.btnMultiSelect)
@@ -194,7 +196,15 @@ btnHelp.setOnClickListener {
                 searchContainer
             )
         }
-
+//زر معالج الصور
+        btnProcessedImages.setOnClickListener {
+    startActivity(
+        Intent(
+            this,
+            ProcessedImagesActivity::class.java
+        )
+    )
+}
         // =====================================================
         // الضغط على البحث
         // =====================================================
