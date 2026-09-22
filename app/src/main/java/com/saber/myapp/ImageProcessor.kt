@@ -371,4 +371,41 @@ fun processDotMatrixStages(bitmap: Bitmap): DotMatrixStages {
         morphology = morphologyBitmap
     )
 }
+private fun matToBitmap(mat: Mat): Bitmap {
+
+    val rgbaMat = Mat()
+
+    if (mat.channels() == 1) {
+
+        Imgproc.cvtColor(
+            mat,
+            rgbaMat,
+            Imgproc.COLOR_GRAY2RGBA
+        )
+
+    } else {
+
+        Imgproc.cvtColor(
+            mat,
+            rgbaMat,
+            Imgproc.COLOR_RGB2RGBA
+        )
+    }
+
+    val bitmap =
+        Bitmap.createBitmap(
+            rgbaMat.cols(),
+            rgbaMat.rows(),
+            Bitmap.Config.ARGB_8888
+        )
+
+    Utils.matToBitmap(
+        rgbaMat,
+        bitmap
+    )
+
+    rgbaMat.release()
+
+    return bitmap
+}
 }
