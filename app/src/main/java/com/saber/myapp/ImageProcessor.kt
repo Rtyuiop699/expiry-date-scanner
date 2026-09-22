@@ -147,48 +147,114 @@ class ImageProcessor {
     // =====================================================
     // معالجة الخطوط النقطية والرفيعة باستخدام OpenCV
     // =====================================================
-
 fun processDotMatrix(bitmap: Bitmap): Bitmap {
+
     val mat = Mat()
     Utils.bitmapToMat(bitmap, mat)
 
-    // 1. تحويل إلى تدرج رمادي
+    // 1. تحويل إلى Grayscale
     val grayMat = Mat()
-    Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-    // 2. تحسين التباين بـ CLAHE (أفضل من equalizeHist مع الانعكاس)
-    val clahe = Imgproc.createCLAHE(3.0, Size(8.0, 8.0))
+    Imgproc.cvtColor(
+        mat,
+        grayMat,
+        Imgproc.COLOR_RGBA2GRAY
+    )
+
+    // 2. تحسين التباين محليًا
+    val clahe =
+        Imgproc.createCLAHE(
+            2.5,
+            Size(8.0, 8.0)
+        )
+
     val contrastMat = Mat()
-    clahe.apply(grayMat, contrastMat)
 
-    // 3. عتبة تكيفية (بدل العتبة الثابتة)
+    clahe.apply(
+        grayMat,
+        contrastMat
+    )
+
+    // 3. تكبير الصورة
+    // يساعد ML Kit على قراءة النقاط الصغيرة
+    val resizedMat = Mat()
+
+    Imgproc.resize(
+        contrastMat,
+        resizedMat,
+        Size(
+            contrastMat.cols() * 2.0,
+            contrastMat.rows() * 2.0
+        ),
+        0.0,
+        0.0,
+        Imgproc.INTER_CUBIC
+    )
+
+    // 4. Adaptive Threshold
     val threshMat = Mat()
+
     Imgproc.adaptiveThreshold(
-        contrastMat, threshMat, 255.0,
+        resizedMat,
+        threshMat,
+        255.0,
         Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-        Imgproc.THRESH_BINARY_INV,
-        15, 10.0
+        Imgproc.THRESH_BINARY,
+        21,
+        7.0
     )
 
-    // 4. لحام النقاط: نواة مستطيلة عمودية + dilate
-    val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(2.0, 5.0))
-    val dilatedMat = Mat()
-    Imgproc.dilate(threshMat, dilatedMat, kernel,
-        org.opencv.core.Point(-1.0, -1.0), 2)
+    // 5. وصل النقاط المتقاربة
+    // نستخدم نواة صغيرة حتى لا تندمج الأرقام
+    val kernel =
+        Imgproc.getStructuringElement(
+            Imgproc.MORPH_RECT,
+            Size(2.0, 2.0)
+        )
 
-    // 5. تحويل إلى RGBA قبل الإرجاع
+    val morphedMat = Mat()
+
+    Imgproc.morphologyEx(
+        threshMat,
+        morphedMat,
+        Imgproc.MORPH_CLOSE,
+        kernel
+    )
+
+    // 6. تحويل إلى RGBA
     val rgbaMat = Mat()
-    Imgproc.cvtColor(dilatedMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
 
-    val resultBitmap = Bitmap.createBitmap(
-        rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
+    Imgproc.cvtColor(
+        morphedMat,
+        rgbaMat,
+        Imgproc.COLOR_GRAY2RGBA
     )
-    Utils.matToBitmap(rgbaMat, resultBitmap)
 
-    // تحرير الموارد
-    mat.release(); grayMat.release(); contrastMat.release()
-    threshMat.release(); dilatedMat.release(); rgbaMat.release(); kernel.release()
+    // 7. إنشاء Bitmap بالحجم الجديد
+    val resultBitmap =
+        Bitmap.createBitmap(
+            rgbaMat.cols(),
+            rgbaMat.rows(),
+            Bitmap.Config.ARGB_8888
+        )
+
+    Utils.matToBitmap(
+        rgbaMat,
+        resultBitmap
+    )
+
+    // 8. تحرير موارد OpenCV
+    mat.release()
+    grayMat.release()
+    contrastMat.release()
+    resizedMat.release()
+    threshMat.release()
+    morphedMat.release()
+    rgbaMat.release()
+    kernel.release()
+    clahe.collectGarbage()
 
     return resultBitmap
 }
+
 }
