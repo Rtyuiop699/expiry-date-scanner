@@ -355,10 +355,14 @@ class DateScannerActivity : AppCompatActivity() {
         imageProcessor.preprocessImage(cropped)
 
     // حفظ نفس الصورة التي سيتم إرسالها إلى ML Kit OCR
-    ProcessedImageStore.save(
-        this,
-        processedBitmap
-    )
+    PProcessedImageStore.save(
+    this,
+    processedBitmap,
+    "normal"
+)
+        
+        
+    
 
     val image =
         InputImage.fromBitmap(
@@ -425,9 +429,13 @@ private fun tryDotMatrixRecognition(
 
     // حفظ نفس صورة OpenCV التي سيتم إرسالها إلى ML Kit
     ProcessedImageStore.save(
-        this,
-        dotMatrixBitmap
-    )
+    this,
+    dotMatrixBitmap,
+    "opencv"
+)
+        
+        
+
 
     val dotMatrixImage =
         InputImage.fromBitmap(
