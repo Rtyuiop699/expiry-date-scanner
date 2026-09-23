@@ -3,15 +3,22 @@ package com.saber.myapp.image
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
 import android.graphics.Paint
 
 import org.opencv.android.Utils
+import org.opencv.core.Core
+import org.opencv.core.CvType
 import org.opencv.core.Mat
+import org.opencv.core.MatOfDouble
+import org.opencv.core.Point
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
+
+// =====================================================
+// Data class لمراحل المعالجة (للـ Debug)
+// =====================================================
+
 data class DotMatrixStages(
     val original: Bitmap,
     val gray: Bitmap,
@@ -20,6 +27,10 @@ data class DotMatrixStages(
     val threshold: Bitmap,
     val morphology: Bitmap
 )
+
+// =====================================================
+// كلاس معالجة الصور
+// =====================================================
 
 class ImageProcessor {
 
@@ -32,17 +43,11 @@ class ImageProcessor {
         val width = bitmap.width
         val height = bitmap.height
 
-        val cropWidth =
-            (width * 0.7).toInt()
+        val cropWidth = (width * 0.85).toInt()
+        val cropHeight = (height * 0.20).toInt()
 
-        val cropHeight =
-            (height * 0.3).toInt()
-
-        val left =
-            (width - cropWidth) / 2
-
-        val top =
-            (height - cropHeight) / 2
+        val left = (width - cropWidth) / 2
+        val top = (height - cropHeight) / 2
 
         return Bitmap.createBitmap(
             bitmap,
@@ -54,358 +59,241 @@ class ImageProcessor {
     }
 
     // =====================================================
-    // معالجة الصورة قبل OCR
+    // معالجة الصورة قبل OCR (محسّنة)
     // =====================================================
 
     fun preprocessImage(bitmap: Bitmap): Bitmap {
 
-        val matrix = Matrix()
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
 
-        matrix.postScale(
-            2f,
-            2f
-        )
+        // 1. تحويل إلى تدرج رمادي
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-        val scaled =
-            Bitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                bitmap.width,
-                bitmap.height,
-                matrix,
-                true
-            )
+        // 2. قياس جودة الصورة (تباين)
+        val mean = MatOfDouble()
+        val stdDev = MatOfDouble()
+        Core.meanStdDev(grayMat, mean, stdDev)
+        val contrast = stdDev.toArray()[0]
 
-        val grayBitmap =
-            Bitmap.createBitmap(
-                scaled.width,
-                scaled.height,
-                Bitmap.Config.ARGB_8888
-            )
-
-        val canvas = Canvas(grayBitmap)
-        val paint = Paint()
-
-        val colorMatrix =
-            ColorMatrix().apply {
-                setSaturation(0f)
+        // 3. معالجة تكيفية حسب جودة الصورة
+        val resultMat = when {
+            contrast > 50.0 -> {
+                grayMat.clone()
             }
+            contrast in 30.0..50.0 -> {
+                val clahe = Imgproc.createCLAHE(1.5, Size(8.0, 8.0))
+                val out = Mat()
+                clahe.apply(grayMat, out)
+                clahe.collectGarbage()
+                out
+            }
+            else -> {
+                val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
+                val enhanced = Mat()
+                clahe.apply(grayMat, enhanced)
+                clahe.collectGarbage()
 
-        paint.colorFilter =
-            ColorMatrixColorFilter(colorMatrix)
+                val blurred = Mat()
+                Imgproc.GaussianBlur(enhanced, blurred, Size(3.0, 3.0), 0.0)
+                blurred
+            }
+        }
 
-        canvas.drawBitmap(
-            scaled,
-            0f,
-            0f,
-            paint
+        // 4. تحويل إلى RGBA للإرجاع
+        val rgbaMat = Mat()
+        Imgproc.cvtColor(resultMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
+
+        val resultBitmap = Bitmap.createBitmap(
+            rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
         )
+        Utils.matToBitmap(rgbaMat, resultBitmap)
 
-        return toBlackWhite(grayBitmap)
+        // تحرير الموارد
+        mat.release()
+        grayMat.release()
+        resultMat.release()
+        rgbaMat.release()
+
+        return resultBitmap
     }
 
     // =====================================================
-    // تحويل الصورة إلى أبيض وأسود
+    // تحويل ثنائي — للـ Debug فقط
     // =====================================================
 
-    private fun toBlackWhite(bitmap: Bitmap): Bitmap {
+    fun toBinary(bitmap: Bitmap): Bitmap {
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
 
-        val width = bitmap.width
-        val height = bitmap.height
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-        val result =
-            Bitmap.createBitmap(
-                width,
-                height,
-                Bitmap.Config.ARGB_8888
-            )
+        val threshMat = Mat()
+        Imgproc.threshold(
+            grayMat, threshMat, 0.0, 255.0,
+            Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU
+        )
 
-        for (x in 0 until width) {
+        val result = matToBitmap(threshMat)
 
-            for (y in 0 until height) {
-
-                val pixel =
-                    bitmap.getPixel(x, y)
-
-                val r = Color.red(pixel)
-                val g = Color.green(pixel)
-                val b = Color.blue(pixel)
-
-                val gray =
-                    (r + g + b) / 3
-
-                val newColor =
-                    if (gray > 140)
-                        Color.WHITE
-                    else
-                        Color.BLACK
-
-                result.setPixel(
-                    x,
-                    y,
-                    newColor
-                )
-            }
-        }
+        mat.release()
+        grayMat.release()
+        threshMat.release()
 
         return result
     }
 
     // =====================================================
-    // معالجة الخطوط النقطية والرفيعة باستخدام OpenCV
+    // معالجة الخطوط النقطية (محسّنة)
     // =====================================================
-fun processDotMatrix(bitmap: Bitmap): Bitmap {
 
-    val mat = Mat()
-    Utils.bitmapToMat(bitmap, mat)
+    fun processDotMatrix(bitmap: Bitmap): Bitmap {
 
-    // 1. تحويل إلى Grayscale
-    val grayMat = Mat()
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
 
-    Imgproc.cvtColor(
-        mat,
-        grayMat,
-        Imgproc.COLOR_RGBA2GRAY
-    )
+        // 1. تدرج رمادي
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
 
-    // 2. تحسين التباين محليًا
-    val clahe =
-        Imgproc.createCLAHE(
-            2.5,
-            Size(8.0, 8.0)
+        // 2. تقليل الضوضاء أولاً
+        val blurredMat = Mat()
+        Imgproc.GaussianBlur(grayMat, blurredMat, Size(3.0, 3.0), 0.0)
+
+        // 3. تحسين التباين بـ CLAHE
+        val clahe = Imgproc.createCLAHE(2.5, Size(8.0, 8.0))
+        val contrastMat = Mat()
+        clahe.apply(blurredMat, contrastMat)
+        clahe.collectGarbage()
+
+        // 4. تكبير 2× (يساعد ML Kit)
+        val resizedMat = Mat()
+        Imgproc.resize(
+            contrastMat, resizedMat,
+            Size(contrastMat.cols() * 2.0, contrastMat.rows() * 2.0),
+            0.0, 0.0, Imgproc.INTER_CUBIC
         )
 
-    val contrastMat = Mat()
-
-    clahe.apply(
-        grayMat,
-        contrastMat
-    )
-
-    // 3. تكبير الصورة
-    // يساعد ML Kit على قراءة النقاط الصغيرة
-    val resizedMat = Mat()
-
-    Imgproc.resize(
-        contrastMat,
-        resizedMat,
-        Size(
-            contrastMat.cols() * 2.0,
-            contrastMat.rows() * 2.0
-        ),
-        0.0,
-        0.0,
-        Imgproc.INTER_CUBIC
-    )
-
-    // 4. Adaptive Threshold
-    val threshMat = Mat()
-
-    Imgproc.adaptiveThreshold(
-        resizedMat,
-        threshMat,
-        255.0,
-        Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-        Imgproc.THRESH_BINARY,
-        21,
-        7.0
-    )
-
-    // 5. وصل النقاط المتقاربة
-    // نستخدم نواة صغيرة حتى لا تندمج الأرقام
-    val kernel =
-        Imgproc.getStructuringElement(
-            Imgproc.MORPH_RECT,
-            Size(2.0, 2.0)
+        // 5. عتبة تكيفية
+        val threshMat = Mat()
+        Imgproc.adaptiveThreshold(
+            resizedMat, threshMat, 255.0,
+            Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
+            Imgproc.THRESH_BINARY,
+            21, 7.0
         )
 
-    val morphedMat = Mat()
-
-    Imgproc.morphologyEx(
-        threshMat,
-        morphedMat,
-        Imgproc.MORPH_CLOSE,
-        kernel
-    )
-
-    // 6. تحويل إلى RGBA
-    val rgbaMat = Mat()
-
-    Imgproc.cvtColor(
-        morphedMat,
-        rgbaMat,
-        Imgproc.COLOR_GRAY2RGBA
-    )
-
-    // 7. إنشاء Bitmap بالحجم الجديد
-    val resultBitmap =
-        Bitmap.createBitmap(
-            rgbaMat.cols(),
-            rgbaMat.rows(),
-            Bitmap.Config.ARGB_8888
+        // 6. لحام النقاط
+        val kernel = Imgproc.getStructuringElement(
+            Imgproc.MORPH_RECT, Size(2.0, 2.0)
+        )
+        val morphedMat = Mat()
+        Imgproc.morphologyEx(
+            threshMat, morphedMat,
+            Imgproc.MORPH_CLOSE, kernel
         )
 
-    Utils.matToBitmap(
-        rgbaMat,
-        resultBitmap
-    )
+        // 7. تحويل إلى Bitmap
+        val resultBitmap = matToBitmap(morphedMat)
 
-    // 8. تحرير موارد OpenCV
-    mat.release()
-    grayMat.release()
-    contrastMat.release()
-    resizedMat.release()
-    threshMat.release()
-    morphedMat.release()
-    rgbaMat.release()
-    kernel.release()
-    clahe.collectGarbage()
+        // تحرير الموارد
+        mat.release()
+        grayMat.release()
+        blurredMat.release()
+        contrastMat.release()
+        resizedMat.release()
+        threshMat.release()
+        morphedMat.release()
+        kernel.release()
 
-    return resultBitmap
-}
-fun processDotMatrixStages(bitmap: Bitmap): DotMatrixStages {
-
-    val mat = Mat()
-    Utils.bitmapToMat(bitmap, mat)
-
-    // 1. Grayscale
-    val grayMat = Mat()
-
-    Imgproc.cvtColor(
-        mat,
-        grayMat,
-        Imgproc.COLOR_RGBA2GRAY
-    )
-
-    // 2. CLAHE
-    val clahe =
-        Imgproc.createCLAHE(
-            2.5,
-            Size(8.0, 8.0)
-        )
-
-    val contrastMat = Mat()
-
-    clahe.apply(
-        grayMat,
-        contrastMat
-    )
-
-    // 3. Upscale 2x
-    val resizedMat = Mat()
-
-    Imgproc.resize(
-        contrastMat,
-        resizedMat,
-        Size(
-            contrastMat.cols() * 2.0,
-            contrastMat.rows() * 2.0
-        ),
-        0.0,
-        0.0,
-        Imgproc.INTER_CUBIC
-    )
-
-    // 4. Adaptive Threshold
-    val threshMat = Mat()
-
-    Imgproc.adaptiveThreshold(
-        resizedMat,
-        threshMat,
-        255.0,
-        Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
-        Imgproc.THRESH_BINARY,
-        21,
-        7.0
-    )
-
-    // 5. Morphology
-    val kernel =
-        Imgproc.getStructuringElement(
-            Imgproc.MORPH_RECT,
-            Size(2.0, 2.0)
-        )
-
-    val morphedMat = Mat()
-
-    Imgproc.morphologyEx(
-        threshMat,
-        morphedMat,
-        Imgproc.MORPH_CLOSE,
-        kernel
-    )
-
-    // تحويل مراحل المعالجة إلى Bitmap
-    val grayBitmap =
-        matToBitmap(grayMat)
-
-    val contrastBitmap =
-        matToBitmap(contrastMat)
-
-    val resizedBitmap =
-        matToBitmap(resizedMat)
-
-    val thresholdBitmap =
-        matToBitmap(threshMat)
-
-    val morphologyBitmap =
-        matToBitmap(morphedMat)
-
-    // تحرير موارد OpenCV
-    mat.release()
-    grayMat.release()
-    contrastMat.release()
-    resizedMat.release()
-    threshMat.release()
-    morphedMat.release()
-    kernel.release()
-    clahe.collectGarbage()
-
-    return DotMatrixStages(
-        original = bitmap,
-        gray = grayBitmap,
-        contrast = contrastBitmap,
-        resized = resizedBitmap,
-        threshold = thresholdBitmap,
-        morphology = morphologyBitmap
-    )
-}
-private fun matToBitmap(mat: Mat): Bitmap {
-
-    val rgbaMat = Mat()
-
-    if (mat.channels() == 1) {
-
-        Imgproc.cvtColor(
-            mat,
-            rgbaMat,
-            Imgproc.COLOR_GRAY2RGBA
-        )
-
-    } else {
-
-        Imgproc.cvtColor(
-            mat,
-            rgbaMat,
-            Imgproc.COLOR_RGB2RGBA
-        )
+        return resultBitmap
     }
 
-    val bitmap =
-        Bitmap.createBitmap(
-            rgbaMat.cols(),
-            rgbaMat.rows(),
+    // =====================================================
+    // مراحل المعالجة (للـ Debug)
+    // =====================================================
+
+    fun processDotMatrixStages(bitmap: Bitmap): DotMatrixStages {
+
+        val mat = Mat()
+        Utils.bitmapToMat(bitmap, mat)
+
+        val grayMat = Mat()
+        Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
+
+        val clahe = Imgproc.createCLAHE(2.5, Size(8.0, 8.0))
+        val contrastMat = Mat()
+        clahe.apply(grayMat, contrastMat)
+        clahe.collectGarbage()
+
+        val resizedMat = Mat()
+        Imgproc.resize(
+            contrastMat, resizedMat,
+            Size(contrastMat.cols() * 2.0, contrastMat.rows() * 2.0),
+            0.0, 0.0, Imgproc.INTER_CUBIC
+        )
+
+        val threshMat = Mat()
+        Imgproc.adaptiveThreshold(
+            resizedMat, threshMat, 255.0,
+            Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
+            Imgproc.THRESH_BINARY,
+            21, 7.0
+        )
+
+        val kernel = Imgproc.getStructuringElement(
+            Imgproc.MORPH_RECT, Size(2.0, 2.0)
+        )
+        val morphedMat = Mat()
+        Imgproc.morphologyEx(
+            threshMat, morphedMat,
+            Imgproc.MORPH_CLOSE, kernel
+        )
+
+        val stages = DotMatrixStages(
+            original = bitmap,
+            gray = matToBitmap(grayMat),
+            contrast = matToBitmap(contrastMat),
+            resized = matToBitmap(resizedMat),
+            threshold = matToBitmap(threshMat),
+            morphology = matToBitmap(morphedMat)
+        )
+
+        mat.release()
+        grayMat.release()
+        contrastMat.release()
+        resizedMat.release()
+        threshMat.release()
+        morphedMat.release()
+        kernel.release()
+
+        return stages
+    }
+
+    // =====================================================
+    // دالة مساعدة: Mat → Bitmap
+    // =====================================================
+
+    private fun matToBitmap(mat: Mat): Bitmap {
+
+        val rgbaMat = Mat()
+
+        if (mat.channels() == 1) {
+            Imgproc.cvtColor(mat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
+        } else {
+            Imgproc.cvtColor(mat, rgbaMat, Imgproc.COLOR_RGB2RGBA)
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            rgbaMat.cols(), rgbaMat.rows(),
             Bitmap.Config.ARGB_8888
         )
 
-    Utils.matToBitmap(
-        rgbaMat,
-        bitmap
-    )
+        Utils.matToBitmap(rgbaMat, bitmap)
+        rgbaMat.release()
 
-    rgbaMat.release()
-
-    return bitmap
-}
+        return bitmap
+    }
 }
