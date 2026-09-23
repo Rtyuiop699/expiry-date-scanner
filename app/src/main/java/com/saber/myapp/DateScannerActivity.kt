@@ -346,199 +346,151 @@ class DateScannerActivity : AppCompatActivity() {
     // التعرف على التاريخ
     // ============================================================
 
-    // =====================================================
-// قص المنطقة المركزية من الصورة
-// =====================================================
+  private fun recognizeDate(bitmap: Bitmap) {
 
-fun cropCenter(bitmap: Bitmap): Bitmap {
+    val cropped = imageProcessor.cropCenter(bitmap)
 
-    val width = bitmap.width
-    val height = bitmap.height
+    // المعالجة الطبيعية للصورة
+    val processedBitmap =
+        imageProcessor.preprocessImage(cropped)
 
-    // نطاق أوسع أفقياً وأضيق رأسياً لتقليل خطر قطع النص
-    val cropWidth = (width * 0.85).toInt()
-    val cropHeight = (height * 0.20).toInt()
+    // حفظ نفس الصورة التي سيتم إرسالها إلى ML Kit OCR
+    ProcessedImageStore.save(
+    this,
+    processedBitmap,
+    "normal"
+)
+        
+        
+    
 
-    val left = (width - cropWidth) / 2
-    val top = (height - cropHeight) / 2
+    val image =
+        InputImage.fromBitmap(
+            processedBitmap,
+            0
+        )
 
-    return Bitmap.createBitmap(
-        bitmap,
-        left,
-        top,
-        cropWidth,
-        cropHeight
-    )
-}
+    val recognizer =
+        TextRecognition.getClient(
+            TextRecognizerOptions.DEFAULT_OPTIONS
+        )
 
-// =====================================================
-// معالجة الصورة قبل OCR (محسّنة بـ OpenCV)
-// =====================================================
+    recognizer.process(image)
+        .addOnSuccessListener { result ->
 
-fun preprocessImage(bitmap: Bitmap): Bitmap {
+            val text = result.text
+            val extractedDate =
+                extractDateFromText(text)
 
-    val mat = Mat()
-    Utils.bitmapToMat(bitmap, mat)
+            if (extractedDate != null) {
 
-    // 1. تحويل إلى تدرج رمادي
-    val grayMat = Mat()
-    Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
+                recognizedDate = extractedDate
 
-    // 2. قياس جودة الصورة (تباين)
-    val mean = MatOfDouble()
-    val stdDev = MatOfDouble()
-    Core.meanStdDev(grayMat, mean, stdDev)
-    val contrast = stdDev.toArray()[0]
+                tvResult.text =
+                    "✅ $extractedDate\n$text"
 
-    // 3. معالجة تكيفية حسب جودة الصورة
-    val resultMat = when {
-        // صورة جيدة: لا تفعل شيئًا تقريبًا
-        contrast > 50.0 -> {
-            grayMat.clone()
+                btnConfirm.isEnabled = true
+
+                resetCaptureButton()
+
+            } else {
+
+                // فشل OCR العادي، ننتقل إلى معالجة OpenCV
+                tryDotMatrixRecognition(
+                    cropped,
+                    recognizer,
+                    textOriginal = text
+                )
+            }
         }
-        // صورة متوسطة: CLAHE خفيف
-        contrast in 30.0..50.0 -> {
-            val clahe = Imgproc.createCLAHE(1.5, Size(8.0, 8.0))
-            val out = Mat()
-            clahe.apply(grayMat, out)
-            out
+        .addOnFailureListener {
+
+            // فشل OCR العادي، ننتقل إلى OpenCV
+            tryDotMatrixRecognition(
+                cropped,
+                recognizer,
+                textOriginal = ""
+            )
         }
-        // صورة ضعيفة: CLAHE متوسط + Gaussian Blur خفيف
-        else -> {
-            val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
-            val enhanced = Mat()
-            clahe.apply(grayMat, enhanced)
+}
 
-            val blurred = Mat()
-            Imgproc.GaussianBlur(enhanced, blurred, Size(3.0, 3.0), 0.0)
-            blurred
+
+private fun tryDotMatrixRecognition(
+    croppedBitmap: Bitmap,
+    recognizer: TextRecognizer,
+    textOriginal: String
+) {
+
+    // معالجة الصورة بواسطة OpenCV
+    val dotMatrixBitmap =
+        imageProcessor.processDotMatrix(
+            croppedBitmap
+        )
+
+    // حفظ نفس صورة OpenCV التي سيتم إرسالها إلى ML Kit
+    ProcessedImageStore.save(
+    this,
+    dotMatrixBitmap,
+    "opencv"
+)
+        
+        
+
+
+    val dotMatrixImage =
+        InputImage.fromBitmap(
+            dotMatrixBitmap,
+            0
+        )
+
+    recognizer.process(dotMatrixImage)
+        .addOnSuccessListener { result ->
+
+            val text = result.text
+
+            val extractedDate =
+                extractDateFromText(text)
+
+            if (extractedDate != null) {
+
+                recognizedDate = extractedDate
+
+                tvResult.text =
+                    "✅ $extractedDate (Dot-Matrix)\n$text"
+
+                btnConfirm.isEnabled = true
+
+            } else {
+
+                recognizedDate = null
+
+                val combinedText =
+                    if (text.isNotBlank()) {
+                        text
+                    } else {
+                        textOriginal
+                    }
+
+                tvResult.text =
+                    "❌ لم يتم التعرف\n$combinedText"
+
+                btnConfirm.isEnabled = false
+            }
+
+            resetCaptureButton()
         }
-    }
+        .addOnFailureListener {
 
-    // 4. تحويل إلى RGBA للإرجاع
-    val rgbaMat = Mat()
-    Imgproc.cvtColor(resultMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
+            recognizedDate = null
 
-    val resultBitmap = Bitmap.createBitmap(
-        rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
-    )
-    Utils.matToBitmap(rgbaMat, resultBitmap)
+            tvResult.text =
+                "❌ حدث خطأ أثناء التعرف"
 
-    // تحرير الموارد
-    mat.release()
-    grayMat.release()
-    resultMat.release()
-    rgbaMat.release()
+            btnConfirm.isEnabled = false
 
-    return resultBitmap
+            resetCaptureButton()
+        }
 }
-
-// =====================================================
-// (اختياري) تحويل ثنائي — للـ Debug فقط
-// =====================================================
-
-fun toBinary(bitmap: Bitmap): Bitmap {
-    val mat = Mat()
-    Utils.bitmapToMat(bitmap, mat)
-
-    val grayMat = Mat()
-    Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
-
-    val threshMat = Mat()
-    Imgproc.threshold(
-        grayMat, threshMat, 0.0, 255.0,
-        Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU
-    )
-
-    val rgbaMat = Mat()
-    Imgproc.cvtColor(threshMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
-
-    val result = Bitmap.createBitmap(
-        rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
-    )
-    Utils.matToBitmap(rgbaMat, result)
-
-    mat.release()
-    grayMat.release()
-    threshMat.release()
-    rgbaMat.release()
-
-    return result
-}
-
-// =====================================================
-// معالجة الخطوط النقطية (محسّنة)
-// =====================================================
-
-fun processDotMatrix(bitmap: Bitmap): Bitmap {
-
-    val mat = Mat()
-    Utils.bitmapToMat(bitmap, mat)
-
-    // 1. تدرج رمادي
-    val grayMat = Mat()
-    Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGBA2GRAY)
-
-    // 2. تقليل الضوضاء أولاً (Gaussian Blur خفيف)
-    val blurredMat = Mat()
-    Imgproc.GaussianBlur(grayMat, blurredMat, Size(3.0, 3.0), 0.0)
-
-    // 3. تحسين التباين بـ CLAHE (بدل equalizeHist)
-    val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
-    val contrastMat = Mat()
-    clahe.apply(blurredMat, contrastMat)
-
-    // 4. عتبة Otsu (تلقائية)
-    val threshMat = Mat()
-    Imgproc.threshold(
-        contrastMat, threshMat, 0.0, 255.0,
-        Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU
-    )
-
-    // 5. إزالة الضوضاء الصغيرة (قبل Dilation)
-    val denoiseKernel = Imgproc.getStructuringElement(
-        Imgproc.MORPH_RECT, Size(2.0, 2.0)
-    )
-    val denoisedMat = Mat()
-    Imgproc.morphologyEx(
-        threshMat, denoisedMat, Imgproc.MORPH_OPEN, denoiseKernel
-    )
-
-    // 6. لحام النقاط: Dilation بنواة عمودية صغيرة
-    val dilateKernel = Imgproc.getStructuringElement(
-        Imgproc.MORPH_RECT, Size(2.0, 3.0)
-    )
-    val dilatedMat = Mat()
-    Imgproc.dilate(
-        denoisedMat, dilatedMat, dilateKernel,
-        Point(-1.0, -1.0), 1
-    )
-
-    // 7. تحويل إلى RGBA قبل الإرجاع
-    val rgbaMat = Mat()
-    Imgproc.cvtColor(dilatedMat, rgbaMat, Imgproc.COLOR_GRAY2RGBA)
-
-    val resultBitmap = Bitmap.createBitmap(
-        rgbaMat.cols(), rgbaMat.rows(), Bitmap.Config.ARGB_8888
-    )
-    Utils.matToBitmap(rgbaMat, resultBitmap)
-
-    // تحرير الموارد
-    mat.release()
-    grayMat.release()
-    blurredMat.release()
-    contrastMat.release()
-    threshMat.release()
-    denoisedMat.release()
-    dilatedMat.release()
-    rgbaMat.release()
-    denoiseKernel.release()
-    dilateKernel.release()
-
-    return resultBitmap
-}
-
-                
    
 
         // ============================================================
