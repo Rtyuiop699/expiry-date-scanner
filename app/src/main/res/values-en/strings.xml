@@ -151,7 +151,7 @@
     <string name="gemini_connection_error">Could not connect to Gemini. Check your internet connection and try again.</string>
     <string name="gemini_server_error">An error occurred while processing the image. Please try again.</string>
     <string name="gemini_unknown_error">An unexpected error occurred while recognizing the expiry date. Please try again.</string>
-</resources>
+
 
     <string name="gemini_camera_instruction">Point the camera at the expiry date so Gemini can read it</string>
     <string name="camera_permission_required_gemini">Camera permission is required</string>
@@ -162,3 +162,4 @@
     <string name="image_read_failed_gemini">❌ Could not read the image</string>
     <string name="capture_failed_gemini">❌ Failed to capture image:\n%1$s</string>
     <string name="capture_error_gemini">An error occurred while capturing the image</string>
+  </resources>
