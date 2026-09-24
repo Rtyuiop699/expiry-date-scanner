@@ -125,9 +125,6 @@
     <string name="print_selected_products_count">Print %1$d product(s)</string>
     <string name="export_selected_pdf">Export %1$d product(s) to PDF</string>
     <string name="delete_product">Delete Product</string>
-    <string name="delete_product_confirmation">Do you want to delete the product:
-
-%1$s?</string>
     <string name="delete_product_success">Product deleted</string>
     <string name="delete_product_confirmation">Do you want to delete the product:
 
@@ -155,3 +152,13 @@
     <string name="gemini_server_error">An error occurred while processing the image. Please try again.</string>
     <string name="gemini_unknown_error">An unexpected error occurred while recognizing the expiry date. Please try again.</string>
 </resources>
+
+    <string name="gemini_camera_instruction">Point the camera at the expiry date so Gemini can read it</string>
+    <string name="camera_permission_required_gemini">Camera permission is required</string>
+    <string name="camera_start_failed_gemini">Failed to start camera: %1$s</string>
+    <string name="camera_start_error_gemini">❌ Camera startup error:\n%1$s</string>
+    <string name="camera_not_ready">Camera is not ready</string>
+    <string name="flash_not_available_gemini">Flash is not available</string>
+    <string name="image_read_failed_gemini">❌ Could not read the image</string>
+    <string name="capture_failed_gemini">❌ Failed to capture image:\n%1$s</string>
+    <string name="capture_error_gemini">An error occurred while capturing the image</string>

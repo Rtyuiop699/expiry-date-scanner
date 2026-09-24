@@ -124,9 +124,6 @@
     <string name="print_selected_products_count">طباعة %1$d منتج</string>
     <string name="export_selected_pdf">تصدير %1$d منتج إلى PDF</string>
     <string name="delete_product">حذف المنتج</string>
-    <string name="delete_product_confirmation">هل تريد حذف المنتج:
-
-%1$s؟</string>
     <string name="delete_product_success">تم حذف المنتج</string>
     <string name="delete_product_confirmation">هل تريد حذف المنتج:
 
@@ -154,3 +151,13 @@
     <string name="gemini_server_error">حدث خطأ أثناء معالجة الصورة. حاول مرة أخرى.</string>
     <string name="gemini_unknown_error">حدث خطأ غير متوقع أثناء التعرف على التاريخ. حاول مرة أخرى.</string>
 </resources>
+
+    <string name="gemini_camera_instruction">وجّه الكاميرا نحو تاريخ انتهاء الصلاحية ليقوم Gemini بقراءته</string>
+    <string name="camera_permission_required_gemini">يجب السماح باستخدام الكاميرا</string>
+    <string name="camera_start_failed_gemini">فشل تشغيل الكاميرا: %1$s</string>
+    <string name="camera_start_error_gemini">❌ خطأ في تشغيل الكاميرا:\n%1$s</string>
+    <string name="camera_not_ready">الكاميرا غير جاهزة</string>
+    <string name="flash_not_available_gemini">الفلاش غير متوفر</string>
+    <string name="image_read_failed_gemini">❌ تعذر قراءة الصورة</string>
+    <string name="capture_failed_gemini">❌ فشل التقاط الصورة:\n%1$s</string>
+    <string name="capture_error_gemini">حدث خطأ أثناء التقاط الصورة</string>
