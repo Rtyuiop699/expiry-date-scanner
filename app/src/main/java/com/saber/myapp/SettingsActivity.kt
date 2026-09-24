@@ -29,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupLanguageMenu() {
-        val languages = arrayOf("العربية", "English")
+        val languages = arrayOf(getString(R.string.language_arabic), getString(R.string.language_english))
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteLanguage)
         
         val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, languages)
@@ -42,16 +42,12 @@ class SettingsActivity : AppCompatActivity() {
 
             when (position) {
                 0 -> setAppLocale("ar")
-                1 -> Toast.makeText(
-                    this,
-                    "English language support will be added soon.",
-                    Toast.LENGTH_LONG
-                ).show()
+                1 -> setAppLocale("en")
             }
         }
     }
 private fun setupThemeMenu() {
-val themes = arrayOf("فاتح", "داكن")
+val themes = arrayOf(getString(R.string.theme_light), getString(R.string.theme_dark))
 val autoComplete =
 findViewById<AutoCompleteTextView>(R.id.autoCompleteTheme)
 
@@ -76,7 +72,7 @@ val isDarkMode = preferences.getBoolean(
 
 // عرض الوضع الحالي
 autoComplete.setText(
-    if (isDarkMode) "داكن" else "فاتح",
+    if (isDarkMode) getString(R.string.theme_dark) else getString(R.string.theme_light),
     false
 )
 
@@ -114,7 +110,7 @@ autoComplete.setOnItemClickListener { _, _, position, _ ->
 }
     
     private fun setupExportGlobalMenu() {
-        val options = arrayOf("تشغيل", "إيقاف")
+        val options = arrayOf(getString(R.string.enabled), getString(R.string.disabled))
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteExportGlobal)
         
         val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
@@ -126,12 +122,12 @@ autoComplete.setOnItemClickListener { _, _, position, _ ->
             autoComplete.clearFocus()
 
             val status = options[position]
-            Toast.makeText(this, "تصدير المنتجات: $status", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.export_products_status, status), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun setupExportOcrMenu() {
-        val options = arrayOf("تشغيل", "إيقاف")
+        val options = arrayOf(getString(R.string.enabled), getString(R.string.disabled))
         val autoComplete = findViewById<AutoCompleteTextView>(R.id.autoCompleteExportOcr)
         
         val adapter = NoFilterAdapter(this, android.R.layout.simple_spinner_dropdown_item, options)
@@ -143,7 +139,7 @@ autoComplete.setOnItemClickListener { _, _, position, _ ->
             autoComplete.clearFocus()
 
             val status = options[position]
-            Toast.makeText(this, "تصدير صور OCR: $status", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.export_ocr_status, status), Toast.LENGTH_SHORT).show()
         }
     }
 

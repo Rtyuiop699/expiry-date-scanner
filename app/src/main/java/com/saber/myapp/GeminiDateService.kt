@@ -265,7 +265,7 @@ class GeminiDateService {
 
                     Result.failure(
                         Exception(
-                            "Gemini لم يعثر على تاريخ انتهاء واضح."
+                            "GEMINI_NO_EXPIRY_DATE"
                         )
                     )
                 }
@@ -280,25 +280,53 @@ class GeminiDateService {
                             ?.use {
                                 it.readText()
                             }
-                            ?: "لا توجد تفاصيل إضافية"
+                            ?: "No additional error details"
 
                     } catch (e: Exception) {
 
-                        "تعذر قراءة تفاصيل الخطأ"
+                        "Unable to read error details"
+                    }
+
+                android.util.Log.e(
+                    "GeminiDateService",
+                    "HTTP $responseCode: $errorText"
+                )
+
+                val errorCode =
+                    if (responseCode == HttpURLConnection.HTTP_TOO_MANY_REQUESTS) {
+                        "GEMINI_USAGE_LIMIT"
+                    } else {
+                        "GEMINI_SERVER_ERROR"
                     }
 
                 Result.failure(
-                    Exception(
-                        "HTTP $responseCode\n$errorText"
-                    )
+                    Exception(errorCode)
                 )
             }
 
         } catch (e: Exception) {
 
-            e.printStackTrace()
+            android.util.Log.e(
+                "GeminiDateService",
+                "Gemini request failed",
+                e
+            )
 
-            Result.failure(e)
+            val errorCode =
+                when (e) {
+                    is java.net.SocketTimeoutException ->
+                        "GEMINI_CONNECTION_ERROR"
+
+                    is java.io.IOException ->
+                        "GEMINI_CONNECTION_ERROR"
+
+                    else ->
+                        "GEMINI_UNKNOWN_ERROR"
+                }
+
+            Result.failure(
+                Exception(errorCode)
+            )
 
         } finally {
 

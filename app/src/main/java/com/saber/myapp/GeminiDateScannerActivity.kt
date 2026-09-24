@@ -581,11 +581,25 @@ private fun sendImageToGemini(
             hideGeminiProgress()
 
             val errorMessage =
-                error.message
-                    ?: "خطأ غير معروف"
+                when (error.message) {
+                    "GEMINI_NO_EXPIRY_DATE" ->
+                        getString(R.string.gemini_no_expiry_date)
+
+                    "GEMINI_USAGE_LIMIT" ->
+                        getString(R.string.gemini_usage_limit)
+
+                    "GEMINI_CONNECTION_ERROR" ->
+                        getString(R.string.gemini_connection_error)
+
+                    "GEMINI_SERVER_ERROR" ->
+                        getString(R.string.gemini_server_error)
+
+                    else ->
+                        getString(R.string.gemini_unknown_error)
+                }
 
             tvResult.text =
-                "❌ لم يتم العثور على تاريخ\n\n$errorMessage"
+                "❌ $errorMessage"
 
             Toast.makeText(
                 this@GeminiDateScannerActivity,

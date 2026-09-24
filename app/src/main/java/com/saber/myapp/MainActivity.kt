@@ -48,7 +48,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
 
     private val productList = mutableListOf<Product>()
-    private var currentCategory = "الكل"
+    private companion object {
+        const val ALL_CATEGORY = "__ALL__"
+    }
+
+    private var currentCategory = ALL_CATEGORY
     private var currentSearchText = ""
 
     // =========================================================
@@ -133,9 +137,9 @@ class MainActivity : AppCompatActivity() {
     // تهيئة مكتبة OpenCV
     // =====================================================
     if (!OpenCVLoader.initLocal()) {
-        android.util.Log.e("OpenCV", "فشل تحميل مكتبة OpenCV")
+        android.util.Log.e("OpenCV", "Failed to load OpenCV library")
     } else {
-        android.util.Log.d("OpenCV", "تم تحميل مكتبة OpenCV بنجاح")
+        android.util.Log.d("OpenCV", "OpenCV library loaded successfully")
     }
     
         
@@ -372,7 +376,7 @@ btnHelp.setOnClickListener {
         // زر PDF
         menuView.findViewById<android.widget.ImageButton>(R.id.btnActionPdf)?.setOnClickListener {
             selectedProduct?.let { selected ->
-                Toast.makeText(this, "تصدير PDF للمنتج: ${selected.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.export_product_pdf, selected.name), Toast.LENGTH_SHORT).show()
             }
             closeProductBalloon()
         }
@@ -380,7 +384,7 @@ btnHelp.setOnClickListener {
         // زر الطباعة
         menuView.findViewById<android.widget.ImageButton>(R.id.btnActionPrint)?.setOnClickListener {
             selectedProduct?.let { selected ->
-                Toast.makeText(this, "طباعة: ${selected.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.print_product, selected.name), Toast.LENGTH_SHORT).show()
             }
             closeProductBalloon()
         }
@@ -730,21 +734,21 @@ private fun enterSelectionMode(
     val selectedProducts = listHandler.getSelectedProducts()
 
     if (selectedProducts.isEmpty()) {
-        Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.no_product_selected), Toast.LENGTH_SHORT).show()
         return
     }
 
     AlertDialog.Builder(this)
-        .setTitle("حذف المنتجات")
-        .setMessage("هل تريد حذف ${selectedProducts.size} منتج؟")
-        .setNegativeButton("إلغاء", null)
-        .setPositiveButton("حذف") { _, _ ->
+        .setTitle(getString(R.string.delete_products))
+        .setMessage(getString(R.string.delete_selected_confirmation, selectedProducts.size))
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.delete)) { _, _ ->
             for (product in selectedProducts) {
                 databaseHelper.deleteProduct(product.id)
             }
             exitSelectionMode()
             loadProductsFromDatabase()
-            Toast.makeText(this, "تم حذف المنتجات المحددة", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.delete_selected_success), Toast.LENGTH_SHORT).show()
         }
         .show()
     }
@@ -756,10 +760,10 @@ private fun enterSelectionMode(
     private fun printSelectedProducts() {
         val selectedProducts = listHandler.getSelectedProducts()
         if (selectedProducts.isEmpty()) {
-            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.no_product_selected), Toast.LENGTH_SHORT).show()
             return
         }
-        Toast.makeText(this, "طباعة ${selectedProducts.size} منتج", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.print_selected_products_count, selectedProducts.size), Toast.LENGTH_SHORT).show()
     }
 
 
@@ -770,10 +774,10 @@ private fun enterSelectionMode(
     private fun exportSelectedProductsToPdf() {
         val selectedProducts = listHandler.getSelectedProducts()
         if (selectedProducts.isEmpty()) {
-            Toast.makeText(this, "لم يتم تحديد أي منتج", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.no_product_selected), Toast.LENGTH_SHORT).show()
             return
         }
-        Toast.makeText(this, "تصدير ${selectedProducts.size} منتج إلى PDF", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.export_selected_pdf, selectedProducts.size), Toast.LENGTH_SHORT).show()
     }
 
 
@@ -810,10 +814,10 @@ private fun enterSelectionMode(
         chipGroup.removeAllViews()
 
         val categories = databaseHelper.getAllCategories()
-        addCategoryChip(chipGroup, "الكل")
+        addCategoryChip(chipGroup, ALL_CATEGORY, getString(R.string.all_categories))
 
         for (category in categories) {
-            if (category.isNotBlank() && category != "الكل") {
+            if (category.isNotBlank() && category != ALL_CATEGORY) {
                 addCategoryChip(chipGroup, category)
             }
         }
@@ -822,9 +826,13 @@ private fun enterSelectionMode(
     // إضافة Chip للتصنيف
     // =========================================================
 
-    private fun addCategoryChip(chipGroup: ChipGroup, category: String) {
+    private fun addCategoryChip(
+        chipGroup: ChipGroup,
+        category: String,
+        displayName: String = category
+    ) {
         val chip = Chip(this).apply {
-            text = category
+            text = displayName
             isCheckable = true
             isChecked = category == currentCategory
             setTextColor(Color.BLACK)
@@ -888,7 +896,7 @@ private fun enterSelectionMode(
         val searchText = currentSearchText.lowercase().trim()
 
         val filtered = productList.filter { product ->
-            val matchesCategory = currentCategory == "الكل" || product.category == currentCategory
+            val matchesCategory = currentCategory == ALL_CATEGORY || product.category == currentCategory
             val matchesSearch = searchText.isEmpty() ||
                     product.name.lowercase().contains(searchText) ||
                     product.barcode.lowercase().contains(searchText)
@@ -936,13 +944,13 @@ private fun enterSelectionMode(
     // =========================================================
     private fun showDeleteConfirmationDialog(product: Product) {
     AlertDialog.Builder(this)
-        .setTitle("حذف المنتج")
-        .setMessage("هل تريد حذف المنتج:\n\n${product.name}؟")
-        .setNegativeButton("إلغاء", null)
-        .setPositiveButton("حذف") { _, _ ->
+        .setTitle(getString(R.string.delete_product))
+        .setMessage(getString(R.string.delete_product_confirmation, product.name))
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setPositiveButton(getString(R.string.delete)) { _, _ ->
             databaseHelper.deleteProduct(product.id)
             loadProductsFromDatabase()
-            Toast.makeText(this, "تم حذف المنتج", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.delete_product_success), Toast.LENGTH_SHORT).show()
         }
         .show()
     }

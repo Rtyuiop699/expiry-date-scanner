@@ -115,4 +115,43 @@
     <string name="long_press_for_options">Long press for more options: %1$s</string>
     <string name="scan_cancelled">Scan cancelled</string>
     <string name="camera_permission_required">Sorry, camera permission is required</string>
+    <string name="export_product_pdf">Export product PDF: %1$s</string>
+    <string name="print_product">Print: %1$s</string>
+    <string name="no_product_selected">No product selected</string>
+    <string name="delete_products">Delete Products</string>
+    <string name="delete_selected_confirmation">Do you want to delete %1$d product(s)?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_selected_success">Selected products deleted</string>
+    <string name="print_selected_products_count">Print %1$d product(s)</string>
+    <string name="export_selected_pdf">Export %1$d product(s) to PDF</string>
+    <string name="delete_product">Delete Product</string>
+    <string name="delete_product_confirmation">Do you want to delete the product:
+
+%1$s?</string>
+    <string name="delete_product_success">Product deleted</string>
+    <string name="delete_product_confirmation">Do you want to delete the product:
+
+%1$s?</string>
+    <string name="all_categories">All</string>
+    <string name="camera_start_failed">Failed to start camera: %1$s</string>
+    <string name="camera_permission_missing">Camera permission not granted</string>
+    <string name="image_processing_failed">Failed to process image</string>
+    <string name="capture_error">Capture error: %1$s</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_english">English</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="enabled">On</string>
+    <string name="disabled">Off</string>
+    <string name="export_products_status">Export products: %1$s</string>
+    <string name="export_ocr_status">Export OCR images: %1$s</string>
+    <string name="camera_permission_required_product">Cannot take a photo without camera permission</string>
+    <string name="camera_start_failed_product">Failed to start camera: %1$s</string>
+    <string name="flash_not_available">Flash is not available on this device</string>
+    <string name="capture_error_product">Capture error: %1$s</string>
+    <string name="gemini_no_expiry_date">Gemini could not find a clear expiry date. Try taking a clearer photo of the product.</string>
+    <string name="gemini_usage_limit">The current Gemini usage limit has been reached. Please try again later.</string>
+    <string name="gemini_connection_error">Could not connect to Gemini. Check your internet connection and try again.</string>
+    <string name="gemini_server_error">An error occurred while processing the image. Please try again.</string>
+    <string name="gemini_unknown_error">An unexpected error occurred while recognizing the expiry date. Please try again.</string>
 </resources>

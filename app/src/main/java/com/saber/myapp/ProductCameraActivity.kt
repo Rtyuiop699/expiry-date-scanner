@@ -76,7 +76,7 @@ class ProductCameraActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera()
             } else {
-                Toast.makeText(this, "لا يمكن التصوير بدون إذن الكاميرا", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.camera_permission_required_product), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -108,7 +108,7 @@ class ProductCameraActivity : AppCompatActivity() {
                     imageCapture
                 )
             } catch (e: Exception) {
-                Toast.makeText(this, "فشل تشغيل الكاميرا: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.camera_start_failed_product, e.message ?: ""), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }, ContextCompat.getMainExecutor(this))
@@ -122,7 +122,7 @@ class ProductCameraActivity : AppCompatActivity() {
             // تغيير شفافية الزر كإشارة بصرية لتفعيل الفلاش
             btnFlash.alpha = if (isFlashOn) 1.0f else 0.5f
         } else {
-            Toast.makeText(this, "الفلاش غير متوفر في هذا الجهاز", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.flash_not_available), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -158,7 +158,7 @@ class ProductCameraActivity : AppCompatActivity() {
 
                 override fun onError(exception: ImageCaptureException) {
                     btnCapture.isEnabled = true
-                    Toast.makeText(this@ProductCameraActivity, "خطأ في التصوير: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProductCameraActivity, getString(R.string.capture_error_product, exception.message ?: ""), Toast.LENGTH_SHORT).show()
                 }
             }
         )

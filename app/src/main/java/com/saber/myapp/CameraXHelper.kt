@@ -50,7 +50,7 @@ class CameraXHelper(
                     imageCapture
                 )
             } catch (e: Exception) {
-                onError("فشل تشغيل الكاميرا: ${e.message}")
+                onError(context.getString(R.string.camera_start_failed, e.message ?: ""))
             }
         }, ContextCompat.getMainExecutor(context))
     }
@@ -59,7 +59,7 @@ class CameraXHelper(
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         ) {
-            onError("لا يوجد إذن كاميرا")
+            onError(context.getString(R.string.camera_permission_missing))
             return
         }
         
@@ -77,12 +77,12 @@ class CameraXHelper(
                     if (bitmap != null) {
                         onImageCaptured(bitmap)
                     } else {
-                        onError("فشل معالجة الصورة")
+                        onError(context.getString(R.string.image_processing_failed))
                     }
                 }
                 
                 override fun onError(exception: ImageCaptureException) {
-                    onError("خطأ في التصوير: ${exception.message}")
+                    onError(context.getString(R.string.capture_error, exception.message ?: ""))
                 }
             }
         )
