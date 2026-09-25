@@ -293,7 +293,7 @@ class GeminiDateService {
                 )
 
                 val errorCode =
-                    if (responseCode == HttpURLConnection.HTTP_TOO_MANY_REQUESTS) {
+                    if (responseCode == 429) {
                         "GEMINI_USAGE_LIMIT"
                     } else {
                         "GEMINI_SERVER_ERROR"
