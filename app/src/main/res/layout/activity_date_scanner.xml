@@ -6,19 +6,36 @@
     android:background="?attr/colorSurface"
     android:orientation="vertical">
 
+
     <!-- ===================================================== -->
-    <!-- عنوان الشاشة (الشريط العلوي) -->
-    <!-- ===================================================== -->
+<!-- الشريط العلوي -->
+<!-- ===================================================== -->
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    android:elevation="4dp">
 
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:padding="16dp"
+        android:gravity="center"
         android:text="OCR"
-        android:textColor="?android:attr/textColorPrimary"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- خط فاصل سفلي -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#33000000" />
+
+</LinearLayout>
 
     <!-- ===================================================== -->
     <!-- منطقة معاينة الكاميرا والإطار الأخضر -->
