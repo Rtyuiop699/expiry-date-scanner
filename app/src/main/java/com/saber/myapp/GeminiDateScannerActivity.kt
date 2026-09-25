@@ -655,8 +655,6 @@ override fun onDestroy() {
 
         camera?.cameraControl?.enableTorch(false)
 
-        cameraProvider?.unbindAll()
-
     } catch (e: Exception) {
 
         e.printStackTrace()
