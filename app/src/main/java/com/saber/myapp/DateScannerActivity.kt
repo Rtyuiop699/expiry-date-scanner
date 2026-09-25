@@ -53,6 +53,7 @@ class DateScannerActivity : AppCompatActivity() {
 
     private var recognizedDate: String? = null
     private var imageCapture: ImageCapture? = null
+    private var isReturningFromGemini = false
 
     private lateinit var imageProcessor: ImageProcessor
     private lateinit var cameraExecutor: ExecutorService
@@ -128,6 +129,8 @@ class DateScannerActivity : AppCompatActivity() {
         // ========================================================
 
         btnSOCR.setOnClickListener {
+            isReturningFromGemini = true
+
             val intent = Intent(
                 this,
                 GeminiDateScannerActivity::class.java
@@ -755,9 +758,36 @@ private fun tryDotMatrixRecognition(
         }
     }
 
+    // ============================================================
+    // دورة حياة الشاشة - إدارة الكاميرا عند المغادرة والعودة
+    // ============================================================
+
+    override fun onResume() {
+        super.onResume()
+
+        if (isReturningFromGemini) {
+            isReturningFromGemini = false
+
+            if (
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                startCamera()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        stopCameraPreview()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        if (::cameraExecutor.isInitialized) {
+        if (isFinishing && ::cameraExecutor.isInitialized) {
             cameraExecutor.shutdown()
         }
     }
