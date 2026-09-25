@@ -53,12 +53,10 @@
     <string name="help">مساعدة</string>
     <string name="flash_on">تشغيل الفلاش</string>
 
-
     <string name="place_expiry_date_inside_frame">ضع تاريخ الانتهاء داخل الإطار</string>
     <string name="detected_date_will_appear_here">سوف يظهر التاريخ المكتشف هنا</string>
     <string name="use_date">استخدام التاريخ</string>
     <string name="recognize_with_ai">التعرف بالذكاء الاصطناعي</string>
-
 
     <string name="inventory_title">إدارة المخزون</string>
     <string name="sort">ترتيب</string>
@@ -75,7 +73,6 @@
     <string name="delete">حذف</string>
     <string name="add_clear">إضافة / مسح</string>
 
-
     <string name="app_settings">إعدادات التطبيق</string>
     <string name="interface_and_sync">الواجهة والمزامنة</string>
     <string name="change_language">تغيير اللغة</string>
@@ -89,17 +86,13 @@
     <string name="export_ocr_images">تصدير صور OCR للمساهمة</string>
     <string name="ocr_images_description">إرسال الصور الملتقطة بواسطة OCR لتحديد الدقة وتحسين الخوارزميات</string>
 
-
     <string name="expiry_date_hint">تاريخ الصلاحية</string>
     <string name="scan_date">مسح التاريخ</string>
     <string name="save_product">حفظ المنتج</string>
 
-
     <string name="help_description">تطبيق تاريخ الصلاحيه الذكي يمكنك من ادارة المخزون لديك بسهوله من خلال مس الباركود وادخال البيانات المطلوبه لكل منتج كما يمكن للتطبيق قراءة التاريخ والتعرف عليه ايضا من خلال الكاميرا باستخدام الذكاء الاصطناعي</string>
 
-
     <string name="select_product">تحديد المنتج</string>
-
 
     <string name="add_new_product">إضافة\nمنتج جديد</string>
 
@@ -109,6 +102,7 @@
     <string name="expires_today">ينتهي اليوم</string>
     <string name="expired_one_day">منتهي منذ يوم واحد</string>
     <string name="expired_days">%1$d يوم منذ انتهاء الصلاحية</string>
+
     <string name="product_saved_successfully">تم حفظ المنتج بنجاح</string>
     <string name="close">إغلاق</string>
     <string name="long_press_for_options">اضغط ضغط مطول لمزيد من الخيارات: %1$s</string>
@@ -128,11 +122,14 @@
     <string name="delete_product_confirmation">هل تريد حذف المنتج:
 
 %1$s؟</string>
+
     <string name="all_categories">الكل</string>
+
     <string name="camera_start_failed">فشل تشغيل الكاميرا: %1$s</string>
     <string name="camera_permission_missing">لا يوجد إذن كاميرا</string>
     <string name="image_processing_failed">فشل معالجة الصورة</string>
     <string name="capture_error">خطأ في التصوير: %1$s</string>
+
     <string name="language_arabic">العربية</string>
     <string name="language_english">English</string>
     <string name="theme_light">فاتح</string>
@@ -141,17 +138,19 @@
     <string name="disabled">إيقاف</string>
     <string name="export_products_status">تصدير المنتجات: %1$s</string>
     <string name="export_ocr_status">تصدير صور OCR: %1$s</string>
+
     <string name="camera_permission_required_product">لا يمكن التصوير بدون إذن الكاميرا</string>
     <string name="camera_start_failed_product">فشل تشغيل الكاميرا: %1$s</string>
     <string name="flash_not_available">الفلاش غير متوفر في هذا الجهاز</string>
     <string name="capture_error_product">خطأ في التصوير: %1$s</string>
+
     <string name="gemini_no_expiry_date">لم يتمكن Gemini من التعرف على تاريخ انتهاء واضح. حاول التقاط صورة أوضح للمنتج.</string>
     <string name="gemini_usage_limit">تم الوصول إلى الحد المتاح لاستخدام Gemini حاليًا. حاول مرة أخرى لاحقًا.</string>
     <string name="gemini_connection_error">تعذر الاتصال بخدمة Gemini. تحقق من اتصال الإنترنت وحاول مرة أخرى.</string>
     <string name="gemini_server_error">حدث خطأ أثناء معالجة الصورة. حاول مرة أخرى.</string>
     <string name="gemini_unknown_error">حدث خطأ غير متوقع أثناء التعرف على التاريخ. حاول مرة أخرى.</string>
-</resources>
 
+    <!-- Gemini Camera -->
     <string name="gemini_camera_instruction">وجّه الكاميرا نحو تاريخ انتهاء الصلاحية ليقوم Gemini بقراءته</string>
     <string name="camera_permission_required_gemini">يجب السماح باستخدام الكاميرا</string>
     <string name="camera_start_failed_gemini">فشل تشغيل الكاميرا: %1$s</string>
@@ -161,3 +160,4 @@
     <string name="image_read_failed_gemini">❌ تعذر قراءة الصورة</string>
     <string name="capture_failed_gemini">❌ فشل التقاط الصورة:\n%1$s</string>
     <string name="capture_error_gemini">حدث خطأ أثناء التقاط الصورة</string>
+</resources>
