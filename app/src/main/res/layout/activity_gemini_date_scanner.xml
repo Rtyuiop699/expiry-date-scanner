@@ -1,159 +1,242 @@
-<?xml version="1.0" encoding="utf-8"?><LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:background="?attr/colorSurface">
-
-<!-- ===================================================== -->
-<!-- عنوان الشاشة -->
-<!-- ===================================================== -->
-
-<TextView
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:gravity="center"
-    android:text="@string/super_ocr"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    android:textColor="?android:attr/textColorPrimary" />
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
 
-<!-- ===================================================== -->
-<!-- منطقة الكاميرا والصورة الثابتة ورسالة Gemini -->
-<!-- ===================================================== -->
-
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1">
-
-    <!-- معاينة الكاميرا -->
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewViewGemini"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <!-- الصورة الملتقطة -->
-    <!-- تكون مخفية أثناء التصوير وتظهر بعد الالتقاط -->
-    <ImageView
-        android:id="@+id/capturedImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:visibility="gone"
-        android:contentDescription="@string/captured_image" />
-
-    <!-- ================================================= -->
-    <!-- رسالة Gemini فوق الصورة -->
-    <!-- ================================================= -->
-
-    <LinearLayout
-        android:id="@+id/geminiProgressOverlay"
+    <!-- عنوان الشاشة -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="30dp"
-        android:orientation="vertical"
+        android:padding="16dp"
         android:gravity="center"
-        android:padding="24dp"
-        android:background="#DDFFFFFF"
-        android:visibility="gone">
+        android:text="@string/super_ocr"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary" />
 
-        <ProgressBar
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="16dp" />
+    <!-- منطقة الكاميرا والصورة الثابتة -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <!-- معاينة الكاميرا -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewViewGemini"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- الصورة الملتقطة -->
+        <ImageView
+            android:id="@+id/capturedImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="@string/captured_image" />
+
+        <!-- ===================================================== -->
+        <!-- إطار التعرف على التاريخ -->
+        <!-- ===================================================== -->
+        <FrameLayout
+            android:id="@+id/dateFrame"
+            android:layout_width="320dp"
+            android:layout_height="140dp"
+            android:layout_gravity="center">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="top"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="bottom"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="#00FF00" />
+
+            <!-- أعلى يسار -->
+            <View
+                android:layout_width="28dp"
+                android:layout_height="4dp"
+                android:layout_gravity="top|start"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="28dp"
+                android:layout_gravity="top|start"
+                android:background="#00FF00" />
+
+            <!-- أعلى يمين -->
+            <View
+                android:layout_width="28dp"
+                android:layout_height="4dp"
+                android:layout_gravity="top|end"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="28dp"
+                android:layout_gravity="top|end"
+                android:background="#00FF00" />
+
+            <!-- أسفل يسار -->
+            <View
+                android:layout_width="28dp"
+                android:layout_height="4dp"
+                android:layout_gravity="bottom|start"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="28dp"
+                android:layout_gravity="bottom|start"
+                android:background="#00FF00" />
+
+            <!-- أسفل يمين -->
+            <View
+                android:layout_width="28dp"
+                android:layout_height="4dp"
+                android:layout_gravity="bottom|end"
+                android:background="#00FF00" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="28dp"
+                android:layout_gravity="bottom|end"
+                android:background="#00FF00" />
+
+        </FrameLayout>
+
+        <!-- تعليمات المستخدم -->
         <TextView
+            android:id="@+id/tvFrameHintGemini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/gemini_analyzing"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="19sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="90dp"
+            android:background="#99000000"
+            android:paddingStart="18dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="8dp"
+            android:text="ضع تاريخ الانتهاء داخل الإطار"
+            android:textColor="#00FF00"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- رسالة Gemini فوق الصورة -->
+        <LinearLayout
+            android:id="@+id/geminiProgressOverlay"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:orientation="vertical"
             android:gravity="center"
-            android:text="@string/please_wait"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="17sp" />
+            android:padding="24dp"
+            android:background="#DDFFFFFF"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/gemini_analyzing"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/please_wait"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- نتيجة Gemini -->
+    <TextView
+        android:id="@+id/tvGeminiResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="70dp"
+        android:padding="12dp"
+        android:gravity="center"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- شريط الأزرار -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp"
+        android:background="#000000">
+
+        <ImageButton
+            android:id="@+id/btnHelp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_margin="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/help"
+            android:padding="2dp"
+            android:src="@drawable/ichelp"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:id="@+id/btnCaptureGemini"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/take_photo"
+            android:padding="1dp"
+            android:src="@drawable/ic_camera"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:id="@+id/btnFlash"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_margin="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/flash_on"
+            android:padding="2dp"
+            android:src="@drawable/ic_flash"
+            android:scaleType="fitCenter" />
 
     </LinearLayout>
-
-</FrameLayout>
-
-<!-- ===================================================== -->
-<!-- نتيجة Gemini -->
-<!-- ===================================================== -->
-
-<TextView
-    android:id="@+id/tvGeminiResult"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="70dp"
-    android:padding="12dp"
-    android:gravity="center"
-    android:text="@string/capture_product_image"
-    android:textSize="18sp"
-    android:textColor="?android:attr/textColorPrimary" />
-
-<!-- ===================================================== -->
-<!-- شريط الأزرار -->
-<!-- ===================================================== -->
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center"
-    android:padding="12dp"
-    android:background="#000000">
-
-    <!-- المساعدة -->
-
-    <ImageButton
-        android:id="@+id/btnHelp"
-        android:layout_width="62dp"
-        android:layout_height="62dp"
-        android:layout_margin="6dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/help"
-        android:padding="2dp"
-        android:src="@drawable/ichelp"
-        android:scaleType="fitCenter" />
-
-    <!-- التصوير -->
-
-    <ImageButton
-        android:id="@+id/btnCaptureGemini"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/take_photo"
-        android:padding="1dp"
-        android:src="@drawable/ic_camera"
-        android:scaleType="fitCenter" />
-
-    <!-- الفلاش -->
-
-    <ImageButton
-        android:id="@+id/btnFlash"
-        android:layout_width="62dp"
-        android:layout_height="62dp"
-        android:layout_margin="6dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/flash_on"
-        android:padding="2dp"
-        android:src="@drawable/ic_flash"
-        android:scaleType="fitCenter" />
-
-</LinearLayout>
 
 </LinearLayout>
