@@ -36,16 +36,6 @@
 
             <!-- الصور المعالجة -->
 
-<ImageView
-    android:id="@+id/btnProcessedImages"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:padding="10dp"
-    android:src="@drawable/ic_images"
-    android:tint="#1976D2"
-    android:contentDescription="الصور المعالجة"
-    android:clickable="true"
-    android:focusable="true" />
 
 <!-- ترتيب -->
 

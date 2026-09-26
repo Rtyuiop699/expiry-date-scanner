@@ -84,6 +84,8 @@
     <string name="arabic">Arabic</string>
     <string name="appearance_and_dark_mode">Appearance &amp; Dark Mode</string>
     <string name="appearance_description">Control the overall app appearance (Light / Dark)</string>
+    <string name="gemini_ai">Gemini AI / S.OCR</string>
+    <string name="gemini_ai_description">Allow Gemini to analyze expiry-date images through S.OCR</string>
     <string name="export_products_global_database">Export Products to Global Database</string>
     <string name="cloud_data_description">Share local product data to enrich cloud content</string>
     <string name="off">Off</string>

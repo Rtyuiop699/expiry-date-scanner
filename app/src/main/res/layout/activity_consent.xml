@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:src="@mipmap/ic_launcher"
+        android:background="@drawable/bg_circle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:text="مرحباً بك في ExpiryLens"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#E0E0E0"
+        app:strokeWidth="1dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="سياسة الخصوصية وشروط الاستخدام"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#555555"
+                    android:lineSpacingExtra="4dp"
+                    android:text="1. الكاميرا: نستخدم الكاميرا فقط لقراءة تواريخ انتهاء المنتجات والباركود. تتم المعالجة مباشرة على جهازك باستخدام تقنيات ML Kit و OpenCV بدون الحاجة للإنترنت.\n\n2. المعالجة المحلية: قراءة التواريخ النقطية (Dot-Matrix) تتم Offline بالكامل على جهازك.\n\n3. التحسين السحابي (اختياري): عند فشل القراءة، قد نطلب منك الموافقة على إرسال جزء مقتطع من صورة تاريخ الانتهاء فقط (بدون أي بيانات شخصية أو صور أشخاص) إلى خدمة Google Gemini لتحسين الدقة. يمكنك رفض هذه الميزة وسيستمر التطبيق في العمل بشكل طبيعي.\n\n4. بيانات المنتجات: عند مسح باركود، نجلب اسم وصورة المنتج من قاعدة البيانات المفتوحة OpenFoodFacts.org فقط.\n\n5. لا نجمع بيانات: نحن لا نجمع، لا نحفظ، ولا نبيع أي بيانات شخصية أو موقعك الجغرافي. جميع بيانات المخزون تبقى على جهازك فقط.\n\nباستمرارك، أنت توافق على هذه الشروط." />
+
+                <TextView
+                    android:id="@+id/txtPolicyLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="اقرأ السياسة الكاملة على موقعنا"
+                    android:textColor="#1A73E8"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkPrivacy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="أوافق على سياسة الخصوصية واستخدام الكاميرا لقراءة التواريخ على جهازي"
+        android:textSize="13sp" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkAi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="أوافق اختيارياً على تحسين AI عبر Google (اختياري)"
+        android:textSize="13sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="متابعة"
+        app:cornerRadius="12dp" />
+
+</LinearLayout>

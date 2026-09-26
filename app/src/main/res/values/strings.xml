@@ -80,6 +80,8 @@
     <string name="arabic">العربية</string>
     <string name="appearance_and_dark_mode">المظهر والوضع الداكن</string>
     <string name="appearance_description">التحكم في المظهر العام للتطبيق (فاتح / داكن)</string>
+    <string name="gemini_ai">Gemini AI / S.OCR</string>
+    <string name="gemini_ai_description">السماح باستخدام Gemini لتحليل صور التواريخ عبر S.OCR</string>
     <string name="export_products_global_database">تصدير المنتجات إلى قاعدة البيانات العالمية</string>
     <string name="cloud_data_description">مشاركة بيانات المنتجات المحلية لإثراء المحتوى السحابي</string>
     <string name="off">إيقاف</string>

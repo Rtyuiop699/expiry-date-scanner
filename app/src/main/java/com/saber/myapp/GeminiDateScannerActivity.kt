@@ -90,15 +90,29 @@ companion object {
 
 // =====================================================
 // onCreate
-// =====================================================
-
+// =================================================
+ 
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    val prefs = getSharedPreferences(
+        "app_prefs",
+        MODE_PRIVATE
+    )
+
+    if (!prefs.getBoolean("ai_allowed", false)) {
+        Toast.makeText(
+            this,
+            "لم يتم السماح باستخدام Gemini.",
+            Toast.LENGTH_LONG
+        ).show()
+        finish()
+        return
+    }
 
     setContentView(
         R.layout.activity_gemini_date_scanner
     )
-
     // =================================================
     // ربط عناصر الواجهة
     // =================================================

@@ -116,7 +116,7 @@ class DateScannerActivity : AppCompatActivity() {
                 finish()
             } else {
                 Toast.makeText(
-                    this,
+،                    this,
                     "لم يتم التعرف على تاريخ بعد",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -128,15 +128,32 @@ class DateScannerActivity : AppCompatActivity() {
         // ========================================================
 
         btnSOCR.setOnClickListener {
-            val intent = Intent(
-                this,
-                GeminiDateScannerActivity::class.java
-            )
-            startActivityForResult(
-                intent,
-                REQUEST_GEMINI_DATE
-            )
-        }
+
+           val prefs =
+       getSharedPreferences(
+          "app_prefs",
+          MODE_PRIVATE
+    )
+
+    if (!prefs.getBoolean("ai_allowed", false)) {
+        Toast.makeText(
+            this,
+            "لم يتم السماح باستخدام Gemini. يمكنك تفعيل ذلك من إعدادات الموافقة.",
+            Toast.LENGTH_LONG
+        ).show()
+        return@setOnClickListener
+    }
+
+    val intent = Intent(
+        this,
+        GeminiDateScannerActivity::class.java
+    )
+
+    startActivityForResult(
+        intent,
+        REQUEST_GEMINI_DATE
+    )
+}
 
         // ========================================================
         // زر الفلاش
@@ -354,16 +371,6 @@ class DateScannerActivity : AppCompatActivity() {
     val processedBitmap =
         imageProcessor.preprocessImage(cropped)
 
-    // حفظ نفس الصورة التي سيتم إرسالها إلى ML Kit OCR
-    ProcessedImageStore.save(
-    this,
-    processedBitmap,
-    "normal"
-)
-        
-        
-    
-
     val image =
         InputImage.fromBitmap(
             processedBitmap,
@@ -426,16 +433,6 @@ private fun tryDotMatrixRecognition(
         imageProcessor.processDotMatrix(
             croppedBitmap
         )
-
-    // حفظ نفس صورة OpenCV التي سيتم إرسالها إلى ML Kit
-    ProcessedImageStore.save(
-    this,
-    dotMatrixBitmap,
-    "opencv"
-)
-        
-        
-
 
     val dotMatrixImage =
         InputImage.fromBitmap(

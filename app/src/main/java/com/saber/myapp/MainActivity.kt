@@ -113,6 +113,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+
+    if (!prefs.getBoolean("privacy_accepted", false)) {
+        startActivity(Intent(this, ConsentActivity::class.java))
+        finish()
+        return
+    }
+
+    val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+
+    if (!prefs.getBoolean("privacy_accepted", false)) {
+        startActivity(Intent(this, ConsentActivity::class.java))
+        finish()
+        return
+    }
+
     // استعادة الوضع المحفوظ
     val preferences = getSharedPreferences(
         "app_settings",
@@ -175,7 +191,6 @@ class MainActivity : AppCompatActivity() {
         // =====================================================
         val searchField = findViewById<EditText>(R.id.searchField)
 
-       val btnProcessedImages = findViewById<ImageView>(R.id.btnProcessedImages) 
         val actionsContainer = findViewById<LinearLayout>(R.id.actionsContainer)
 val searchAndActionsBar = findViewById<LinearLayout>(R.id.searchAndActionsBar)
 val searchContainer = findViewById<View>(R.id.searchContainer)
@@ -200,15 +215,6 @@ btnHelp.setOnClickListener {
                 searchContainer
             )
         }
-//زر معالج الصور
-        btnProcessedImages.setOnClickListener {
-    startActivity(
-        Intent(
-            this,
-            ProcessedImagesActivity::class.java
-        )
-    )
-}
         // =====================================================
         // الضغط على البحث
         // =====================================================
