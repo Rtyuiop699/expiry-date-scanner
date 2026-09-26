@@ -121,14 +121,6 @@ class MainActivity : AppCompatActivity() {
         return
     }
 
-    val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-
-    if (!prefs.getBoolean("privacy_accepted", false)) {
-        startActivity(Intent(this, ConsentActivity::class.java))
-        finish()
-        return
-    }
-
     // استعادة الوضع المحفوظ
     val preferences = getSharedPreferences(
         "app_settings",
