@@ -116,7 +116,7 @@ class DateScannerActivity : AppCompatActivity() {
                 finish()
             } else {
                 Toast.makeText(
-،                    this,
+                  this,
                     "لم يتم التعرف على تاريخ بعد",
                     Toast.LENGTH_SHORT
                 ).show()
