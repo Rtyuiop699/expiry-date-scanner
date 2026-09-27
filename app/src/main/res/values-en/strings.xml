@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Inventory Management</string>
+    <string name="app_name">ExpiryLens</string>
 
     <!-- Add product -->
     <string name="add_product">Add Product</string>
@@ -114,11 +114,14 @@ By continuing, you agree to these terms.</string>
     <string name="privacy_policy_link">Read the full policy on our website</string>
     <string name="privacy_policy_agreement">I agree to the Privacy Policy and to using the camera to read dates on my device</string>
     <string name="ai_optional_agreement">I optionally agree to AI improvement through Google (optional)</string>
+    <string name="gemini_consent_title">Use Gemini</string>
+    <string name="gemini_consent_message">Using Gemini requires sending an expiry-date image to a cloud service for analysis. Do you agree to send the image and use Gemini?</string>
+    <string name="gemini_consent_allow">Allow and continue</string>
     <string name="continue_button">Continue</string>
     <string name="back_button">Back</string>
     <string name="help_title">App Help</string>
     <string name="review_privacy">Review Privacy Policy</string>
-    <string name="help_description">The Inventory Management app helps you record your products, track expiry dates, and organize your inventory data easily.
+    <string name="help_description">The ExpiryLens app helps you record your products, track expiry dates, and organize your inventory data easily.
 
 Barcode Scanning
 Point the camera at a product barcode to add the product or search for it quickly. The app can also use product information available through OpenFoodFacts when available.
@@ -201,4 +204,12 @@ Your inventory data is stored locally on your device. You can review the Privacy
     <string name="image_read_failed_gemini">❌ Could not read the image</string>
     <string name="capture_failed_gemini">❌ Failed to capture image:\n%1$s</string>
     <string name="capture_error_gemini">An error occurred while capturing the image</string>
-  </resources>
+      <string name="category_juices">Juices</string>
+    <string name="category_soft_drinks">Soft Drinks</string>
+    <string name="category_canned_vegetables_pickles">Canned Vegetables &amp; Pickles</string>
+    <string name="category_canned_fish">Canned Fish</string>
+    <string name="category_cakes_biscuits">Cakes &amp; Biscuits</string>
+    <string name="category_ice_cream_frozen">Ice Cream &amp; Frozen Desserts</string>
+    <string name="barcode_scan_prompt">Point the camera at the barcode</string>
+    <string name="open_with">Open with</string>
+</resources>

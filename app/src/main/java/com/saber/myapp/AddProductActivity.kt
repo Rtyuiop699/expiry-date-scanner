@@ -32,6 +32,7 @@ class AddProductActivity : AppCompatActivity() {
     private var isEditMode: Boolean = false
     // القائمة الأساسية للتصنيفات
     private val categories = mutableListOf<String>()
+    private val originalCategories = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -322,7 +323,7 @@ this.editProductId = productId
             )
 
             binding.autoCompleteCategories.setText(
-                existingProduct.category,
+                getLocalizedCategoryName(existingProduct.category),
                 false
             )
 
@@ -379,7 +380,7 @@ this.editProductId = productId
             )
 
             binding.autoCompleteCategories.setText(
-                existingProduct.category,
+                getLocalizedCategoryName(existingProduct.category),
                 false
             )
 
@@ -435,14 +436,70 @@ this.editProductId = productId
     }
   } 
     
+private fun getLocalizedCategoryName(category: String): String {
+    return when (category) {
+        "عصائر" ->
+            getString(R.string.category_juices)
+
+        "مشروبات غازية" ->
+            getString(R.string.category_soft_drinks)
+
+        "خضار معلبة ومخللات" ->
+            getString(R.string.category_canned_vegetables_pickles)
+
+        "أسماك معلبة" ->
+            getString(R.string.category_canned_fish)
+
+        "كيك وبسكويت" ->
+            getString(R.string.category_cakes_biscuits)
+
+        "آيسكريم ومثلجات" ->
+            getString(R.string.category_ice_cream_frozen)
+
+        else -> category
+    }
+}
+
+private fun getOriginalCategoryName(displayName: String): String {
+    return when (displayName) {
+        getString(R.string.category_juices) ->
+            "عصائر"
+
+        getString(R.string.category_soft_drinks) ->
+            "مشروبات غازية"
+
+        getString(R.string.category_canned_vegetables_pickles) ->
+            "خضار معلبة ومخللات"
+
+        getString(R.string.category_canned_fish) ->
+            "أسماك معلبة"
+
+        getString(R.string.category_cakes_biscuits) ->
+            "كيك وبسكويت"
+
+        getString(R.string.category_ice_cream_frozen) ->
+            "آيسكريم ومثلجات"
+
+        else -> displayName
+    }
+}
+
 private fun loadCategories() {
 
+    originalCategories.clear()
+    originalCategories.addAll(databaseHelper.getAllCategories())
+
     categories.clear()
-    categories.addAll(databaseHelper.getAllCategories())
+    categories.addAll(
+        originalCategories.map {
+            getLocalizedCategoryName(it)
+        }
+    )
 
     categoriesAdapter.notifyDataSetChanged()
 }
-    private fun processProductImage(imagePathValue: String?) {
+
+private fun processProductImage(imagePathValue: String?) {
 
     if (imagePathValue.isNullOrBlank()) {
         return
@@ -495,7 +552,9 @@ private fun loadCategories() {
     val barcode = binding.editTextBarcode.text.toString().trim()
 
     val category =
-        binding.autoCompleteCategories.text.toString().trim()
+        getOriginalCategoryName(
+            binding.autoCompleteCategories.text.toString().trim()
+        )
 
    // =========================
 // التحقق من البيانات الأساسية
@@ -672,9 +731,11 @@ val fixedImagePath = fixOpenFoodFactsImageUrl(currentImagePath) ?: ""
                     normalizeDate(rawDate)
 
                 val category =
-                    binding.autoCompleteCategories.text
-                        .toString()
-                        .trim()
+                    getOriginalCategoryName(
+                        binding.autoCompleteCategories.text
+                            .toString()
+                            .trim()
+                    )
 
                 // =========================
                 // التحقق من اسم المنتج

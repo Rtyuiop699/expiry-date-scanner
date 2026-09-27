@@ -1,5 +1,6 @@
 package com.saber.myapp
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.mlkit.vision.text.TextRecognizer
 import android.widget.ImageButton
 import android.Manifest
@@ -129,30 +130,47 @@ class DateScannerActivity : AppCompatActivity() {
 
         btnSOCR.setOnClickListener {
 
-           val prefs =
-       getSharedPreferences(
-          "app_prefs",
-          MODE_PRIVATE
+    val prefs = getSharedPreferences(
+        "app_prefs",
+        MODE_PRIVATE
     )
 
     if (!prefs.getBoolean("ai_allowed", false)) {
-        Toast.makeText(
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.gemini_consent_title)
+            .setMessage(R.string.gemini_consent_message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.gemini_consent_allow) { _, _ ->
+
+                prefs.edit()
+                    .putBoolean("ai_allowed", true)
+                    .apply()
+
+                val intent = Intent(
+                    this,
+                    GeminiDateScannerActivity::class.java
+                )
+
+                startActivityForResult(
+                    intent,
+                    REQUEST_GEMINI_DATE
+                )
+            }
+            .show()
+
+    } else {
+
+        val intent = Intent(
             this,
-            "لم يتم السماح باستخدام Gemini. يمكنك تفعيل ذلك من إعدادات الموافقة.",
-            Toast.LENGTH_LONG
-        ).show()
-        return@setOnClickListener
+            GeminiDateScannerActivity::class.java
+        )
+
+        startActivityForResult(
+            intent,
+            REQUEST_GEMINI_DATE
+        )
     }
-
-    val intent = Intent(
-        this,
-        GeminiDateScannerActivity::class.java
-    )
-
-    startActivityForResult(
-        intent,
-        REQUEST_GEMINI_DATE
-    )
 }
 
         // ========================================================

@@ -835,13 +835,41 @@ private fun enterSelectionMode(
 
         for (category in categories) {
             if (category.isNotBlank() && category != ALL_CATEGORY) {
-                addCategoryChip(chipGroup, category)
+                addCategoryChip(
+                    chipGroup,
+                    category,
+                    getLocalizedCategoryName(category)
+                )
             }
         }
     }
     // =========================================================
     // إضافة Chip للتصنيف
     // =========================================================
+
+    private fun getLocalizedCategoryName(category: String): String {
+        return when (category) {
+            "عصائر" ->
+                getString(R.string.category_juices)
+
+            "مشروبات غازية" ->
+                getString(R.string.category_soft_drinks)
+
+            "خضار معلبة ومخللات" ->
+                getString(R.string.category_canned_vegetables_pickles)
+
+            "أسماك معلبة" ->
+                getString(R.string.category_canned_fish)
+
+            "كيك وبسكويت" ->
+                getString(R.string.category_cakes_biscuits)
+
+            "آيسكريم ومثلجات" ->
+                getString(R.string.category_ice_cream_frozen)
+
+            else -> category
+        }
+    }
 
     private fun addCategoryChip(
         chipGroup: ChipGroup,

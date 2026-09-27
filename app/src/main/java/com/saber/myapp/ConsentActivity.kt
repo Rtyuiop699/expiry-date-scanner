@@ -22,12 +22,21 @@ class ConsentActivity : AppCompatActivity() {
         val txtLink = findViewById<TextView>(R.id.txtPolicyLink)
 
         txtLink.setOnClickListener {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://your-github-link.com/privacy.html")
-                )
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://rtyuiop699.github.io/expiry-date-scanner/privacy.html")
             )
+
+            try {
+                startActivity(
+                    Intent.createChooser(
+                        intent,
+                        getString(R.string.open_with)
+                    )
+                )
+            } catch (e: Exception) {
+                // لا يوجد تطبيق يمكنه فتح الروابط
+            }
         }
 
         if (reviewMode) {

@@ -22,7 +22,7 @@ class BarcodeScannerHelper(
         }
 
     fun startScanner(
-        prompt: String = "وجّه الكاميرا نحو الباركود"
+        prompt: String = activity.getString(R.string.barcode_scan_prompt)
     ) {
 
         val options = ScanOptions().apply {

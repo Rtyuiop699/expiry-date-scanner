@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">إدارة المخزون</string>
+    <string name="app_name">ExpiryLens</string>
 
     <!-- إضافة منتج -->
     <string name="add_product">إضافة منتج</string>
@@ -108,11 +108,14 @@
     <string name="privacy_policy_link">اقرأ السياسة الكاملة على موقعنا</string>
     <string name="privacy_policy_agreement">أوافق على سياسة الخصوصية واستخدام الكاميرا لقراءة التواريخ على جهازي</string>
     <string name="ai_optional_agreement">أوافق اختيارياً على تحسين AI عبر Google (اختياري)</string>
+    <string name="gemini_consent_title">استخدام Gemini</string>
+    <string name="gemini_consent_message">يتطلب استخدام Gemini إرسال صورة تاريخ انتهاء الصلاحية إلى خدمة سحابية لتحليلها. هل توافق على إرسال الصورة واستخدام Gemini؟</string>
+    <string name="gemini_consent_allow">السماح والمتابعة</string>
     <string name="continue_button">متابعة</string>
     <string name="back_button">رجوع</string>
     <string name="help_title">مساعدة استخدام التطبيق</string>
     <string name="review_privacy">مراجعة سياسة الخصوصية</string>
-    <string name="help_description">يساعدك تطبيق إدارة المخزون على تسجيل منتجاتك ومتابعة تواريخ انتهاء الصلاحية وتنظيم بيانات المخزون بسهولة.
+    <string name="help_description">يساعدك تطبيق ExpiryLens على تسجيل منتجاتك ومتابعة تواريخ انتهاء الصلاحية وتنظيم بيانات المخزون بسهولة.
 
 مسح الباركود
 وجّه الكاميرا نحو باركود المنتج لإضافة المنتج أو البحث عنه بسرعة. ويمكن للتطبيق الاستفادة من بيانات المنتجات المتوفرة عبر OpenFoodFacts عند توفرها.
@@ -199,4 +202,12 @@ Super OCR
     <string name="capture_failed_gemini">❌ فشل التقاط الصورة:\n%1$s</string>
     <string name="capture_error_gemini">حدث خطأ أثناء التقاط الصورة</string>
 <string name="gemini_permission_denied">لم يتم السماح باستخدام Gemini.</string>
+    <string name="category_juices">عصائر</string>
+    <string name="category_soft_drinks">مشروبات غازية</string>
+    <string name="category_canned_vegetables_pickles">خضار معلبة ومخللات</string>
+    <string name="category_canned_fish">أسماك معلبة</string>
+    <string name="category_cakes_biscuits">كيك وبسكويت</string>
+    <string name="category_ice_cream_frozen">آيسكريم ومثلجات</string>
+    <string name="barcode_scan_prompt">وجّه الكاميرا نحو الباركود</string>
+    <string name="open_with">فتح باستخدام</string>
 </resources>
