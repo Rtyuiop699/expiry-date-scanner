@@ -51,4 +51,5 @@
     <color name="fab_background">#FFFFFF</color>
     <color name="gemini_message_background">#FFFFFF</color>
     <color name="scanner_button_background">#FFFFFF</color>
+    <color name="scanner_button_icon">#1D1B20</color>
 </resources>
