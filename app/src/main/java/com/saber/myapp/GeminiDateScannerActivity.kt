@@ -103,7 +103,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     if (!prefs.getBoolean("ai_allowed", false)) {
         Toast.makeText(
             this,
-            "لم يتم السماح باستخدام Gemini.",
+            getString(R.string.gemini_permission_denied),
             Toast.LENGTH_LONG
         ).show()
         finish()
@@ -180,7 +180,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
         Toast.makeText(
             this,
-            "التقط صورة واضحة للمنتج ليقوم Gemini بقراءة تاريخ الانتهاء",
+            getString(R.string.gemini_camera_instruction),
             Toast.LENGTH_LONG
         ).show()
     }
@@ -247,7 +247,7 @@ override fun onRequestPermissionsResult(
 
             Toast.makeText(
                 this,
-                "يجب السماح باستخدام الكاميرا",
+                getString(R.string.camera_permission_required_gemini),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -315,12 +315,12 @@ private fun startCamera() {
 
             Toast.makeText(
                 this,
-                "فشل تشغيل الكاميرا: ${e.message}",
+                getString(R.string.camera_start_failed_gemini, e.message.orEmpty()),
                 Toast.LENGTH_LONG
             ).show()
 
             tvResult.text =
-                "❌ خطأ في تشغيل الكاميرا:\n${e.message}"
+                getString(R.string.camera_start_error_gemini, e.message.orEmpty())
         }
 
     }, ContextCompat.getMainExecutor(this))
@@ -337,7 +337,7 @@ private fun toggleFlash() {
 
             Toast.makeText(
                 this,
-                "الكاميرا غير جاهزة",
+                getString(R.string.camera_not_ready),
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -348,7 +348,7 @@ private fun toggleFlash() {
 
         Toast.makeText(
             this,
-            "الفلاش غير متوفر",
+            getString(R.string.flash_not_available_gemini),
             Toast.LENGTH_SHORT
         ).show()
 
@@ -378,7 +378,7 @@ private fun takePhoto() {
 
             Toast.makeText(
                 this,
-                "الكاميرا غير جاهزة",
+                getString(R.string.camera_not_ready),
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -430,7 +430,7 @@ private fun takePhoto() {
                     finishProcessing()
 
                     tvResult.text =
-                        "❌ تعذر قراءة الصورة"
+                        getString(R.string.image_read_failed_gemini)
 
                     return
                 }
@@ -467,11 +467,11 @@ private fun takePhoto() {
                 finishProcessing()
 
                 tvResult.text =
-                    "❌ فشل التقاط الصورة:\n${exception.message}"
+                    getString(R.string.capture_failed_gemini, exception.message.orEmpty())
 
                 Toast.makeText(
                     this@GeminiDateScannerActivity,
-                    "حدث خطأ أثناء التقاط الصورة",
+                    getString(R.string.capture_error_gemini),
                     Toast.LENGTH_SHORT
                 ).show()
             }

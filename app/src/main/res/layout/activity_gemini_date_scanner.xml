@@ -137,7 +137,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="18dp"
             android:paddingBottom="8dp"
-            android:text="ضع تاريخ الانتهاء داخل الإطار"
+            android:text="@string/gemini_frame_hint"
             android:textColor="#00FF00"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -152,7 +152,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:padding="24dp"
-            android:background="#DDFFFFFF"
+            android:background="@color/gemini_message_background"
             android:visibility="gone">
 
             <ProgressBar

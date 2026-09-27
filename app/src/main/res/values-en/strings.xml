@@ -98,7 +98,42 @@
     <string name="save_product">Save Product</string>
 
 
-    <string name="help_description">The smart expiry date app allows you to easily manage your inventory by scanning barcodes and entering the required data for each product. The app can also read and recognize expiry dates using the camera and artificial intelligence.</string>
+    <string name="consent_welcome">Welcome to ExpiryLens</string>
+    <string name="privacy_policy_title">Privacy Policy and Terms of Use</string>
+    <string name="privacy_policy_text">1. Camera: We use the camera only to read product expiry dates and barcodes. Processing is performed directly on your device using ML Kit and OpenCV without requiring an internet connection.
+
+2. Local processing: Reading Dot-Matrix dates is performed completely offline on your device.
+
+3. Optional cloud processing: When date recognition fails, we may ask for your permission to send only a cropped portion of the expiry-date image (without any personal data or pictures of people) to Google Gemini to improve recognition accuracy. You can decline this feature, and the app will continue to work normally.
+
+4. Product data: When scanning a barcode, we retrieve the product name and image only from the OpenFoodFacts.org open database.
+
+5. No data collection: We do not collect, store, or sell any personal data or your geographic location. All inventory data remains only on your device.
+
+By continuing, you agree to these terms.</string>
+    <string name="privacy_policy_link">Read the full policy on our website</string>
+    <string name="privacy_policy_agreement">I agree to the Privacy Policy and to using the camera to read dates on my device</string>
+    <string name="ai_optional_agreement">I optionally agree to AI improvement through Google (optional)</string>
+    <string name="continue_button">Continue</string>
+    <string name="back_button">Back</string>
+    <string name="help_title">App Help</string>
+    <string name="review_privacy">Review Privacy Policy</string>
+    <string name="help_description">The Inventory Management app helps you record your products, track expiry dates, and organize your inventory data easily.
+
+Barcode Scanning
+Point the camera at a product barcode to add the product or search for it quickly. The app can also use product information available through OpenFoodFacts when available.
+
+Reading Expiry Dates
+Use the camera to capture an expiry date. The app uses OCR technologies to process the image and automatically recognize the date, including some types of Dot-Matrix printing.
+
+Super OCR
+When the date cannot be recognized through normal processing, Super OCR, powered by Google Gemini, can be used to help analyze the image and extract the date. This feature is optional and requires your consent to cloud processing.
+
+Inventory Management
+You can add products, edit their information, delete them, and organize them by category, while keeping your inventory data stored on your device.
+
+Privacy
+Your inventory data is stored locally on your device. You can review the Privacy Policy and Terms of Use at any time.</string>
 
 
     <string name="select_product">Select product</string>
@@ -153,9 +188,11 @@
     <string name="gemini_connection_error">Could not connect to Gemini. Check your internet connection and try again.</string>
     <string name="gemini_server_error">An error occurred while processing the image. Please try again.</string>
     <string name="gemini_unknown_error">An unexpected error occurred while recognizing the expiry date. Please try again.</string>
+    <string name="gemini_permission_denied">Gemini access was not allowed.</string>
 
 
     <string name="gemini_camera_instruction">Point the camera at the expiry date so Gemini can read it</string>
+    <string name="gemini_frame_hint">Place the expiry date inside the frame</string>
     <string name="camera_permission_required_gemini">Camera permission is required</string>
     <string name="camera_start_failed_gemini">Failed to start camera: %1$s</string>
     <string name="camera_start_error_gemini">❌ Camera startup error:\n%1$s</string>

@@ -48,4 +48,6 @@
     <color name="ic_launcher_background">#FFFFFF</color>
 
     <color name="product_selected_background">#FFF0F0</color>
+    <color name="fab_background">#FFFFFF</color>
+    <color name="gemini_message_background">#FFFFFF</color>
 </resources>

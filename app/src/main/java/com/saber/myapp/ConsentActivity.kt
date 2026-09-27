@@ -14,6 +14,8 @@ class ConsentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_consent)
 
+        val reviewMode = intent.getBooleanExtra("review_mode", false)
+
         val checkPrivacy = findViewById<MaterialCheckBox>(R.id.checkPrivacy)
         val checkAi = findViewById<MaterialCheckBox>(R.id.checkAi)
         val btnContinue = findViewById<MaterialButton>(R.id.btnContinue)
@@ -28,21 +30,35 @@ class ConsentActivity : AppCompatActivity() {
             )
         }
 
-        checkPrivacy.setOnCheckedChangeListener { _, isChecked ->
-            btnContinue.isEnabled = isChecked
-            btnContinue.alpha = if (isChecked) 1f else 0.5f
-        }
+        if (reviewMode) {
+            checkPrivacy.visibility = android.view.View.GONE
+            checkAi.visibility = android.view.View.GONE
 
-        btnContinue.setOnClickListener {
-            getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .edit()
-                .putBoolean("privacy_accepted", true)
-                .putBoolean("ai_allowed", checkAi.isChecked)
-                .putBoolean("first_run", false)
-                .apply()
+            btnContinue.setText(R.string.back_button)
+            btnContinue.isEnabled = true
+            btnContinue.alpha = 1f
 
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            btnContinue.setOnClickListener {
+                finish()
+            }
+
+        } else {
+            checkPrivacy.setOnCheckedChangeListener { _, isChecked ->
+                btnContinue.isEnabled = isChecked
+                btnContinue.alpha = if (isChecked) 1f else 0.5f
+            }
+
+            btnContinue.setOnClickListener {
+                getSharedPreferences("app_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("privacy_accepted", true)
+                    .putBoolean("ai_allowed", checkAi.isChecked)
+                    .putBoolean("first_run", false)
+                    .apply()
+
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
     }
 }

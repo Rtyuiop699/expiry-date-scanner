@@ -35,4 +35,8 @@
 
     <color name="product_selected_background">#26382A</color>
 
+    <color name="fab_background">#FFFFFF</color>
+    <color name="gemini_message_background">#2A2A2A</color>
+    <color name="scanner_button_background">#1E1E1E</color>
+    <color name="scanner_button_icon">#E6E1E5</color>
 </resources>

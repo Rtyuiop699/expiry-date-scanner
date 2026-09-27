@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ExpiryLens Privacy Policy">
+    <title>ExpiryLens - Privacy Policy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+            line-height: 1.8;
+        }
+
+        header {
+            background: #2e7d32;
+            color: white;
+            padding: 28px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .language {
+            margin-top: 18px;
+        }
+
+        .language button {
+            border: 1px solid rgba(255,255,255,0.8);
+            background: transparent;
+            color: white;
+            padding: 7px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 25px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            color: #2e7d32;
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        ul {
+            padding-right: 22px;
+        }
+
+        .english {
+            display: none;
+            direction: ltr;
+            text-align: left;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ExpiryLens</h1>
+
+    <div id="arHeader">
+        <p>سياسة الخصوصية</p>
+    </div>
+
+    <div id="enHeader" class="english">
+        <p>Privacy Policy</p>
+    </div>
+
+    <div class="language">
+        <button onclick="setLanguage('ar')">العربية</button>
+        <button onclick="setLanguage('en')">English</button>
+    </div>
+</header>
+
+<main>
+
+    <!-- Arabic -->
+    <section id="arabic">
+
+        <div class="card">
+            <h2>1. مقدمة</h2>
+            <p>
+                تحترم ExpiryLens خصوصية المستخدم. توضح هذه السياسة كيفية
+                تعامل التطبيق مع المعلومات والصور والبيانات عند استخدام
+                ميزات قراءة تواريخ انتهاء الصلاحية والباركود.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>2. استخدام الكاميرا</h2>
+            <p>
+                يستخدم التطبيق الكاميرا لالتقاط صور المنتجات وقراءة
+                تواريخ انتهاء الصلاحية والباركود.
+            </p>
+            <p>
+                تتم معالجة صور قراءة التاريخ محليًا على الجهاز باستخدام
+                تقنيات OCR وML Kit وOpenCV عندما تكون المعالجة المحلية
+                متاحة.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>3. المعالجة السحابية الاختيارية</h2>
+            <p>
+                عند تعذر التعرف على تاريخ انتهاء الصلاحية باستخدام
+                المعالجة المحلية، يمكن للمستخدم اختيار استخدام ميزة
+                Super OCR المدعومة بواسطة Google Gemini.
+            </p>
+            <p>
+                عند استخدام هذه الميزة، قد يتم إرسال جزء مقتطع من صورة
+                تاريخ انتهاء الصلاحية إلى خدمة المعالجة السحابية من أجل
+                تحليل الصورة واستخراج التاريخ.
+            </p>
+            <p>
+                هذه الميزة اختيارية. يمكن للمستخدم رفض استخدامها،
+                وسيستمر التطبيق في توفير ميزات القراءة المحلية.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>4. صور OCR والمساهمة الاختيارية</h2>
+            <p>
+                قد يوفر التطبيق خيارًا منفصلًا للمستخدم للمساهمة بصور
+                OCR بهدف تقييم دقة التعرف وتحسين خوارزميات معالجة الصور.
+            </p>
+            <p>
+                استخدام هذه الميزة اختياري ويتطلب إجراء المستخدم أو
+                موافقته من داخل التطبيق.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>5. بيانات المنتجات</h2>
+            <p>
+                يحفظ التطبيق بيانات المخزون التي يدخلها المستخدم على
+                جهازه للاستخدام المحلي.
+            </p>
+            <p>
+                عند مسح باركود المنتج، يمكن للتطبيق الاستفادة من
+                المعلومات العامة المتاحة من Open Food Facts، مثل اسم
+                المنتج وصورته، عند توفرها.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>6. البيانات الشخصية والموقع</h2>
+            <p>
+                لا يطلب التطبيق الوصول إلى موقع المستخدم الجغرافي
+                لتشغيل ميزات إدارة المخزون وقراءة تواريخ الصلاحية.
+            </p>
+            <p>
+                لا يبيع التطبيق البيانات الشخصية للمستخدمين.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>7. التخزين المحلي</h2>
+            <p>
+                يتم تخزين بيانات المخزون وإعدادات التطبيق محليًا على
+                جهاز المستخدم وفقًا للوظائف التي يوفرها التطبيق.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>8. خدمات الطرف الثالث</h2>
+            <p>
+                قد يستخدم التطبيق خدمات خارجية لتنفيذ بعض الوظائف،
+                ومنها:
+            </p>
+            <ul>
+                <li>Google Gemini لمعالجة الصور عند اختيار ميزة Super OCR.</li>
+                <li>Supabase لتوفير البنية السحابية اللازمة لميزة المعالجة السحابية.</li>
+                <li>Open Food Facts للحصول على معلومات المنتجات العامة عند توفرها.</li>
+            </ul>
+            <p>
+                تخضع معالجة البيانات بواسطة هذه الخدمات لسياسات الخصوصية
+                والشروط الخاصة بكل خدمة.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>9. التحكم في الميزات الاختيارية</h2>
+            <p>
+                يمكن للمستخدم اختيار عدم استخدام ميزات المعالجة السحابية
+                أو المساهمة بصور OCR. ويستمر التطبيق في العمل بالميزات
+                الأساسية التي لا تتطلب هذه الخدمات، وفقًا لوظائف الإصدار
+                المستخدم.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>10. التغييرات على سياسة الخصوصية</h2>
+            <p>
+                قد يتم تحديث سياسة الخصوصية عند إضافة ميزات جديدة أو
+                تغيير طريقة معالجة البيانات. سيتم نشر النسخة المحدثة
+                على هذه الصفحة.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>11. التواصل</h2>
+            <p>
+                إذا كانت لديك أسئلة حول سياسة الخصوصية أو طريقة تعامل
+                ExpiryLens مع البيانات، يمكنك التواصل مع مطور التطبيق
+                من خلال وسيلة التواصل المتاحة في صفحة التطبيق.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- English -->
+    <section id="english" class="english">
+
+        <div class="card">
+            <h2>1. Introduction</h2>
+            <p>
+                ExpiryLens respects user privacy. This policy explains how
+                the app handles information, images, and data when users
+                use expiry-date and barcode scanning features.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>2. Camera Usage</h2>
+            <p>
+                The app uses the camera to capture product images and
+                read expiry dates and barcodes.
+            </p>
+            <p>
+                Expiry-date images are processed locally on the device
+                using OCR, ML Kit, and OpenCV when local processing is
+                available.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>3. Optional Cloud Processing</h2>
+            <p>
+                When the local recognition process cannot identify an
+                expiry date, the user may choose to use Super OCR powered
+                by Google Gemini.
+            </p>
+            <p>
+                When this feature is used, a cropped portion of the expiry
+                date image may be sent to the cloud processing service
+                for image analysis and date extraction.
+            </p>
+            <p>
+                This feature is optional. Users may decline it and
+                continue using the local recognition features.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>4. Optional OCR Image Contribution</h2>
+            <p>
+                The app may provide a separate option allowing users to
+                contribute OCR images for recognition accuracy evaluation
+                and improvement of image-processing algorithms.
+            </p>
+            <p>
+                This feature is optional and requires an action or consent
+                from the user within the app.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>5. Product Data</h2>
+            <p>
+                Inventory data entered by the user is stored locally on
+                the device for local use.
+            </p>
+            <p>
+                When a product barcode is scanned, the app may use public
+                information available from Open Food Facts, such as the
+                product name and image, when available.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>6. Personal Data and Location</h2>
+            <p>
+                The app does not require access to the user's geographic
+                location to provide inventory-management and expiry-date
+                recognition features.
+            </p>
+            <p>
+                The app does not sell users' personal data.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>7. Local Storage</h2>
+            <p>
+                Inventory data and app settings are stored locally on the
+                user's device according to the features provided by the app.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>8. Third-Party Services</h2>
+            <p>
+                The app may use third-party services to provide certain
+                features, including:
+            </p>
+            <ul>
+                <li>Google Gemini for image processing when Super OCR is used.</li>
+                <li>Supabase for the cloud infrastructure required for cloud processing.</li>
+                <li>Open Food Facts for publicly available product information when available.</li>
+            </ul>
+            <p>
+                Data processing by these services is subject to their
+                respective privacy policies and terms.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>9. Control of Optional Features</h2>
+            <p>
+                Users can choose not to use cloud processing or OCR image
+                contribution features. The app continues to provide its
+                core features that do not require these services, according
+                to the functionality of the installed version.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>10. Changes to This Privacy Policy</h2>
+            <p>
+                This privacy policy may be updated when new features are
+                added or when data-processing practices change. Updated
+                versions will be published on this page.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>11. Contact</h2>
+            <p>
+                If you have questions about this privacy policy or how
+                ExpiryLens handles data, you can contact the app developer
+                through the contact method available on the app's listing page.
+            </p>
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    <div id="arFooter">آخر تحديث: سبتمبر 2026</div>
+    <div id="enFooter" class="english">Last updated: September 2026</div>
+</footer>
+
+<script>
+    function setLanguage(language) {
+        const arabic = document.getElementById("arabic");
+        const english = document.getElementById("english");
+        const arHeader = document.getElementById("arHeader");
+        const enHeader = document.getElementById("enHeader");
+        const arFooter = document.getElementById("arFooter");
+        const enFooter = document.getElementById("enFooter");
+
+        if (language === "en") {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+
+            arabic.style.display = "none";
+            english.style.display = "block";
+            arHeader.style.display = "none";
+            enHeader.style.display = "block";
+            arFooter.style.display = "none";
+            enFooter.style.display = "block";
+        } else {
+            document.documentElement.lang = "ar";
+            document.documentElement.dir = "rtl";
+
+            arabic.style.display = "block";
+            english.style.display = "none";
+            arHeader.style.display = "block";
+            enHeader.style.display = "none";
+            arFooter.style.display = "block";
+            enFooter.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

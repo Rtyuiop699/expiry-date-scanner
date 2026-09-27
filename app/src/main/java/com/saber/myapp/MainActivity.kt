@@ -29,6 +29,7 @@ import androidx.core.animation.doOnEnd
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.button.MaterialButton
 
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.ArrowPositionRules
@@ -101,8 +102,26 @@ class MainActivity : AppCompatActivity() {
 
     val dialog = AlertDialog.Builder(this)
         .setView(dialogView)
-        .setPositiveButton(R.string.close, null)
         .create()
+
+    val btnReviewPrivacy =
+        dialogView.findViewById<MaterialButton>(R.id.btnReviewPrivacy)
+
+    val btnCloseHelp =
+        dialogView.findViewById<MaterialButton>(R.id.btnCloseHelp)
+
+    btnReviewPrivacy.setOnClickListener {
+        dialog.dismiss()
+
+        startActivity(
+            Intent(this, ConsentActivity::class.java)
+                .putExtra("review_mode", true)
+        )
+    }
+
+    btnCloseHelp.setOnClickListener {
+        dialog.dismiss()
+    }
 
     dialog.show()
   }

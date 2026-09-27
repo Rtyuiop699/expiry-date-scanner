@@ -33,7 +33,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#33000000" />
+        android:background="@color/toolbar_border_stroke" />
 
 </LinearLayout>
 
