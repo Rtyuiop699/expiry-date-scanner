@@ -1,7 +1,15 @@
 package com.saber.myapp
 
 import android.content.Context
+import android.provider.MediaStore
+import android.content.ContentValues
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import com.bumptech.glide.Glide
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
@@ -22,19 +30,6 @@ class ProductPdfGenerator(
     fun createPdf(product: Product): File {
 
         // =========================
-        // مجلد حفظ ملفات PDF
-        // =========================
-
-        val documentsDir = File(
-            context.getExternalFilesDir(null),
-            "Documents/إدارة المخزون"
-        )
-
-        if (!documentsDir.exists()) {
-            documentsDir.mkdirs()
-        }
-
-        // =========================
         // اسم الملف
         // =========================
 
@@ -47,10 +42,14 @@ class ProductPdfGenerator(
                 "product"
             }
 
-        val pdfFile = File(
-            documentsDir,
-            "$safeName.pdf"
-        )
+        val fileName = "$safeName.pdf"
+
+        // ملف مؤقت يتم إنشاء PDF بداخله أولاً.
+        val pdfFile =
+            File(
+                context.cacheDir,
+                fileName
+            )
 
         // =========================
         // إنشاء ملف PDF
@@ -107,9 +106,10 @@ class ProductPdfGenerator(
                 // =========================
 
                 drawText(
+                    document,
                     content,
                     font,
-                    "إدارة المخزون",
+                    context.getString(R.string.pdf_title),
                     220f,
                     pageHeight - 55f,
                     20f
@@ -148,17 +148,12 @@ class ProductPdfGenerator(
 
                 if (!imagePath.isNullOrBlank()) {
 
-                    val imageFile =
-                        File(imagePath)
+                    val bitmap =
+                        loadProductBitmap(imagePath)
 
-                    if (imageFile.exists()) {
+                    if (bitmap != null) {
 
-                        val bitmap =
-                            BitmapFactory.decodeFile(
-                                imageFile.absolutePath
-                            )
-
-                        if (bitmap != null) {
+                        try {
 
                             val pdfImage =
                                 LosslessFactory.createFromImage(
@@ -166,13 +161,37 @@ class ProductPdfGenerator(
                                     bitmap
                                 )
 
+                            val maxImageWidth = 180f
+                            val maxImageHeight = 180f
+
+                            val scale =
+                                minOf(
+                                    maxImageWidth / bitmap.width.toFloat(),
+                                    maxImageHeight / bitmap.height.toFloat()
+                                )
+
+                            val imageWidth =
+                                bitmap.width * scale
+
+                            val imageHeight =
+                                bitmap.height * scale
+
+                            val imageX =
+                                40f +
+                                    (maxImageWidth - imageWidth) / 2f
+
+                            val imageY =
+                                pageHeight - 100f - imageHeight
+
                             content.drawImage(
                                 pdfImage,
-                                40f,
-                                pageHeight - 280f,
-                                180f,
-                                180f
+                                imageX,
+                                imageY,
+                                imageWidth,
+                                imageHeight
                             )
+
+                        } finally {
 
                             bitmap.recycle()
                         }
@@ -184,36 +203,40 @@ class ProductPdfGenerator(
                 // =========================
 
                 drawText(
+                    document,
                     content,
                     font,
-                    "اسم المنتج: ${product.name}",
+                    context.getString(R.string.product_name) + ": ${product.name}",
                     250f,
                     pageHeight - 125f,
                     15f
                 )
 
                 drawText(
+                    document,
                     content,
                     font,
-                    "التصنيف: ${product.category}",
+                    context.getString(R.string.category) + ": ${getLocalizedCategoryName(product.category)}",
                     250f,
                     pageHeight - 165f,
                     15f
                 )
 
                 drawText(
+                    document,
                     content,
                     font,
-                    "تاريخ الانتهاء: ${product.expiryDate}",
+                    context.getString(R.string.expiry_date) + ": ${product.expiryDate}",
                     250f,
                     pageHeight - 205f,
                     15f
                 )
 
                 drawText(
+                    document,
                     content,
                     font,
-                    "الباركود: ${product.barcode}",
+                    context.getString(R.string.barcode) + ": ${product.barcode}",
                     250f,
                     pageHeight - 245f,
                     15f
@@ -229,6 +252,11 @@ class ProductPdfGenerator(
             )
         }
 
+        copyToDownloads(
+            pdfFile,
+            pdfFile.name
+        )
+
         return pdfFile
     }
 
@@ -236,7 +264,167 @@ class ProductPdfGenerator(
     // كتابة النص
     // =====================================================
 
+    private fun copyToDownloads(
+        sourceFile: File,
+        fileName: String
+    ) {
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+
+            val values =
+                ContentValues().apply {
+
+                    put(
+                        MediaStore.Downloads.DISPLAY_NAME,
+                        fileName
+                    )
+
+                    put(
+                        MediaStore.Downloads.MIME_TYPE,
+                        "application/pdf"
+                    )
+
+                    put(
+                        MediaStore.Downloads.RELATIVE_PATH,
+                        "Download/إدارة المخزون"
+                    )
+
+                    put(
+                        MediaStore.Downloads.IS_PENDING,
+                        1
+                    )
+                }
+
+            val resolver =
+                context.contentResolver
+
+            val uri =
+                resolver.insert(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    values
+                ) ?: throw IllegalStateException(
+                    "تعذر إنشاء ملف PDF في Download"
+                )
+
+            try {
+
+                resolver.openOutputStream(uri)?.use { output ->
+                    sourceFile.inputStream().use { input ->
+                        input.copyTo(output)
+                    }
+                } ?: throw IllegalStateException(
+                    "تعذر كتابة ملف PDF"
+                )
+
+                val completedValues =
+                    ContentValues().apply {
+                        put(
+                            MediaStore.Downloads.IS_PENDING,
+                            0
+                        )
+                    }
+
+                resolver.update(
+                    uri,
+                    completedValues,
+                    null,
+                    null
+                )
+
+            } catch (e: Exception) {
+
+                resolver.delete(
+                    uri,
+                    null,
+                    null
+                )
+
+                throw e
+            }
+
+        } else {
+
+            val downloadsDir =
+                android.os.Environment.getExternalStoragePublicDirectory(
+                    android.os.Environment.DIRECTORY_DOWNLOADS
+                )
+
+            val appDownloadsDir =
+                File(
+                    downloadsDir,
+                    "إدارة المخزون"
+                )
+
+            if (!appDownloadsDir.exists()) {
+                appDownloadsDir.mkdirs()
+            }
+
+            val destination =
+                File(
+                    appDownloadsDir,
+                    fileName
+                )
+
+            sourceFile.inputStream().use { input ->
+                destination.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+    }
+
+    private fun loadProductBitmap(imagePath: String): Bitmap? {
+        return try {
+
+            if (
+                imagePath.startsWith("http://") ||
+                imagePath.startsWith("https://")
+            ) {
+
+                Glide.with(context.applicationContext)
+                    .asBitmap()
+                    .load(imagePath)
+                    .submit()
+                    .get()
+
+            } else {
+
+                BitmapFactory.decodeFile(imagePath)
+            }
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getLocalizedCategoryName(category: String): String {
+        return when (category) {
+            "عصائر" ->
+                context.getString(R.string.category_juices)
+
+            "مشروبات غازية" ->
+                context.getString(R.string.category_soft_drinks)
+
+            "خضار معلبة ومخللات" ->
+                context.getString(R.string.category_canned_vegetables_pickles)
+
+            "أسماك معلبة" ->
+                context.getString(R.string.category_canned_fish)
+
+            "كيك وبسكويت" ->
+                context.getString(R.string.category_cakes_biscuits)
+
+            "آيسكريم ومثلجات" ->
+                context.getString(R.string.category_ice_cream_frozen)
+
+            else -> category
+        }
+    }
+
     private fun drawText(
+        document: PDDocument,
         content: PDPageContentStream,
         font: PDType0Font,
         text: String,
@@ -245,30 +433,69 @@ class ProductPdfGenerator(
         size: Float
     ) {
 
-        content.beginText()
+        // Android Canvas يتولى تشكيل الحروف العربية واتجاه RTL.
 
-        content.setFont(
-            font,
-            size
+        val bitmapWidth = 600
+        val bitmapHeight =
+            (size * 3.0f)
+                .toInt()
+                .coerceAtLeast(60)
+
+        val bitmap =
+            Bitmap.createBitmap(
+                bitmapWidth,
+                bitmapHeight,
+                Bitmap.Config.ARGB_8888
+            )
+
+        val canvas =
+            Canvas(bitmap)
+
+        canvas.drawColor(
+            Color.TRANSPARENT
         )
 
-        // PDFBox يريد RGB منفصلة
-        // وليس قيمة Android ARGB
-        content.setNonStrokingColor(
-            0,
-            0,
-            0
+        val typeface =
+            Typeface.createFromAsset(
+                context.assets,
+                "fonts/NotoNaskhArabic-Regular.ttf"
+            )
+
+        val paint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+
+                this.typeface = typeface
+                textSize = size * 2.0f
+                color = Color.BLACK
+                textAlign = Paint.Align.RIGHT
+                isSubpixelText = true
+            }
+
+        val baseline =
+            bitmapHeight - size * 0.55f
+
+        canvas.drawText(
+            text,
+            bitmapWidth - 10f,
+            baseline,
+            paint
         )
 
-        content.newLineAtOffset(
+        val pdfImage =
+            LosslessFactory.createFromImage(
+                document,
+                bitmap
+            )
+
+        content.drawImage(
+            pdfImage,
             x,
-            y
+            y,
+            bitmapWidth * 0.5f,
+            bitmapHeight * 0.5f
         )
 
-        content.showText(
-            text
-        )
-
-        content.endText()
+        bitmap.recycle()
     }
+
 }

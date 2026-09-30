@@ -1,8 +1,12 @@
 package com.saber.myapp
 
+import android.Manifest
+import android.content.pm.PackageManager
+
 import org.opencv.android.OpenCVLoader
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import android.animation.ValueAnimator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import android.view.Gravity
@@ -24,8 +28,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import androidx.core.animation.doOnEnd
+import androidx.core.content.FileProvider
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -146,6 +155,16 @@ class MainActivity : AppCompatActivity() {
         MODE_PRIVATE
     )
 
+    val language =
+        preferences.getString(
+            "language",
+            "ar"
+        ) ?: "ar"
+
+    AppCompatDelegate.setApplicationLocales(
+        LocaleListCompat.forLanguageTags(language)
+    )
+
     val isDarkMode = preferences.getBoolean(
         "dark_mode",
         false
@@ -168,9 +187,9 @@ class MainActivity : AppCompatActivity() {
     } else {
         android.util.Log.d("OpenCV", "OpenCV library loaded successfully")
     }
-    
-        
-        
+
+
+
         // =====================================================
         // قاعدة البيانات
         // =====================================================
@@ -392,10 +411,12 @@ btnHelp.setOnClickListener {
 
         // زر PDF
         menuView.findViewById<android.widget.ImageButton>(R.id.btnActionPdf)?.setOnClickListener {
-            selectedProduct?.let { selected ->
-                Toast.makeText(this, getString(R.string.export_product_pdf, selected.name), Toast.LENGTH_SHORT).show()
-            }
+            val selected = selectedProduct
             closeProductBalloon()
+
+            if (selected != null) {
+                exportProductToPdf(selected)
+            }
         }
 
         // زر الطباعة
@@ -422,7 +443,7 @@ btnHelp.setOnClickListener {
             balloon.showAlignTop(anchorView)
         }
     }
-    
+
 // =========================================================
 // الدخول إلى وضع التحديد المتعدد
 // =========================================================
@@ -515,7 +536,7 @@ private fun enterSelectionMode(
     listHandler.setSelectionMode(true)
 }
 
-    
+
 
     // =========================================================
     // إعداد أزرار وضع التحديد
@@ -544,7 +565,7 @@ private fun enterSelectionMode(
     // الخروج من وضع التحديد المتعدد
     // =========================================================
 
-    
+
         private fun exitSelectionMode() {
     if (!isSelectionMode) return
 
@@ -740,8 +761,8 @@ private fun enterSelectionMode(
         }
     }
         }
-    
-                
+
+
 
     // =========================================================
     // حذف المنتجات المحددة
@@ -769,6 +790,94 @@ private fun enterSelectionMode(
         }
         .show()
     }
+
+    // =========================================================
+    // تصدير منتج واحد إلى PDF
+
+    private fun createAndOpenProductPdf(product: Product) {
+
+        lifecycleScope.launch {
+
+            try {
+
+                val pdfFile = withContext(Dispatchers.IO) {
+                    ProductPdfGenerator(this@MainActivity)
+                        .createPdf(product)
+                }
+
+                val pdfUri =
+                    FileProvider.getUriForFile(
+                        this@MainActivity,
+                        "com.saber.expiryscanner.fileprovider",
+                        pdfFile
+                    )
+
+                val intent =
+                    Intent(Intent.ACTION_VIEW).apply {
+
+                        setDataAndType(
+                            pdfUri,
+                            "application/pdf"
+                        )
+
+                        addFlags(
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                    }
+
+                startActivity(
+                    Intent.createChooser(
+                        intent,
+                        null
+                    )
+                )
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+
+                Toast.makeText(
+                    this@MainActivity,
+                    "فشل إنشاء ملف PDF",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    // =========================================================
+
+    private var pendingPdfProduct: Product? = null
+
+    private val REQUEST_WRITE_STORAGE = 2001
+
+    private fun exportProductToPdf(product: Product) {
+
+        // Android 10 وما بعده لا يحتاج WRITE_EXTERNAL_STORAGE
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+
+            if (
+                checkSelfPermission(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                pendingPdfProduct = product
+
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
+                    REQUEST_WRITE_STORAGE
+                )
+
+                return
+            }
+        }
+
+        createAndOpenProductPdf(product)
+    }
+
 
     // =========================================================
     // طباعة المنتجات المحددة
@@ -810,7 +919,7 @@ private fun enterSelectionMode(
         }
         addProductLauncher.launch(intent)
     }
-    
+
     // =========================================================
     // إعداد شريط الأدوات
     // =========================================================
@@ -999,7 +1108,7 @@ private fun enterSelectionMode(
         }
         .show()
     }
-    
+
     // =========================================================
     // التعامل مع زر الرجوع
     // =========================================================
@@ -1041,5 +1150,42 @@ private fun enterSelectionMode(
         closeProductBalloon()
         super.onDestroy()
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
+
+        if (requestCode == REQUEST_WRITE_STORAGE) {
+
+            val product = pendingPdfProduct
+            pendingPdfProduct = null
+
+            if (
+                grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+
+                if (product != null) {
+                    createAndOpenProductPdf(product)
+                }
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "يجب السماح بالوصول إلى التخزين لحفظ ملف PDF",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
-    
+
+}
+

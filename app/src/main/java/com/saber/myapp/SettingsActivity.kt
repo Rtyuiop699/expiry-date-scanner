@@ -144,8 +144,22 @@ autoComplete.setOnItemClickListener { _, _, position, _ ->
     }
 
     private fun setAppLocale(languageCode: String) {
-        val appLocale = LocaleListCompat.forLanguageTags(languageCode)
-        AppCompatDelegate.setApplicationLocales(appLocale)
+
+        val preferences = getSharedPreferences(
+            "app_settings",
+            MODE_PRIVATE
+        )
+
+        preferences.edit()
+            .putString("language", languageCode)
+            .apply()
+
+        val appLocale =
+            LocaleListCompat.forLanguageTags(languageCode)
+
+        AppCompatDelegate.setApplicationLocales(
+            appLocale
+        )
     }
 
     /**
