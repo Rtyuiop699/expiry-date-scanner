@@ -19,21 +19,6 @@ import androidx.appcompat.app.AlertDialog
 import java.time.DateTimeException
 
 
-class AddProductActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityAddProductBinding
-    private var hasPack = true
-    private lateinit var databaseHelper: DatabaseHelper
-    private var currentImagePath: String? = null
-    private val REQUEST_PRODUCT_CAMERA = 1001
-    private val REQUEST_DATE_SCAN = 1002
-    private lateinit var categoriesAdapter: ArrayAdapter<String>
-    private var editProductId: Int = -1
-    private var isEditMode: Boolean = false
-    // القائمة الأساسية للتصنيفات
-    private val categories = mutableListOf<String>()
-    private val originalCategories = mutableListOf<String>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -42,7 +27,33 @@ class AddProductActivity : AppCompatActivity() {
 
     databaseHelper = DatabaseHelper(this)
 
-    // 1. --- إعداد Adapter التصنيفات أولاً ---
+    // ==========================================
+    // 1. إعداد أحداث الشريط العلوي (الرجوع والإلغاء والحفظ)
+    // ==========================================
+
+    // زر الرجوع في الشريط العلوي
+    binding.topAppBar.setNavigationOnClickListener {
+        finish()
+    }
+
+    // التعامل مع خيارات القائمة العلوي (حفظ / إلغاء)
+    binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+            R.id.btnSaveAction -> {
+                // كود تنفيذ عملية الحفظ
+                true
+            }
+            R.id.btnCancel -> {
+                showCancelAlertDialog()
+                true
+            }
+            else -> false
+        }
+    }
+
+    // ==========================================
+    // 2. إعداد Adapter التصنيفات
+    // ==========================================
     categoriesAdapter = ArrayAdapter(
         this,
         android.R.layout.simple_dropdown_item_1line,
@@ -50,7 +61,7 @@ class AddProductActivity : AppCompatActivity() {
     )
 
     binding.autoCompleteCategories.setAdapter(categoriesAdapter)
-
+    
     // تحميل التصنيفات من قاعدة البيانات بعد تهيئة الـ Adapter
     loadCategories()
 
