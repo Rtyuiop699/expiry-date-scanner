@@ -1434,7 +1434,31 @@ private fun createDate(
         }
     }
 }
+    private fun showCancelAlertDialog() {
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle("تأكيد الإلغاء")
+            .setMessage("هل تريد إلغاء عملية الحفظ؟")
+            .setPositiveButton("تأكيد") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("رجوع") { dialog, _ ->
+                dialog.dismiss()
+            }
 
+        val alertDialog = builder.create()
+        alertDialog.show()
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            ?.setTextColor(Color.parseColor("#F44336"))
+
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            ?.setTextColor(Color.parseColor("#8BC34A"))
+    }
+    
 /**
  * إصلاح رابط الصورة من Open Food Facts
  * يضيف .jpg إذا كان الرابط بدون امتداد
