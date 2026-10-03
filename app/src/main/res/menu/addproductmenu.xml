@@ -9,11 +9,11 @@
         android:icon="@drawable/icsave"
         app:showAsAction="always" />
 
-    <!-- إلغاء (دائرة حمراء بإكس أبيض) -->
+    <!-- إلغاء -->
     <item
         android:id="@+id/btnCancel"
         android:title="إلغاء"
-        android:icon="@drawable/ic_close_red" 
+        android:icon="@drawable/ic_cancel_circle" 
         app:showAsAction="always" />
 
 </menu>
