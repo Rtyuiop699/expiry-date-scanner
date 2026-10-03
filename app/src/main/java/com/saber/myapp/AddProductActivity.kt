@@ -18,7 +18,9 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import java.time.DateTimeException
 
+class AddProductActivity : AppCompatActivity() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
     override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
