@@ -9,25 +9,11 @@
         android:icon="@drawable/icsave"
         app:showAsAction="always" />
 
-    <!-- حذف -->
+    <!-- إلغاء عملية الحفظ -->
     <item
-        android:id="@+id/btnDelete"
-        android:title="حذف"
-        android:icon="@drawable/icdeletered"
-        app:showAsAction="always" />
-
-    <!-- طباعة -->
-    <item
-        android:id="@+id/btnPrint"
-        android:title="طباعة"
-        android:icon="@drawable/icprint"
-        app:showAsAction="always" />
-
-    <!-- PDF -->
-    <item
-        android:id="@+id/btnPdf"
-        android:title="PDF"
-        android:icon="@drawable/icpdf"
+        android:id="@+id/btnCancelAction"
+        android:title="إلغاء عملية الحفظ"
+        android:icon="@drawable/ic_cancel_circle"
         app:showAsAction="always" />
 
 </menu>

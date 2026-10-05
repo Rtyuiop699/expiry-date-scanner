@@ -700,195 +700,13 @@ val fixedImagePath = fixOpenFoodFactsImageUrl(currentImagePath) ?: ""
                 true
             }
 
-            R.id.btnPrint -> {
-
-                Toast.makeText(
-                    this,
-                    "جاري الطباعة...",
-                    Toast.LENGTH_SHORT
-                ).show()
-
+            R.id.btnCancelAction -> {
+                showCancelSaveDialog()
                 true
             }
 
-            R.id.btnPdf -> {
 
-                // =========================
-                // البيانات الأساسية
-                // =========================
 
-                val name =
-                    binding.editTextProductName.text
-                        .toString()
-                        .trim()
-
-                val rawDate =
-                    binding.editTextDate.text
-                        .toString()
-                        .trim()
-
-                val normalizedDate =
-                    normalizeDate(rawDate)
-
-                val category =
-                    getOriginalCategoryName(
-                        binding.autoCompleteCategories.text
-                            .toString()
-                            .trim()
-                    )
-
-                // =========================
-                // التحقق من اسم المنتج
-                // =========================
-
-                if (name.isBlank()) {
-
-                    Toast.makeText(
-                        this,
-                        "يرجى إدخال اسم المنتج أولاً",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    return@setOnMenuItemClickListener true
-                }
-
-                // =========================
-                // التحقق من التاريخ
-                // =========================
-
-                if (
-                    rawDate.isBlank() ||
-                    normalizedDate == null
-                ) {
-
-                    Toast.makeText(
-                        this,
-                        "يرجى إدخال تاريخ انتهاء صحيح أولاً",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    return@setOnMenuItemClickListener true
-                }
-
-                // =========================
-                // التحقق من التصنيف
-                // =========================
-
-                if (category.isBlank()) {
-
-                    Toast.makeText(
-                        this,
-                        "يرجى اختيار التصنيف أولاً",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    return@setOnMenuItemClickListener true
-                }
-
-                // =========================
-                // التحقق من صورة المنتج
-                // =========================
-
-                if (currentImagePath.isNullOrBlank()) {
-
-                    Toast.makeText(
-                        this,
-                        "يرجى إضافة صورة المنتج أولاً",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    return@setOnMenuItemClickListener true
-                }
-
-                // =========================
-                // الباركود
-                // =========================
-
-                val barcode =
-                    binding.editTextBarcode.text
-                        .toString()
-                        .trim()
-
-                // =========================
-                // إنشاء المنتج مؤقتاً للـ PDF
-                // =========================
-
-                val product = Product(
-                    id = 0,
-                    barcode = barcode,
-                    name = name,
-                    expiryDate = normalizedDate,
-
-                    cartons =
-                        binding.editCarton.text
-                            .toString()
-                            .toIntOrNull() ?: 0,
-
-                    packsPerCarton =
-                        binding.editPack.text
-                            .toString()
-                            .toIntOrNull() ?: 0,
-
-                    piecesPerPack =
-                        binding.editPiece.text
-                            .toString()
-                            .toIntOrNull() ?: 0,
-
-                    cartonPurchasePrice =
-                        binding.editCartonPurchasePrice.text
-                            .toString()
-                            .toDoubleOrNull() ?: 0.0,
-
-                    pieceSalePrice =
-                        binding.editPieceSalePrice.text
-                            .toString()
-                            .toDoubleOrNull() ?: 0.0,
-
-                    imagePath = currentImagePath!!,
-
-                    category = category
-                )
-
-                // =========================
-                // إنشاء PDF
-                // =========================
-
-                try {
-
-                    val pdfFile =
-                        ProductPdfGenerator(this)
-                            .createPdf(product)
-
-                    Toast.makeText(
-                        this,
-                        "تم إنشاء ملف PDF بنجاح",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                } catch (e: Exception) {
-
-                    Toast.makeText(
-                        this,
-                        "فشل إنشاء PDF: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    e.printStackTrace()
-                }
-
-                true
-            }
-
-            R.id.btnDelete -> {
-
-                Toast.makeText(
-                    this,
-                    "تم حذف المنتج",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                true
-            }
 
             else -> false
         }
@@ -897,7 +715,18 @@ val fixedImagePath = fixOpenFoodFactsImageUrl(currentImagePath) ?: ""
 
                 
 
-   private fun calculateQuantity() {
+   private fun showCancelSaveDialog() {
+    AlertDialog.Builder(this)
+        .setTitle("إلغاء عملية الحفظ")
+        .setMessage("هل تريد إلغاء عملية حفظ المنتج؟")
+        .setNegativeButton("رجوع", null)
+        .setPositiveButton("تأكيد") { _, _ ->
+            finish()
+        }
+        .show()
+}
+
+private fun calculateQuantity() {
 
     // =========================
     // الكميات
