@@ -848,6 +848,7 @@ private fun enterSelectionMode(
     // =========================================================
 
     private var pendingPdfProduct: Product? = null
+private var pendingPdfProducts: List<Product>? = null
 
     private val REQUEST_WRITE_STORAGE = 2001
 
@@ -898,12 +899,107 @@ private fun enterSelectionMode(
     // =========================================================
 
     private fun exportSelectedProductsToPdf() {
-        val selectedProducts = listHandler.getSelectedProducts()
+
+        val selectedProducts =
+            listHandler.getSelectedProducts()
+
         if (selectedProducts.isEmpty()) {
-            Toast.makeText(this, getString(R.string.no_product_selected), Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                this,
+                getString(R.string.no_product_selected),
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
-        Toast.makeText(this, getString(R.string.export_selected_pdf, selectedProducts.size), Toast.LENGTH_SHORT).show()
+
+        // Android 9 وأقدم يحتاج إذن الكتابة إلى التخزين
+        if (
+            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q &&
+            checkSelfPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            pendingPdfProducts = selectedProducts
+
+            requestPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_WRITE_STORAGE
+            )
+
+            return
+        }
+
+        createAndOpenSelectedProductsPdf(selectedProducts)
+    }
+
+    private fun createAndOpenSelectedProductsPdf(
+        selectedProducts: List<Product>
+    ) {
+
+        lifecycleScope.launch {
+
+            try {
+
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(
+                        R.string.export_selected_pdf,
+                        selectedProducts.size
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                val pdfFile =
+                    withContext(Dispatchers.IO) {
+
+                        ProductPdfGenerator(
+                            this@MainActivity
+                        ).createPdf(
+                            selectedProducts
+                        )
+                    }
+
+                val pdfUri =
+                    FileProvider.getUriForFile(
+                        this@MainActivity,
+                        "com.saber.expiryscanner.fileprovider",
+                        pdfFile
+                    )
+
+                val intent =
+                    Intent(Intent.ACTION_VIEW).apply {
+
+                        setDataAndType(
+                            pdfUri,
+                            "application/pdf"
+                        )
+
+                    addFlags(
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+
+                startActivity(
+                    Intent.createChooser(
+                        intent,
+                        null
+                    )
+                )
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+
+                Toast.makeText(
+                    this@MainActivity,
+                    "فشل إنشاء ملف PDF: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 
 
@@ -1167,6 +1263,9 @@ private fun enterSelectionMode(
             val product = pendingPdfProduct
             pendingPdfProduct = null
 
+            val products = pendingPdfProducts
+            pendingPdfProducts = null
+
             if (
                 grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
@@ -1174,6 +1273,10 @@ private fun enterSelectionMode(
 
                 if (product != null) {
                     createAndOpenProductPdf(product)
+                }
+
+                if (products != null) {
+                    createAndOpenSelectedProductsPdf(products)
                 }
 
             } else {
