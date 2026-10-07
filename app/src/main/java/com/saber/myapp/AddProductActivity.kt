@@ -1,7 +1,9 @@
 package com.saber.myapp
 
+import android.Manifest
 import android.view.View
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
@@ -27,6 +29,8 @@ class AddProductActivity : AppCompatActivity() {
     private var currentImagePath: String? = null
     private val REQUEST_PRODUCT_CAMERA = 1001
     private val REQUEST_DATE_SCAN = 1002
+    private val REQUEST_GALLERY_PERMISSION = 1003
+    private val REQUEST_GALLERY = 1004
     private lateinit var categoriesAdapter: ArrayAdapter<String>
     private var editProductId: Int = -1
     private var isEditMode: Boolean = false
@@ -136,11 +140,24 @@ class AddProductActivity : AppCompatActivity() {
     // 4. --- اختيار صورة من المعرض ---
     binding.btnChooseImage.setOnClickListener {
 
-        Toast.makeText(
-            this,
-            "ميزة اختيار من المعرض قريباً",
-            Toast.LENGTH_SHORT
-        ).show()
+        if (
+            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q &&
+            checkSelfPermission(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                REQUEST_GALLERY_PERMISSION
+            )
+
+        } else {
+
+            openGallery()
+        }
     }
 
    // 5. --- مسح تاريخ الانتهاء بواسطة OCR ---
@@ -208,6 +225,60 @@ binding.btnScanDate.setOnClickListener {
     setupToolbar()
     }
 
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(
+        requestCode,
+        permissions,
+        grantResults
+    )
+
+    if (requestCode == REQUEST_GALLERY_PERMISSION) {
+
+        if (
+            grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            openGallery()
+
+        } else {
+
+            Toast.makeText(
+                this,
+                "يجب السماح بالوصول إلى الصور لاختيار صورة المنتج",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+  }
+
+  private fun openGallery() {
+
+    val intent = Intent(
+        Intent.ACTION_OPEN_DOCUMENT
+    ).apply {
+
+        addCategory(
+            Intent.CATEGORY_OPENABLE
+        )
+
+        type = "image/*"
+
+        addFlags(
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+    }
+
+    startActivityForResult(
+        intent,
+        REQUEST_GALLERY
+    )
+  }
+
   override fun onActivityResult(
     requestCode: Int,
     resultCode: Int,
@@ -240,6 +311,73 @@ binding.btnScanDate.setOnClickListener {
             processProductImage(
                 imagePath
             )
+        }
+
+        return
+    }
+
+    // =====================================================
+    // نتيجة اختيار صورة من المعرض
+    // =====================================================
+
+    if (
+        requestCode == REQUEST_GALLERY &&
+        resultCode == RESULT_OK
+    ) {
+
+        val imageUri = data?.data
+
+        if (imageUri != null) {
+
+            try {
+
+                val inputStream =
+                    contentResolver.openInputStream(imageUri)
+
+                if (inputStream != null) {
+
+                    val imageDir =
+                        File(
+                            filesDir,
+                            "product_images"
+                        )
+
+                    if (!imageDir.exists()) {
+                        imageDir.mkdirs()
+                    }
+
+                    val imageFile =
+                        File(
+                            imageDir,
+                            "product_${System.currentTimeMillis()}.jpg"
+                        )
+
+                    inputStream.use { input ->
+
+                        imageFile.outputStream().use { output ->
+
+                            input.copyTo(output)
+                        }
+                    }
+
+                    currentImagePath =
+                        imageFile.absolutePath
+
+                    processProductImage(
+                        imageFile.absolutePath
+                    )
+                }
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+
+                Toast.makeText(
+                    this,
+                    "فشل اختيار الصورة",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
         return

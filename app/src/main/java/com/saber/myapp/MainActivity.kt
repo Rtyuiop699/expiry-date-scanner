@@ -231,7 +231,7 @@ val btnHelp = findViewById<ImageView>(R.id.btnHelp)
 // زر المساعدة
 // =====================================================
 btnHelp.setOnClickListener {
-    showHelpDialog()
+    startActivity(Intent(this, HelpActivity::class.java))
 }
 
         // =====================================================
