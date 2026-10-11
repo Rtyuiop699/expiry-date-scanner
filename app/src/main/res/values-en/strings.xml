@@ -213,4 +213,7 @@ Your inventory data is stored locally on your device. You can review the Privacy
     <string name="category_ice_cream_frozen">Ice Cream &amp; Frozen Desserts</string>
     <string name="barcode_scan_prompt">Point the camera at the barcode</string>
     <string name="open_with">Open with</string>
+    <string name="gemini_login_required_title">Sign in required</string>
+    <string name="gemini_login_required_message">You have used your free attempts. Sign in with Google to keep using Gemini.</string>
+    <string name="gemini_login_button">Sign in</string>
 </resources>

@@ -225,4 +225,7 @@
     <string name="category_ice_cream_frozen">آيسكريم ومثلجات</string>
     <string name="barcode_scan_prompt">وجّه الكاميرا نحو الباركود</string>
     <string name="open_with">فتح باستخدام</string>
+    <string name="gemini_login_required_title">تسجيل الدخول مطلوب</string>
+    <string name="gemini_login_required_message">لقد استخدمت المحاولات المجانية. سجّل الدخول بحساب Google لمتابعة استخدام Gemini.</string>
+    <string name="gemini_login_button">تسجيل الدخول</string>
 </resources>

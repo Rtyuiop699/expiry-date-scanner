@@ -562,6 +562,18 @@ private fun sendImageToGemini(
             // إخفاء رسالة الانتظار
             hideGeminiProgress()
 
+            // احتساب محاولة مجانية ناجحة
+            val usagePrefs = getSharedPreferences(
+                "app_prefs",
+                MODE_PRIVATE
+            )
+            usagePrefs.edit()
+                .putInt(
+                    "gemini_free_used",
+                    usagePrefs.getInt("gemini_free_used", 0) + 1
+                )
+                .apply()
+
             // =============================================
             // إرسال التاريخ للشاشة السابقة
             // =============================================

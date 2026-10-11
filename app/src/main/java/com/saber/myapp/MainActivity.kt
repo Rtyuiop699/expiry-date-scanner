@@ -13,6 +13,7 @@ import android.view.Gravity
 import android.widget.Space
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -24,6 +25,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import android.widget.TextView
 
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -348,12 +350,158 @@ btnHelp.setOnClickListener {
             permissionManager.checkAndRequestCameraPermission()
         }
 
+        findViewById<View>(R.id.btnAbout)?.setOnClickListener {
+            showAboutDialog()
+        }
+
+        findViewById<View>(R.id.btnSupport)?.setOnClickListener {
+            showSupportDialog()
+        }
+
         // =====================================================
         // تحميل المنتجات
         // =====================================================
         loadProductsFromDatabase()
     }
 
+
+
+    // =========================================================
+    // صفحة من نحن
+    // =========================================================
+
+    private fun showAboutDialog() {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(24, 12, 24, 8)
+        }
+
+        content.addView(TextView(this).apply {
+            text = "Super Code"
+            textSize = 25f
+            setTextColor(Color.rgb(46, 125, 50))
+            gravity = Gravity.CENTER
+            setTypeface(null, android.graphics.Typeface.BOLD)
+        })
+
+        content.addView(TextView(this).apply {
+            text = "سوبر كود للبرمجيات والحلول التقنية"
+            textSize = 17f
+            setTextColor(Color.rgb(40, 40, 40))
+            gravity = Gravity.CENTER
+            setPadding(0, 16, 0, 12)
+        })
+
+        content.addView(TextView(this).apply {
+            text = "اليمن — عدن"
+            textSize = 15f
+            gravity = Gravity.CENTER
+            setPadding(0, 0, 0, 12)
+        })
+
+        content.addView(TextView(this).apply {
+            text = "هذا التطبيق من تطوير شركة سوبر كود للبرمجيات والحلول التقنية، اليمن — عدن."
+            textSize = 15f
+            gravity = Gravity.CENTER
+            setLineSpacing(4f, 1f)
+        })
+
+        AlertDialog.Builder(this)
+            .setTitle("من نحن")
+            .setView(content)
+            .setPositiveButton("إغلاق", null)
+            .show()
+    }
+
+    // =========================================================
+    // صفحة الدعم الفني
+    // =========================================================
+
+    private fun showSupportDialog() {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 8, 20, 8)
+        }
+
+        content.addView(TextView(this).apply {
+            text = "للاستفسار والتواصل"
+            textSize = 16f
+            gravity = Gravity.CENTER
+            setPadding(0, 0, 0, 16)
+        })
+
+        val whatsappButton = MaterialButton(this).apply {
+            text = "واتساب — 967774815743"
+            isAllCaps = false
+        }
+
+        val emailButton = MaterialButton(this).apply {
+            text = "البريد الإلكتروني"
+            isAllCaps = false
+        }
+
+        content.addView(
+            whatsappButton,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        content.addView(
+            emailButton,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = (8 * resources.displayMetrics.density).toInt()
+            }
+        )
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("الدعم الفني")
+            .setView(content)
+            .setNegativeButton("إغلاق", null)
+            .create()
+
+        whatsappButton.setOnClickListener {
+            dialog.dismiss()
+            openContactIntent(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://wa.me/967774815743")
+                )
+            )
+        }
+
+        emailButton.setOnClickListener {
+            dialog.dismiss()
+            openContactIntent(
+                Intent(
+                    Intent.ACTION_SENDTO,
+                    Uri.parse("mailto:swbr8519@gmail.com")
+                ).putExtra(
+                    Intent.EXTRA_SUBJECT,
+                    "استفسار عن تطبيق إدارة المخزون"
+                )
+            )
+        }
+
+        dialog.show()
+    }
+
+    private fun openContactIntent(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            Toast.makeText(
+                this,
+                "لا يوجد تطبيق مناسب لتنفيذ هذا الإجراء",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     // =========================================================
     // إظهار Balloon عند الضغط المطول
@@ -403,7 +551,7 @@ btnHelp.setOnClickListener {
     putExtra("BARCODE_EXTRA", selected.barcode)
     putExtra("PRODUCT_ID_EXTRA", selected.id)
     putExtra("IS_EDIT_MODE", true)
-               } 
+               }
                 addProductLauncher.launch(intent)
             }
             closeProductBalloon()

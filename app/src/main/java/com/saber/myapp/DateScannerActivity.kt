@@ -147,29 +147,13 @@ class DateScannerActivity : AppCompatActivity() {
                     .putBoolean("ai_allowed", true)
                     .apply()
 
-                val intent = Intent(
-                    this,
-                    GeminiDateScannerActivity::class.java
-                )
-
-                startActivityForResult(
-                    intent,
-                    REQUEST_GEMINI_DATE
-                )
+                openGeminiScanner()
             }
             .show()
 
     } else {
 
-        val intent = Intent(
-            this,
-            GeminiDateScannerActivity::class.java
-        )
-
-        startActivityForResult(
-            intent,
-            REQUEST_GEMINI_DATE
-        )
+        openGeminiScanner()
     }
 }
 
@@ -202,6 +186,44 @@ class DateScannerActivity : AppCompatActivity() {
 
         checkCameraPermission()
     }
+
+private fun openGeminiScanner() {
+
+    val prefs = getSharedPreferences(
+        "app_prefs",
+        MODE_PRIVATE
+    )
+
+    val used = prefs.getInt("gemini_free_used", 0)
+
+    if (used >= 3) {
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.gemini_login_required_title)
+            .setMessage(R.string.gemini_login_required_message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.gemini_login_button) { _, _ ->
+                android.widget.Toast.makeText(
+                    this,
+                    "Coming soon",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
+            .show()
+
+        return
+    }
+
+    val intent = Intent(
+        this,
+        GeminiDateScannerActivity::class.java
+    )
+
+    startActivityForResult(
+        intent,
+        REQUEST_GEMINI_DATE
+    )
+}
 
     override fun onActivityResult(
         requestCode: Int,
