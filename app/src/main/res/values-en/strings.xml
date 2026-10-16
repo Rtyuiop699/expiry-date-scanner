@@ -122,6 +122,25 @@
     <string name="back_button">Back</string>
     <string name="help_title">App Help</string>
     <string name="review_privacy">Review Privacy Policy</string>
+    <string name="help_welcome">Welcome to ExpiryLens</string>
+    <string name="help_image_description">Product shelves in a store</string>
+    <string name="help_main_title">How to Use the App</string>
+    <string name="help_step_1">1. Add a New Product
+Tap the Add New Product button, then enter the product details, such as its name, category, expiry date, quantities, and prices. You can also use the camera to scan the barcode.</string>
+    <string name="help_step_2">2. Scan a Barcode
+Point the camera at the product barcode. When product information is available, the app can use the OpenFoodFacts database to display the product name and some details.</string>
+    <string name="help_step_3">3. Read the Expiry Date
+Use the camera to capture the expiry date. The app attempts to recognize the date automatically using OCR technologies and local image processing, including support for some types of dot-matrix printing.</string>
+    <string name="help_step_4">4. Quantities and Prices
+Record the number of cartons, packs, and individual pieces. When needed, enter the carton purchase price and the selling price per piece to keep your inventory organized.</string>
+    <string name="help_step_5">5. Search, Edit, and Delete
+Use the search feature to find products quickly. Open a product to edit its details or delete it when necessary.</string>
+    <string name="help_step_6">6. Export Product Details to PDF
+Use the product options to export its details to a PDF file, then open or share the file using apps available on your device.</string>
+    <string name="help_step_7">7. Track Products Nearing Expiry
+The app displays the number of days remaining before a product expires, helping you identify products that need attention before their expiry dates.</string>
+    <string name="help_step_8">8. Super OCR and Gemini
+If normal processing cannot recognize an expiry date, Super OCR, powered by Google Gemini, can help analyze the image and extract the date. This feature is optional and requires your consent to cloud processing.</string>
     <string name="help_description">The ExpiryLens app helps you record your products, track expiry dates, and organize your inventory data easily.
 
 Barcode Scanning
@@ -214,6 +233,26 @@ Your inventory data is stored locally on your device. You can review the Privacy
     <string name="barcode_scan_prompt">Point the camera at the barcode</string>
     <string name="open_with">Open with</string>
     <string name="gemini_login_required_title">Sign in required</string>
-    <string name="gemini_login_required_message">You have used your free attempts. Sign in with Google to keep using Gemini.</string>
+    <string name="gemini_login_required_message">Sign in with Google to use Gemini. You get free attempts every day.</string>
     <string name="gemini_login_button">Sign in</string>
+    <string name="gemini_no_credits">You have reached your daily Gemini limit. Try again tomorrow.</string>
+    <string name="gemini_login_again">Your session expired. Please sign in again.</string>
+
+    <!-- Super Code: About dialog -->
+    <string name="about_dialog_title_sc">About Us</string>
+    <string name="about_company_english_sc">Super Code</string>
+    <string name="about_company_arabic_sc">Super Code for Software and Technology Solutions</string>
+    <string name="about_description_sc">We develop technology solutions and smart applications to simplify work and improve the user experience.</string>
+    <string name="about_location_sc">Aden, Yemen</string>
+    <string name="about_close_sc">Close</string>
+
+    <!-- Super Code: About and Support -->
+    <string name="about_button_sc">About Us</string>
+    <string name="support_button_sc">Technical Support</string>
+    <string name="support_title_sc">Technical Support</string>
+    <string name="support_description_sc">For inquiries and contact</string>
+    <string name="support_whatsapp_sc">WhatsApp — 967774815743</string>
+    <string name="support_email_sc">Email — swbr8519@gmail.com</string>
+    <string name="support_email_subject_sc">Inquiry about Inventory Management</string>
+    <string name="support_no_handler_sc">No suitable app is available for this action</string>
 </resources>

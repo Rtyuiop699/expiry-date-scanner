@@ -143,7 +143,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     // =================================================
 
     geminiDateService =
-        GeminiDateService()
+        GeminiDateService(this)
 
     // =================================================
     // Executor
@@ -607,7 +607,7 @@ private fun sendImageToGemini(
             hideGeminiProgress()
 
             val errorMessage =
-                when (error.message) {
+                when (error.message?.substringBefore("|")) {
                     "GEMINI_NO_EXPIRY_DATE" ->
                         getString(R.string.gemini_no_expiry_date)
 
@@ -617,6 +617,12 @@ private fun sendImageToGemini(
                     "GEMINI_CONNECTION_ERROR" ->
                         getString(R.string.gemini_connection_error)
 
+                    "GEMINI_NO_CREDITS" ->
+                        getString(R.string.gemini_no_credits)
+
+                    "GEMINI_LOGIN_AGAIN" ->
+                        getString(R.string.gemini_login_again)
+
                     "GEMINI_SERVER_ERROR" ->
                         getString(R.string.gemini_server_error)
 
@@ -625,7 +631,8 @@ private fun sendImageToGemini(
                 }
 
             tvResult.text =
-                "❌ $errorMessage"
+                "❌ $errorMessage\n[" +
+                (error.message?.substringAfter("|", "") ?: "") + "]"
 
             Toast.makeText(
                 this@GeminiDateScannerActivity,

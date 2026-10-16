@@ -196,18 +196,21 @@ private fun openGeminiScanner() {
 
     val used = prefs.getInt("gemini_free_used", 0)
 
-    if (used >= 3) {
+    val loggedIn = !prefs.getString("sb_access_token", null).isNullOrEmpty()
+
+    if (!loggedIn) {
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.gemini_login_required_title)
             .setMessage(R.string.gemini_login_required_message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.gemini_login_button) { _, _ ->
-                android.widget.Toast.makeText(
-                    this,
-                    "Coming soon",
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
+                startActivity(
+                    Intent(
+                        this,
+                        LoginActivity::class.java
+                    )
+                )
             }
             .show()
 

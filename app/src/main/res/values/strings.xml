@@ -226,6 +226,26 @@
     <string name="barcode_scan_prompt">وجّه الكاميرا نحو الباركود</string>
     <string name="open_with">فتح باستخدام</string>
     <string name="gemini_login_required_title">تسجيل الدخول مطلوب</string>
-    <string name="gemini_login_required_message">لقد استخدمت المحاولات المجانية. سجّل الدخول بحساب Google لمتابعة استخدام Gemini.</string>
+    <string name="gemini_login_required_message">سجّل الدخول بحساب Google لاستخدام Gemini، ولديك محاولات مجانية يومياً.</string>
     <string name="gemini_login_button">تسجيل الدخول</string>
+    <string name="gemini_no_credits">انتهى حدك اليومي من Gemini. جرّب غداً.</string>
+    <string name="gemini_login_again">انتهت جلسة الدخول. سجّل الدخول من جديد.</string>
+
+    <!-- Super Code: About dialog -->
+    <string name="about_dialog_title_sc">من نحن</string>
+    <string name="about_company_english_sc">Super Code</string>
+    <string name="about_company_arabic_sc">سوبر كود للبرمجيات والحلول التقنية</string>
+    <string name="about_description_sc">نطوّر حلولًا تقنية وتطبيقات ذكية لتسهيل الأعمال وتحسين تجربة المستخدم.</string>
+    <string name="about_location_sc">اليمن — عدن</string>
+    <string name="about_close_sc">إغلاق</string>
+
+    <!-- Super Code: About and Support -->
+    <string name="about_button_sc">من نحن</string>
+    <string name="support_button_sc">الدعم الفني</string>
+    <string name="support_title_sc">الدعم الفني</string>
+    <string name="support_description_sc">للاستفسار والتواصل</string>
+    <string name="support_whatsapp_sc">واتساب — 967774815743</string>
+    <string name="support_email_sc">البريد الإلكتروني — swbr8519@gmail.com</string>
+    <string name="support_email_subject_sc">استفسار عن تطبيق إدارة المخزون</string>
+    <string name="support_no_handler_sc">لا يوجد تطبيق مناسب لتنفيذ هذا الإجراء</string>
 </resources>

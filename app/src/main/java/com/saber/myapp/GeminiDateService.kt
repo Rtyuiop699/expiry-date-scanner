@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class GeminiDateService {
+class GeminiDateService(private val context: android.content.Context) {
 
     companion object {
 
@@ -142,7 +142,7 @@ class GeminiDateService {
             // =================================================
 
             val url =
-                URL(SUPABASE_URL)
+                URL(SupabaseConfig.EXTRACT_DATE_URL)
 
             connection =
                 url.openConnection()
@@ -158,8 +158,21 @@ class GeminiDateService {
 
             connection.setRequestProperty(
                 "apikey",
-                SUPABASE_ANON_KEY
+                SupabaseConfig.API_KEY
             )
+
+            SupabaseConfig.refreshIfNeeded(context)
+
+            val userToken = context
+                .getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                .getString("sb_access_token", null)
+
+            if (!userToken.isNullOrEmpty()) {
+                connection.setRequestProperty(
+                    "Authorization",
+                    "Bearer $userToken"
+                )
+            }
 
             connection.connectTimeout =
                 15000
@@ -293,14 +306,15 @@ class GeminiDateService {
                 )
 
                 val errorCode =
-                    if (responseCode == 429) {
-                        "GEMINI_USAGE_LIMIT"
-                    } else {
-                        "GEMINI_SERVER_ERROR"
+                    when (responseCode) {
+                        429 -> "GEMINI_USAGE_LIMIT"
+                        402 -> "GEMINI_NO_CREDITS"
+                        401 -> "GEMINI_LOGIN_AGAIN"
+                        else -> "GEMINI_SERVER_ERROR"
                     }
 
                 Result.failure(
-                    Exception(errorCode)
+                    Exception(errorCode + "|HTTP " + responseCode + ": " + errorText.take(300))
                 )
             }
 
@@ -325,7 +339,7 @@ class GeminiDateService {
                 }
 
             Result.failure(
-                Exception(errorCode)
+                Exception(errorCode + "|" + e.javaClass.simpleName + ": " + e.message)
             )
 
         } finally {

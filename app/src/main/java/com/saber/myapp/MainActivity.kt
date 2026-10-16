@@ -371,133 +371,158 @@ btnHelp.setOnClickListener {
     // =========================================================
 
     private fun showAboutDialog() {
+        val density = resources.displayMetrics.density
+        fun dp(value: Int) = (value * density).toInt()
+        val dark = (resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(24, 12, 24, 8)
+            setPadding(dp(24), dp(12), dp(24), dp(12))
+            setBackgroundColor(if (dark) Color.rgb(30, 30, 30) else Color.WHITE)
         }
 
+        content.addView(ImageView(this).apply {
+            setImageResource(R.drawable.super_code_logo)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            contentDescription = getString(R.string.about_company_english_sc)
+        }, LinearLayout.LayoutParams(dp(112), dp(112)).apply {
+            gravity = Gravity.CENTER
+            bottomMargin = dp(8)
+        })
+
         content.addView(TextView(this).apply {
-            text = "Super Code"
+            text = getString(R.string.about_company_english_sc)
             textSize = 25f
-            setTextColor(Color.rgb(46, 125, 50))
+            setTextColor(Color.rgb(66, 165, 245))
             gravity = Gravity.CENTER
             setTypeface(null, android.graphics.Typeface.BOLD)
         })
 
         content.addView(TextView(this).apply {
-            text = "سوبر كود للبرمجيات والحلول التقنية"
+            text = getString(R.string.about_company_arabic_sc)
             textSize = 17f
-            setTextColor(Color.rgb(40, 40, 40))
+            setTextColor(if (dark) Color.WHITE else Color.rgb(45, 45, 45))
             gravity = Gravity.CENTER
-            setPadding(0, 16, 0, 12)
+            setPadding(0, dp(8), 0, dp(14))
+        })
+
+        content.addView(View(this).apply {
+            setBackgroundColor(Color.rgb(33, 150, 243))
+        }, LinearLayout.LayoutParams(dp(56), dp(3)).apply {
+            gravity = Gravity.CENTER
+            bottomMargin = dp(14)
         })
 
         content.addView(TextView(this).apply {
-            text = "اليمن — عدن"
+            text = getString(R.string.about_description_sc)
             textSize = 15f
             gravity = Gravity.CENTER
-            setPadding(0, 0, 0, 12)
+            setLineSpacing(dp(5).toFloat(), 1f)
+            setTextColor(if (dark) Color.LTGRAY else Color.rgb(75, 75, 75))
         })
 
         content.addView(TextView(this).apply {
-            text = "هذا التطبيق من تطوير شركة سوبر كود للبرمجيات والحلول التقنية، اليمن — عدن."
-            textSize = 15f
+            text = "⌖  " + getString(R.string.about_location_sc)
+            textSize = 14f
             gravity = Gravity.CENTER
-            setLineSpacing(4f, 1f)
+            setTextColor(Color.rgb(66, 165, 245))
+            setPadding(0, dp(16), 0, dp(4))
         })
 
         AlertDialog.Builder(this)
-            .setTitle("من نحن")
+            .setTitle(R.string.about_dialog_title_sc)
             .setView(content)
-            .setPositiveButton("إغلاق", null)
+            .setPositiveButton(R.string.about_close_sc, null)
             .show()
     }
-
     // =========================================================
     // صفحة الدعم الفني
     // =========================================================
 
     private fun showSupportDialog() {
+        val density = resources.displayMetrics.density
+        fun dp(value: Int) = (value * density).toInt()
+        val dark = (resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 8, 20, 8)
+            setPadding(dp(20), dp(8), dp(20), dp(8))
+            setBackgroundColor(if (dark) Color.rgb(30, 30, 30) else Color.WHITE)
         }
 
         content.addView(TextView(this).apply {
-            text = "للاستفسار والتواصل"
+            text = getString(R.string.support_description_sc)
             textSize = 16f
             gravity = Gravity.CENTER
-            setPadding(0, 0, 0, 16)
+            setTextColor(if (dark) Color.WHITE else Color.rgb(45, 45, 45))
+            setPadding(0, 0, 0, dp(16))
         })
 
         val whatsappButton = MaterialButton(this).apply {
-            text = "واتساب — 967774815743"
+            text = getString(R.string.support_whatsapp_sc)
             isAllCaps = false
         }
 
         val emailButton = MaterialButton(this).apply {
-            text = "البريد الإلكتروني"
+            text = getString(R.string.support_email_sc)
             isAllCaps = false
         }
 
-        content.addView(
-            whatsappButton,
+        content.addView(whatsappButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+            ))
 
-        content.addView(
-            emailButton,
+        content.addView(emailButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                topMargin = (8 * resources.displayMetrics.density).toInt()
-            }
-        )
+                topMargin = dp(8)
+            })
 
         val dialog = AlertDialog.Builder(this)
-            .setTitle("الدعم الفني")
+            .setTitle(R.string.support_title_sc)
             .setView(content)
-            .setNegativeButton("إغلاق", null)
+            .setNegativeButton(R.string.about_close_sc, null)
             .create()
 
         whatsappButton.setOnClickListener {
             dialog.dismiss()
             openContactIntent(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://wa.me/967774815743")
-                )
+                Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://wa.me/967774815743"))
             )
         }
 
         emailButton.setOnClickListener {
             dialog.dismiss()
             openContactIntent(
-                Intent(
-                    Intent.ACTION_SENDTO,
-                    Uri.parse("mailto:swbr8519@gmail.com")
-                ).putExtra(
-                    Intent.EXTRA_SUBJECT,
-                    "استفسار عن تطبيق إدارة المخزون"
-                )
+                Intent(Intent.ACTION_SENDTO,
+                    Uri.parse("mailto:swbr8519@gmail.com"))
+                    .putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.support_email_subject_sc)
+                    )
             )
         }
 
         dialog.show()
     }
-
     private fun openContactIntent(intent: Intent) {
         try {
             startActivity(intent)
         } catch (_: android.content.ActivityNotFoundException) {
             Toast.makeText(
                 this,
-                "لا يوجد تطبيق مناسب لتنفيذ هذا الإجراء",
+                getString(R.string.support_no_handler_sc),
                 Toast.LENGTH_LONG
             ).show()
         }
