@@ -9,7 +9,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.saber.expiryscanner"
+        applicationId "com.supercode.inventory"
         minSdk 24
         targetSdk 34
         versionCode 4

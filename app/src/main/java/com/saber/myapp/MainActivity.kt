@@ -981,7 +981,7 @@ private fun enterSelectionMode(
                 val pdfUri =
                     FileProvider.getUriForFile(
                         this@MainActivity,
-                        "com.saber.expiryscanner.fileprovider",
+                        packageName + ".fileprovider",
                         pdfFile
                     )
 
@@ -1138,7 +1138,7 @@ private var pendingPdfProducts: List<Product>? = null
                 val pdfUri =
                     FileProvider.getUriForFile(
                         this@MainActivity,
-                        "com.saber.expiryscanner.fileprovider",
+                        packageName + ".fileprovider",
                         pdfFile
                     )
 
