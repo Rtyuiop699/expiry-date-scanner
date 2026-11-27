@@ -196,27 +196,6 @@ private fun openGeminiScanner() {
 
     val used = prefs.getInt("gemini_free_used", 0)
 
-    val loggedIn = !prefs.getString("sb_access_token", null).isNullOrEmpty()
-
-    if (!loggedIn) {
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.gemini_login_required_title)
-            .setMessage(R.string.gemini_login_required_message)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.gemini_login_button) { _, _ ->
-                startActivity(
-                    Intent(
-                        this,
-                        LoginActivity::class.java
-                    )
-                )
-            }
-            .show()
-
-        return
-    }
-
     val intent = Intent(
         this,
         GeminiDateScannerActivity::class.java
